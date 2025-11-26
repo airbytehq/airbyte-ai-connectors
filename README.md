@@ -25,4 +25,4 @@ Each connector has independent versioning and changelog.
 
 ## Source
 
-Generated from: https://github.com/airbytehq/airbyte-embedded
+Generated from: https://github.com/airbytehq/sonar
