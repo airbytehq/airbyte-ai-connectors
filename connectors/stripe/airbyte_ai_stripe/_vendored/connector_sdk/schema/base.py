@@ -44,6 +44,7 @@ class DocUrlType(StrEnum):
     API_REFERENCE = "api_reference"
     API_RELEASE_HISTORY = "api_release_history"
     AUTHENTICATION_GUIDE = "authentication_guide"
+    CHANGELOG = "changelog"
     DATA_MODEL_REFERENCE = "data_model_reference"
     DEVELOPER_COMMUNITY = "developer_community"
     MIGRATION_GUIDE = "migration_guide"
@@ -92,8 +93,8 @@ class Info(BaseModel):
     x_airbyte_connector_name: Optional[str] = Field(
         None, alias="x-airbyte-connector-name"
     )
-    x_airbyte_external_documentation_urls: Optional[list[DocUrl]] = Field(
-        None, alias="x-airbyte-external-documentation-urls"
+    x_airbyte_external_documentation_urls: list[DocUrl] = Field(
+        ..., alias="x-airbyte-external-documentation-urls"
     )
 
 

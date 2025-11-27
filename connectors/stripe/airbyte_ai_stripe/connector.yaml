@@ -5,7 +5,7 @@ info:
   x-airbyte-connector-name: stripe
   x-airbyte-external-documentation-urls:
     - title: Stripe API Changelog documentation
-      type: api_deprecations
+      type: changelog
       url: "https://docs.stripe.com/changelog"
     - title: Stripe API Upgrades documentation
       type: migration_guide

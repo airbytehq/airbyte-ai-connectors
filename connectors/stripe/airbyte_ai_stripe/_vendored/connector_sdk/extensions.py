@@ -46,6 +46,34 @@ Example:
     ```
 """
 
+AIRBYTE_EXTERNAL_DOCUMENTATION_URLS = "x-airbyte-external-documentation-urls"
+"""
+Extension: x-airbyte-external-documentation-urls
+Location: OpenAPI Info object
+Type: list
+Required: Yes
+
+Description:
+    List of objects that contain external documentation URLs relevant to the connector. Each object includes:
+    - type: Type of documentation (e.g., "api_reference", "other", etc.)
+    - title: Human-readable title for the documentation link
+    - url: The actual URL to the external documentation
+
+Example:
+    ```yaml
+    info:
+      title: Stripe API
+      version: 1.0.0
+      x-airbyte-external-documentation-urls:
+        - type: api_reference
+          title: Stripe API Reference
+          url: https://stripe.com/docs/api
+        - type: authentication_guide
+          title: Stripe APIN Authentication Guide
+          url: https://docs.stripe.com/api/authentication
+    ```
+"""
+
 AIRBYTE_RESOURCE = "x-airbyte-resource"
 """
 Extension: x-airbyte-resource
@@ -305,6 +333,7 @@ def get_all_extension_names() -> list[str]:
     """
     return [
         AIRBYTE_CONNECTOR_NAME,
+        AIRBYTE_EXTERNAL_DOCUMENTATION_URLS,
         AIRBYTE_RESOURCE,
         AIRBYTE_VERB,
         AIRBYTE_RESOURCE_NAME,
@@ -324,6 +353,12 @@ EXTENSION_REGISTRY = {
         "type": "string",
         "required": False,
         "description": "Unique identifier for the connector",
+    },
+    AIRBYTE_EXTERNAL_DOCUMENTATION_URLS: {
+        "location": "info",
+        "type": "list",
+        "required": True,
+        "description": "List of external documentation URLs relevant to the connector",
     },
     AIRBYTE_RESOURCE: {
         "location": "operation",
