@@ -16,7 +16,7 @@ uv pip install airbyte-ai-github
 from airbyte_ai_github import GithubConnector
 
 # Create connector
-connector = GithubConnector.create(secrets={"api_key": "your_api_key"})
+connector = GithubConnector.create(auth_config={"api_key": "your_api_key"})
 
 # Use typed methods with full IDE autocomplete
 # (See Available Operations below for all methods)

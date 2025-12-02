@@ -25,14 +25,18 @@ servers:
     description: GitHub API Server
 
 security:
-  - bearerAuth: []
+  - githubOAuth: []
 
 components:
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      description: GitHub personal access token or OAuth token
+    githubOAuth:
+      type: oauth2
+      description: GitHub OAuth 2.0 authentication
+      flows:
+        authorizationCode:
+          authorizationUrl: https://github.com/login/oauth/authorize
+          tokenUrl: https://github.com/login/oauth/access_token
+          scopes: {}
 
   schemas:
     Repository:

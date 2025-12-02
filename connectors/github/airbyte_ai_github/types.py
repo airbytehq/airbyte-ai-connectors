@@ -5,6 +5,15 @@ Generated from OpenAPI specification schemas.
 """
 from typing import TypedDict, NotRequired, Any
 
+# ===== AUTH CONFIG TYPE DEFINITIONS =====
+
+class GithubAuthConfig(TypedDict):
+    """Authentication"""
+    access_token: str  # OAuth2 access token
+    refresh_token: NotRequired[str]  # OAuth2 refresh token (optional)
+    client_id: NotRequired[str]  # OAuth2 client ID (optional)
+    client_secret: NotRequired[str]  # OAuth2 client secret (optional)
+
 # ===== RESPONSE TYPE DEFINITIONS =====
 
 class Repository(TypedDict):
