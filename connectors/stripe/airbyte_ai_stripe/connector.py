@@ -11,7 +11,10 @@ try:
     from typing import Literal
 except ImportError:
     from typing_extensions import Literal
+
 from pathlib import Path
+
+from ._vendored.connector_sdk import save_download
 
 if TYPE_CHECKING:
     from .types import (
@@ -56,6 +59,7 @@ class StripeConnector:
             connector_id: Connector ID (required for hosted mode)
             airbyte_client_id: Airbyte OAuth client ID (required for hosted mode)
             airbyte_client_secret: Airbyte OAuth client secret (required for hosted mode)
+            airbyte_connector_api_url: Airbyte connector API URL (defaults to Airbyte Cloud API URL)
             on_token_refresh: Optional callback for OAuth2 token refresh persistence.
                 Called with new_tokens dict when tokens are refreshed. Can be sync or async.
                 Example: lambda tokens: save_to_database(tokens)
@@ -123,6 +127,7 @@ class StripeConnector:
         return Path(__file__).parent / "connector.yaml"
 
     # ===== TYPED EXECUTE METHOD (Recommended Interface) =====
+
     @overload
     async def execute(
         self,
@@ -130,6 +135,7 @@ class StripeConnector:
         action: Literal["list"],
         params: "CustomersListParams"
     ) -> "CustomerList": ...
+
     @overload
     async def execute(
         self,
@@ -137,6 +143,7 @@ class StripeConnector:
         action: Literal["get"],
         params: "CustomersGetParams"
     ) -> "Customer": ...
+
 
     @overload
     async def execute(
@@ -209,7 +216,7 @@ class CustomersQuery:
         ending_before: str | None = None,
         email: str | None = None,
         **kwargs
-    ) -> "CustomerList":
+    ) -> CustomerList:
         """
         List all customers
 
@@ -232,11 +239,14 @@ class CustomersQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("customers", "list", params)
+
+
+
     async def get(
         self,
         id: str | None = None,
         **kwargs
-    ) -> "Customer":
+    ) -> Customer:
         """
         Get a customer
 
@@ -253,3 +263,5 @@ class CustomersQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("customers", "get", params)
+
+
