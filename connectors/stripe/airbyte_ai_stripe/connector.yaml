@@ -37,7 +37,7 @@ components:
   schemas:
     Customer:
       type: object
-      x-airbyte-resource-name: customers
+      x-airbyte-entity-name: customers
       properties:
         id:
           type: string
@@ -115,8 +115,8 @@ paths:
       summary: List all customers
       description: Returns a list of customers
       operationId: Customers_List
-      x-airbyte-resource: customers
-      x-airbyte-verb: list
+      x-airbyte-entity: customers
+      x-airbyte-action: list
       tags:
         - Customers
       parameters:
@@ -156,8 +156,8 @@ paths:
       summary: Get a customer
       description: Gets the details of an existing customer
       operationId: Customers_Get
-      x-airbyte-resource: customers
-      x-airbyte-verb: get
+      x-airbyte-entity: customers
+      x-airbyte-action: get
       tags:
         - Customers
       parameters:

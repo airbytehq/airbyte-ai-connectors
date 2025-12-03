@@ -6,7 +6,7 @@ Generated from OpenAPI specification.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, Any, Dict, overload, Self
+from typing import TYPE_CHECKING, Any, overload
 try:
     from typing import Literal
 except ImportError:
@@ -14,7 +14,6 @@ except ImportError:
 from pathlib import Path
 
 if TYPE_CHECKING:
-    from ._vendored.connector_sdk.executor import ExecutorProtocol
     from .types import (
         Customer,
         CustomerList,
@@ -35,23 +34,17 @@ class StripeConnector:
     connector_version = "0.0.1"
     vendored_sdk_version = "0.1.0"  # Version of vendored connector-sdk
 
-    def __init__(self, executor: ExecutorProtocol):
-        """Initialize connector with an executor."""
-        self._executor = executor
-        self.customers = CustomersQuery(self)
-
-    @classmethod
-    def create(
-        cls,
-        auth_config: Optional[StripeAuthConfig] = None,
-        config_path: Optional[str] = None,
-        connector_id: Optional[str] = None,
-        airbyte_client_id: Optional[str] = None,
-        airbyte_client_secret: Optional[str] = None,
-        airbyte_connector_api_url: Optional[str] = None,
-        on_token_refresh: Optional[Any] = None    ) -> Self:
+    def __init__(
+        self,
+        auth_config: StripeAuthConfig | None = None,
+        config_path: str | None = None,
+        connector_id: str | None = None,
+        airbyte_client_id: str | None = None,
+        airbyte_client_secret: str | None = None,
+        airbyte_connector_api_url: str | None = None,
+        on_token_refresh: Any | None = None    ):
         """
-        Create a new stripe connector instance.
+        Initialize a new stripe connector instance.
 
         Supports both local and hosted execution modes:
         - Local mode: Provide `auth_config` for direct API calls
@@ -66,14 +59,11 @@ class StripeConnector:
             on_token_refresh: Optional callback for OAuth2 token refresh persistence.
                 Called with new_tokens dict when tokens are refreshed. Can be sync or async.
                 Example: lambda tokens: save_to_database(tokens)
-        Returns:
-            Configured StripeConnector instance
-
         Examples:
             # Local mode (direct API calls)
-            connector = StripeConnector.create(auth_config={"api_key": "sk_..."})
+            connector = StripeConnector(auth_config={"api_key": "sk_..."})
             # Hosted mode (executed on Airbyte cloud)
-            connector = StripeConnector.create(
+            connector = StripeConnector(
                 connector_id="connector-456",
                 airbyte_client_id="client_abc123",
                 airbyte_client_secret="secret_xyz789"
@@ -85,7 +75,7 @@ class StripeConnector:
                 with open("tokens.json", "w") as f:
                     json.dump(new_tokens, f)
 
-            connector = StripeConnector.create(
+            connector = StripeConnector(
                 auth_config={"access_token": "...", "refresh_token": "..."},
                 on_token_refresh=save_tokens
             )
@@ -93,40 +83,39 @@ class StripeConnector:
         # Hosted mode: connector_id, airbyte_client_id, and airbyte_client_secret provided
         if connector_id and airbyte_client_id and airbyte_client_secret:
             from ._vendored.connector_sdk.executor import HostedExecutor
-            executor = HostedExecutor(
+            self._executor = HostedExecutor(
                 connector_id=connector_id,
                 airbyte_client_id=airbyte_client_id,
                 airbyte_client_secret=airbyte_client_secret,
                 api_url=airbyte_connector_api_url,
             )
-            return cls(executor)
+        else:
+            # Local mode: auth_config required
+            if not auth_config:
+                raise ValueError(
+                    "Either provide (connector_id, airbyte_client_id, airbyte_client_secret) for hosted mode "
+                    "or auth_config for local mode"
+                )
 
-        # Local mode: auth_config required
-        if not auth_config:
-            raise ValueError(
-                "Either provide (connector_id, airbyte_client_id, airbyte_client_secret) for hosted mode "
-                "or auth_config for local mode"
+            from ._vendored.connector_sdk.executor import LocalExecutor
+
+            if not config_path:
+                config_path = str(self.get_default_config_path())
+
+            # Build config_values dict from server variables
+            config_values = None
+
+            self._executor = LocalExecutor(
+                config_path=config_path,
+                auth_config=auth_config,
+                config_values=config_values,
+                on_token_refresh=on_token_refresh
             )
 
-        from ._vendored.connector_sdk.executor import LocalExecutor
+            # Update base_url with server variables if provided
 
-        if not config_path:
-            config_path = str(cls.get_default_config_path())
-
-        # Build config_values dict from server variables
-        config_values = None
-
-        executor = LocalExecutor(
-            config_path=config_path,
-            auth_config=auth_config,
-            config_values=config_values,
-            on_token_refresh=on_token_refresh
-        )
-        connector = cls(executor)
-
-        # Update base_url with server variables if provided
-
-        return connector
+        # Initialize entity query objects
+        self.customers = CustomersQuery(self)
 
     @classmethod
     def get_default_config_path(cls) -> Path:
@@ -137,52 +126,52 @@ class StripeConnector:
     @overload
     async def execute(
         self,
-        resource: Literal["customers"],
-        verb: Literal["list"],
+        entity: Literal["customers"],
+        action: Literal["list"],
         params: "CustomersListParams"
     ) -> "CustomerList": ...
     @overload
     async def execute(
         self,
-        resource: Literal["customers"],
-        verb: Literal["get"],
+        entity: Literal["customers"],
+        action: Literal["get"],
         params: "CustomersGetParams"
     ) -> "Customer": ...
 
     @overload
     async def execute(
         self,
-        resource: str,
-        verb: str,
-        params: Dict[str, Any]
-    ) -> Dict[str, Any]: ...
+        entity: str,
+        action: str,
+        params: dict[str, Any]
+    ) -> dict[str, Any]: ...
 
     async def execute(
         self,
-        resource: str,
-        verb: str,
-        params: Optional[Dict[str, Any]] = None
+        entity: str,
+        action: str,
+        params: dict[str, Any] | None = None
     ) -> Any:
         """
-        Execute a resource operation with full type safety.
+        Execute an entity operation with full type safety.
 
         This is the recommended interface for blessed connectors as it:
         - Uses the same signature as non-blessed connectors
-        - Provides full IDE autocomplete for resource/verb/params
+        - Provides full IDE autocomplete for entity/action/params
         - Makes migration from generic to blessed connectors seamless
 
         Args:
-            resource: Resource name (e.g., "customers")
-            verb: Operation verb (e.g., "create", "get", "list")
-            params: Operation parameters (typed based on resource+verb)
+            entity: Entity name (e.g., "customers")
+            action: Operation action (e.g., "create", "get", "list")
+            params: Operation parameters (typed based on entity+action)
 
         Returns:
             Typed response based on the operation
 
         Example:
             customer = await connector.execute(
-                resource="customers",
-                verb="get",
+                entity="customers",
+                action="get",
                 params={"id": "cus_123"}
             )
         """
@@ -190,8 +179,8 @@ class StripeConnector:
 
         # Use ExecutionConfig for both local and hosted executors
         config = ExecutionConfig(
-            resource=resource,
-            verb=verb,
+            entity=entity,
+            action=action,
             params=params
         )
 
@@ -206,7 +195,7 @@ class StripeConnector:
 
 class CustomersQuery:
     """
-    Query class for Customers resource operations.
+    Query class for Customers entity operations.
     """
 
     def __init__(self, connector: StripeConnector):
@@ -215,10 +204,10 @@ class CustomersQuery:
 
     async def list(
         self,
-        limit: Optional[int] = None,
-        starting_after: Optional[str] = None,
-        ending_before: Optional[str] = None,
-        email: Optional[str] = None,
+        limit: int | None = None,
+        starting_after: str | None = None,
+        ending_before: str | None = None,
+        email: str | None = None,
         **kwargs
     ) -> "CustomerList":
         """
@@ -245,7 +234,7 @@ class CustomersQuery:
         return await self._connector.execute("customers", "list", params)
     async def get(
         self,
-        id: Optional[str] = None,
+        id: str | None = None,
         **kwargs
     ) -> "Customer":
         """

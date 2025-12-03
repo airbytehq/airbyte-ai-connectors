@@ -2,7 +2,7 @@
 
 Type-safe Stripe API connector with full IDE autocomplete support for AI applications.
 
-**Package Version:** 0.1.16
+**Package Version:** 0.1.17
 
 **Connector Version:** 0.0.1
 
@@ -20,7 +20,7 @@ uv pip install airbyte-ai-stripe
 from airbyte_ai_stripe import StripeConnector
 
 # Create connector
-connector = StripeConnector.create(auth_config={"api_key": "your_api_key"})
+connector = StripeConnector(auth_config={"api_key": "your_api_key"})
 
 # Use typed methods with full IDE autocomplete
 # (See Available Operations below for all methods)
