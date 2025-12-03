@@ -6,7 +6,7 @@ Generated from OpenAPI specification.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, Any, Dict, overload, Self
+from typing import TYPE_CHECKING, Any, overload
 try:
     from typing import Literal
 except ImportError:
@@ -14,7 +14,6 @@ except ImportError:
 from pathlib import Path
 
 if TYPE_CHECKING:
-    from ._vendored.connector_sdk.executor import ExecutorProtocol
     from .types import (
         ActivityAggregateResponse,
         ActivityDayByDayResponse,
@@ -51,30 +50,17 @@ class GongConnector:
     connector_version = "1.0.0"
     vendored_sdk_version = "0.1.0"  # Version of vendored connector-sdk
 
-    def __init__(self, executor: ExecutorProtocol):
-        """Initialize connector with an executor."""
-        self._executor = executor
-        self.users = UsersQuery(self)
-        self.calls = CallsQuery(self)
-        self.calls_extensive = CallsextensiveQuery(self)
-        self.workspaces = WorkspacesQuery(self)
-        self.call_transcripts = CalltranscriptsQuery(self)
-        self.stats_activity_aggregate = StatsactivityaggregateQuery(self)
-        self.stats_activity_day_by_day = StatsactivitydaybydayQuery(self)
-        self.stats_interaction = StatsinteractionQuery(self)
-
-    @classmethod
-    def create(
-        cls,
-        auth_config: Optional[GongAuthConfig] = None,
-        config_path: Optional[str] = None,
-        connector_id: Optional[str] = None,
-        airbyte_client_id: Optional[str] = None,
-        airbyte_client_secret: Optional[str] = None,
-        airbyte_connector_api_url: Optional[str] = None,
-        on_token_refresh: Optional[Any] = None    ) -> Self:
+    def __init__(
+        self,
+        auth_config: GongAuthConfig | None = None,
+        config_path: str | None = None,
+        connector_id: str | None = None,
+        airbyte_client_id: str | None = None,
+        airbyte_client_secret: str | None = None,
+        airbyte_connector_api_url: str | None = None,
+        on_token_refresh: Any | None = None    ):
         """
-        Create a new gong connector instance.
+        Initialize a new gong connector instance.
 
         Supports both local and hosted execution modes:
         - Local mode: Provide `auth_config` for direct API calls
@@ -89,14 +75,11 @@ class GongConnector:
             on_token_refresh: Optional callback for OAuth2 token refresh persistence.
                 Called with new_tokens dict when tokens are refreshed. Can be sync or async.
                 Example: lambda tokens: save_to_database(tokens)
-        Returns:
-            Configured GongConnector instance
-
         Examples:
             # Local mode (direct API calls)
-            connector = GongConnector.create(auth_config={"api_key": "sk_..."})
+            connector = GongConnector(auth_config={"api_key": "sk_..."})
             # Hosted mode (executed on Airbyte cloud)
-            connector = GongConnector.create(
+            connector = GongConnector(
                 connector_id="connector-456",
                 airbyte_client_id="client_abc123",
                 airbyte_client_secret="secret_xyz789"
@@ -108,7 +91,7 @@ class GongConnector:
                 with open("tokens.json", "w") as f:
                     json.dump(new_tokens, f)
 
-            connector = GongConnector.create(
+            connector = GongConnector(
                 auth_config={"access_token": "...", "refresh_token": "..."},
                 on_token_refresh=save_tokens
             )
@@ -116,40 +99,46 @@ class GongConnector:
         # Hosted mode: connector_id, airbyte_client_id, and airbyte_client_secret provided
         if connector_id and airbyte_client_id and airbyte_client_secret:
             from ._vendored.connector_sdk.executor import HostedExecutor
-            executor = HostedExecutor(
+            self._executor = HostedExecutor(
                 connector_id=connector_id,
                 airbyte_client_id=airbyte_client_id,
                 airbyte_client_secret=airbyte_client_secret,
                 api_url=airbyte_connector_api_url,
             )
-            return cls(executor)
+        else:
+            # Local mode: auth_config required
+            if not auth_config:
+                raise ValueError(
+                    "Either provide (connector_id, airbyte_client_id, airbyte_client_secret) for hosted mode "
+                    "or auth_config for local mode"
+                )
 
-        # Local mode: auth_config required
-        if not auth_config:
-            raise ValueError(
-                "Either provide (connector_id, airbyte_client_id, airbyte_client_secret) for hosted mode "
-                "or auth_config for local mode"
+            from ._vendored.connector_sdk.executor import LocalExecutor
+
+            if not config_path:
+                config_path = str(self.get_default_config_path())
+
+            # Build config_values dict from server variables
+            config_values = None
+
+            self._executor = LocalExecutor(
+                config_path=config_path,
+                auth_config=auth_config,
+                config_values=config_values,
+                on_token_refresh=on_token_refresh
             )
 
-        from ._vendored.connector_sdk.executor import LocalExecutor
+            # Update base_url with server variables if provided
 
-        if not config_path:
-            config_path = str(cls.get_default_config_path())
-
-        # Build config_values dict from server variables
-        config_values = None
-
-        executor = LocalExecutor(
-            config_path=config_path,
-            auth_config=auth_config,
-            config_values=config_values,
-            on_token_refresh=on_token_refresh
-        )
-        connector = cls(executor)
-
-        # Update base_url with server variables if provided
-
-        return connector
+        # Initialize entity query objects
+        self.users = UsersQuery(self)
+        self.calls = CallsQuery(self)
+        self.calls_extensive = CallsextensiveQuery(self)
+        self.workspaces = WorkspacesQuery(self)
+        self.call_transcripts = CalltranscriptsQuery(self)
+        self.stats_activity_aggregate = StatsactivityaggregateQuery(self)
+        self.stats_activity_day_by_day = StatsactivitydaybydayQuery(self)
+        self.stats_interaction = StatsinteractionQuery(self)
 
     @classmethod
     def get_default_config_path(cls) -> Path:
@@ -160,108 +149,108 @@ class GongConnector:
     @overload
     async def execute(
         self,
-        resource: Literal["users"],
-        verb: Literal["list"],
+        entity: Literal["users"],
+        action: Literal["list"],
         params: "UsersListParams"
     ) -> "UsersResponse": ...
     @overload
     async def execute(
         self,
-        resource: Literal["users"],
-        verb: Literal["get"],
+        entity: Literal["users"],
+        action: Literal["get"],
         params: "UsersGetParams"
     ) -> "UserResponse": ...
     @overload
     async def execute(
         self,
-        resource: Literal["calls"],
-        verb: Literal["list"],
+        entity: Literal["calls"],
+        action: Literal["list"],
         params: "CallsListParams"
     ) -> "CallsResponse": ...
     @overload
     async def execute(
         self,
-        resource: Literal["calls"],
-        verb: Literal["get"],
+        entity: Literal["calls"],
+        action: Literal["get"],
         params: "CallsGetParams"
     ) -> "CallResponse": ...
     @overload
     async def execute(
         self,
-        resource: Literal["calls_extensive"],
-        verb: Literal["list"],
+        entity: Literal["calls_extensive"],
+        action: Literal["list"],
         params: "CallsExtensiveListParams"
     ) -> "ExtensiveCallsResponse": ...
     @overload
     async def execute(
         self,
-        resource: Literal["workspaces"],
-        verb: Literal["list"],
+        entity: Literal["workspaces"],
+        action: Literal["list"],
         params: "WorkspacesListParams"
     ) -> "WorkspacesResponse": ...
     @overload
     async def execute(
         self,
-        resource: Literal["call_transcripts"],
-        verb: Literal["list"],
+        entity: Literal["call_transcripts"],
+        action: Literal["list"],
         params: "CallTranscriptsListParams"
     ) -> "TranscriptsResponse": ...
     @overload
     async def execute(
         self,
-        resource: Literal["stats_activity_aggregate"],
-        verb: Literal["list"],
+        entity: Literal["stats_activity_aggregate"],
+        action: Literal["list"],
         params: "StatsActivityAggregateListParams"
     ) -> "ActivityAggregateResponse": ...
     @overload
     async def execute(
         self,
-        resource: Literal["stats_activity_day_by_day"],
-        verb: Literal["list"],
+        entity: Literal["stats_activity_day_by_day"],
+        action: Literal["list"],
         params: "StatsActivityDayByDayListParams"
     ) -> "ActivityDayByDayResponse": ...
     @overload
     async def execute(
         self,
-        resource: Literal["stats_interaction"],
-        verb: Literal["list"],
+        entity: Literal["stats_interaction"],
+        action: Literal["list"],
         params: "StatsInteractionListParams"
     ) -> "InteractionStatsResponse": ...
 
     @overload
     async def execute(
         self,
-        resource: str,
-        verb: str,
-        params: Dict[str, Any]
-    ) -> Dict[str, Any]: ...
+        entity: str,
+        action: str,
+        params: dict[str, Any]
+    ) -> dict[str, Any]: ...
 
     async def execute(
         self,
-        resource: str,
-        verb: str,
-        params: Optional[Dict[str, Any]] = None
+        entity: str,
+        action: str,
+        params: dict[str, Any] | None = None
     ) -> Any:
         """
-        Execute a resource operation with full type safety.
+        Execute an entity operation with full type safety.
 
         This is the recommended interface for blessed connectors as it:
         - Uses the same signature as non-blessed connectors
-        - Provides full IDE autocomplete for resource/verb/params
+        - Provides full IDE autocomplete for entity/action/params
         - Makes migration from generic to blessed connectors seamless
 
         Args:
-            resource: Resource name (e.g., "customers")
-            verb: Operation verb (e.g., "create", "get", "list")
-            params: Operation parameters (typed based on resource+verb)
+            entity: Entity name (e.g., "customers")
+            action: Operation action (e.g., "create", "get", "list")
+            params: Operation parameters (typed based on entity+action)
 
         Returns:
             Typed response based on the operation
 
         Example:
             customer = await connector.execute(
-                resource="customers",
-                verb="get",
+                entity="customers",
+                action="get",
                 params={"id": "cus_123"}
             )
         """
@@ -269,8 +258,8 @@ class GongConnector:
 
         # Use ExecutionConfig for both local and hosted executors
         config = ExecutionConfig(
-            resource=resource,
-            verb=verb,
+            entity=entity,
+            action=action,
             params=params
         )
 
@@ -285,7 +274,7 @@ class GongConnector:
 
 class UsersQuery:
     """
-    Query class for Users resource operations.
+    Query class for Users entity operations.
     """
 
     def __init__(self, connector: GongConnector):
@@ -294,7 +283,7 @@ class UsersQuery:
 
     async def list(
         self,
-        cursor: Optional[str] = None,
+        cursor: str | None = None,
         **kwargs
     ) -> "UsersResponse":
         """
@@ -315,7 +304,7 @@ class UsersQuery:
         return await self._connector.execute("users", "list", params)
     async def get(
         self,
-        id: Optional[str] = None,
+        id: str | None = None,
         **kwargs
     ) -> "UserResponse":
         """
@@ -336,7 +325,7 @@ class UsersQuery:
         return await self._connector.execute("users", "get", params)
 class CallsQuery:
     """
-    Query class for Calls resource operations.
+    Query class for Calls entity operations.
     """
 
     def __init__(self, connector: GongConnector):
@@ -347,7 +336,7 @@ class CallsQuery:
         self,
         fromDateTime: str,
         toDateTime: str,
-        cursor: Optional[str] = None,
+        cursor: str | None = None,
         **kwargs
     ) -> "CallsResponse":
         """
@@ -372,7 +361,7 @@ class CallsQuery:
         return await self._connector.execute("calls", "list", params)
     async def get(
         self,
-        id: Optional[str] = None,
+        id: str | None = None,
         **kwargs
     ) -> "CallResponse":
         """
@@ -393,7 +382,7 @@ class CallsQuery:
         return await self._connector.execute("calls", "get", params)
 class CallsextensiveQuery:
     """
-    Query class for Callsextensive resource operations.
+    Query class for Callsextensive entity operations.
     """
 
     def __init__(self, connector: GongConnector):
@@ -417,7 +406,7 @@ class CallsextensiveQuery:
         return await self._connector.execute("calls_extensive", "list", params)
 class WorkspacesQuery:
     """
-    Query class for Workspaces resource operations.
+    Query class for Workspaces entity operations.
     """
 
     def __init__(self, connector: GongConnector):
@@ -441,7 +430,7 @@ class WorkspacesQuery:
         return await self._connector.execute("workspaces", "list", params)
 class CalltranscriptsQuery:
     """
-    Query class for Calltranscripts resource operations.
+    Query class for Calltranscripts entity operations.
     """
 
     def __init__(self, connector: GongConnector):
@@ -465,7 +454,7 @@ class CalltranscriptsQuery:
         return await self._connector.execute("call_transcripts", "list", params)
 class StatsactivityaggregateQuery:
     """
-    Query class for Statsactivityaggregate resource operations.
+    Query class for Statsactivityaggregate entity operations.
     """
 
     def __init__(self, connector: GongConnector):
@@ -489,7 +478,7 @@ class StatsactivityaggregateQuery:
         return await self._connector.execute("stats_activity_aggregate", "list", params)
 class StatsactivitydaybydayQuery:
     """
-    Query class for Statsactivitydaybyday resource operations.
+    Query class for Statsactivitydaybyday entity operations.
     """
 
     def __init__(self, connector: GongConnector):
@@ -513,7 +502,7 @@ class StatsactivitydaybydayQuery:
         return await self._connector.execute("stats_activity_day_by_day", "list", params)
 class StatsinteractionQuery:
     """
-    Query class for Statsinteraction resource operations.
+    Query class for Statsinteraction entity operations.
     """
 
     def __init__(self, connector: GongConnector):

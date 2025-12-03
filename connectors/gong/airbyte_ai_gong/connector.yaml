@@ -26,8 +26,8 @@ paths:
       summary: List users
       description: Returns a list of all users in the Gong account
       operationId: listUsers
-      x-airbyte-resource: users
-      x-airbyte-verb: list
+      x-airbyte-entity: users
+      x-airbyte-action: list
       parameters:
         - name: cursor
           in: query
@@ -50,8 +50,8 @@ paths:
       summary: Get a user
       description: Get a single user by ID
       operationId: getUser
-      x-airbyte-resource: users
-      x-airbyte-verb: get
+      x-airbyte-entity: users
+      x-airbyte-action: get
       parameters:
         - name: id
           in: path
@@ -76,8 +76,8 @@ paths:
       summary: List calls
       description: Retrieve calls data by date range
       operationId: listCalls
-      x-airbyte-resource: calls
-      x-airbyte-verb: list
+      x-airbyte-entity: calls
+      x-airbyte-action: list
       parameters:
         - name: fromDateTime
           in: query
@@ -114,8 +114,8 @@ paths:
       summary: Get a call
       description: Get specific call data by ID
       operationId: getCall
-      x-airbyte-resource: calls
-      x-airbyte-verb: get
+      x-airbyte-entity: calls
+      x-airbyte-action: get
       parameters:
         - name: id
           in: path
@@ -140,8 +140,8 @@ paths:
       summary: List calls with extensive data
       description: Retrieve detailed call data including participants, interaction stats, and content
       operationId: listCallsExtensive
-      x-airbyte-resource: calls_extensive
-      x-airbyte-verb: list
+      x-airbyte-entity: calls_extensive
+      x-airbyte-action: list
       requestBody:
         required: true
         content:
@@ -267,8 +267,8 @@ paths:
       summary: List workspaces
       description: List all company workspaces
       operationId: listWorkspaces
-      x-airbyte-resource: workspaces
-      x-airbyte-verb: list
+      x-airbyte-entity: workspaces
+      x-airbyte-action: list
       responses:
         "200":
           description: List of workspaces
@@ -284,8 +284,8 @@ paths:
       summary: Retrieve call transcripts
       description: Returns transcripts for calls in a specified date range or specific call IDs
       operationId: getCallTranscripts
-      x-airbyte-resource: call_transcripts
-      x-airbyte-verb: list
+      x-airbyte-entity: call_transcripts
+      x-airbyte-action: list
       requestBody:
         required: true
         content:
@@ -327,8 +327,8 @@ paths:
       summary: Retrieve aggregated activity statistics
       description: Provides aggregated user activity metrics across a specified period
       operationId: getActivityAggregate
-      x-airbyte-resource: stats_activity_aggregate
-      x-airbyte-verb: list
+      x-airbyte-entity: stats_activity_aggregate
+      x-airbyte-action: list
       requestBody:
         required: true
         content:
@@ -367,8 +367,8 @@ paths:
       summary: Retrieve daily activity statistics
       description: Delivers daily user activity metrics across a specified date range
       operationId: getActivityDayByDay
-      x-airbyte-resource: stats_activity_day_by_day
-      x-airbyte-verb: list
+      x-airbyte-entity: stats_activity_day_by_day
+      x-airbyte-action: list
       requestBody:
         required: true
         content:
@@ -407,8 +407,8 @@ paths:
       summary: Retrieve interaction statistics
       description: Returns interaction stats for users based on calls that have Whisper turned on
       operationId: getInteractionStats
-      x-airbyte-resource: stats_interaction
-      x-airbyte-verb: list
+      x-airbyte-entity: stats_interaction
+      x-airbyte-action: list
       requestBody:
         required: true
         content:
@@ -489,7 +489,7 @@ components:
 
     User:
       type: object
-      x-airbyte-resource-name: users
+      x-airbyte-entity-name: users
       description: User object
       properties:
         id:
@@ -537,7 +537,7 @@ components:
 
     Call:
       type: object
-      x-airbyte-resource-name: calls
+      x-airbyte-entity-name: calls
       description: Call object
       properties:
         id:
@@ -598,7 +598,7 @@ components:
 
     Workspace:
       type: object
-      x-airbyte-resource-name: workspaces
+      x-airbyte-entity-name: workspaces
       description: Workspace object
       properties:
         workspaceId:
@@ -622,7 +622,7 @@ components:
 
     CallTranscript:
       type: object
-      x-airbyte-resource-name: call_transcripts
+      x-airbyte-entity-name: call_transcripts
       description: Call transcript object
       properties:
         callId:
@@ -670,7 +670,7 @@ components:
 
     ExtensiveCall:
       type: object
-      x-airbyte-resource-name: calls_extensive
+      x-airbyte-entity-name: calls_extensive
       description: Detailed call object with extended information
       properties:
         metaData:
@@ -882,7 +882,7 @@ components:
 
     UserAggregateActivity:
       type: object
-      x-airbyte-resource-name: stats_activity_aggregate
+      x-airbyte-entity-name: stats_activity_aggregate
       description: User with aggregated activity statistics
       properties:
         userId:
@@ -982,7 +982,7 @@ components:
 
     UserDetailedActivity:
       type: object
-      x-airbyte-resource-name: stats_activity_day_by_day
+      x-airbyte-entity-name: stats_activity_day_by_day
       description: User with detailed daily activity statistics
       properties:
         userId:
@@ -1018,7 +1018,7 @@ components:
 
     UserInteractionStats:
       type: object
-      x-airbyte-resource-name: stats_interaction
+      x-airbyte-entity-name: stats_interaction
       description: User with interaction statistics
       properties:
         userId:
