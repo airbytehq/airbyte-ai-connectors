@@ -262,6 +262,96 @@ paths:
         "401":
           description: Unauthorized
 
+  "/v2/calls:audio/download":
+    post:
+      summary: Download call audio
+      description: Downloads the audio media file for a call
+      operationId: DownloadCallAudio
+      x-airbyte-entity: call_audio
+      x-airbyte-action: download
+      x-airbyte-file-url: calls[0].media.audioUrl
+      x-airbyte-path-override:
+        path: /v2/calls/extensive
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filter:
+                  type: object
+                  properties:
+                    callIds:
+                      type: array
+                      items:
+                        type: string
+                      description: List containing the single call ID
+                contentSelector:
+                  type: object
+                  properties:
+                    exposedFields:
+                      type: object
+                      properties:
+                        media:
+                          type: boolean
+                          description: Must be true to get media URLs
+                          default: true
+      responses:
+        "200":
+          description: Call metadata with audio URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtensiveCallsResponse"
+        "401":
+          description: Unauthorized
+
+  "/v2/calls:video/download":
+    post:
+      summary: Download call video
+      description: Downloads the video media file for a call
+      operationId: DownloadCallVideo
+      x-airbyte-entity: call_video
+      x-airbyte-action: download
+      x-airbyte-file-url: calls[0].media.videoUrl
+      x-airbyte-path-override:
+        path: /v2/calls/extensive
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filter:
+                  type: object
+                  properties:
+                    callIds:
+                      type: array
+                      items:
+                        type: string
+                      description: List containing the single call ID
+                contentSelector:
+                  type: object
+                  properties:
+                    exposedFields:
+                      type: object
+                      properties:
+                        media:
+                          type: boolean
+                          description: Must be true to get media URLs
+                          default: true
+      responses:
+        "200":
+          description: Call metadata with video URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtensiveCallsResponse"
+        "401":
+          description: Unauthorized
+
   "/v2/workspaces":
     get:
       summary: List workspaces
@@ -746,7 +836,7 @@ components:
                 type: string
                 description: Gong user ID if internal
               speakerId:
-                type: string
+                type: ["string", "null"]
                 description: Speaker ID for transcript matching
               context:
                 type: array
