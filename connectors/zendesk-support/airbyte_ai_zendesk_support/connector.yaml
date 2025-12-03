@@ -52,7 +52,7 @@ components:
   schemas:
     Article:
       type: object
-      x-airbyte-resource-name: articles
+      x-airbyte-entity-name: articles
       description: Help Center article object
       properties:
         id:
@@ -137,7 +137,7 @@ components:
 
     ArticleAttachment:
       type: object
-      x-airbyte-resource-name: article_attachments
+      x-airbyte-entity-name: article_attachments
       description: Article attachment object
       properties:
         id:
@@ -209,8 +209,8 @@ paths:
       summary: List all articles
       description: Returns a list of all articles in the Help Center
       operationId: ListArticles
-      x-airbyte-resource: articles
-      x-airbyte-verb: list
+      x-airbyte-entity: articles
+      x-airbyte-action: list
       tags:
         - Articles
       parameters:
@@ -254,8 +254,8 @@ paths:
       summary: Get an article by ID
       description: Retrieves the details of a specific article
       operationId: GetArticle
-      x-airbyte-resource: articles
-      x-airbyte-verb: get
+      x-airbyte-entity: articles
+      x-airbyte-action: get
       tags:
         - Articles
       parameters:
@@ -281,8 +281,8 @@ paths:
       summary: List attachments for an article
       description: Returns a list of all attachments for a specific article
       operationId: ListArticleAttachments
-      x-airbyte-resource: article_attachments
-      x-airbyte-verb: list
+      x-airbyte-entity: article_attachments
+      x-airbyte-action: list
       tags:
         - Article Attachments
       parameters:
@@ -306,8 +306,8 @@ paths:
       summary: Retrieve attachment metadata
       description: Retrieves the metadata of a specific attachment for a specific article
       operationId: GetArticleAttachmentMetadata
-      x-airbyte-resource: article_attachments
-      x-airbyte-verb: get
+      x-airbyte-entity: article_attachments
+      x-airbyte-action: get
       tags:
         - Article Attachments
       parameters:
@@ -336,8 +336,8 @@ paths:
       summary: Download attachment file
       description: Downloads the file content of a specific attachment
       operationId: DownloadArticleAttachment
-      x-airbyte-resource: article_attachments
-      x-airbyte-verb: download
+      x-airbyte-entity: article_attachments
+      x-airbyte-action: download
       x-airbyte-file-url: article_attachment.content_url
       x-airbyte-path-override:
         path: /help_center/articles/{article_id}/attachments/{attachment_id}

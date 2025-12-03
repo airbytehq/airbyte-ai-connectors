@@ -2,7 +2,7 @@
 
 Type-safe Zendesk-Support API connector with full IDE autocomplete support for AI applications.
 
-**Package Version:** 0.6.0
+**Package Version:** 0.7.0
 
 **Connector Version:** 1.0.0
 
@@ -20,7 +20,7 @@ uv pip install airbyte-ai-zendesk-support
 from airbyte_ai_zendesk_support import ZendeskSupportConnector
 
 # Create connector
-connector = ZendeskSupportConnector.create(auth_config={"api_key": "your_api_key"})
+connector = ZendeskSupportConnector(auth_config={"api_key": "your_api_key"})
 
 # Use typed methods with full IDE autocomplete
 # (See Available Operations below for all methods)

@@ -6,7 +6,7 @@ Generated from OpenAPI specification.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, Any, Dict, AsyncIterator, overload, Self
+from typing import TYPE_CHECKING, Any, AsyncIterator, overload
 try:
     from typing import Literal
 except ImportError:
@@ -14,7 +14,6 @@ except ImportError:
 from pathlib import Path
 
 if TYPE_CHECKING:
-    from ._vendored.connector_sdk.executor import ExecutorProtocol
     from .types import (
         ArticleAttachment,
         ArticleAttachmentList,
@@ -40,25 +39,18 @@ class ZendeskSupportConnector:
     connector_version = "1.0.0"
     vendored_sdk_version = "0.1.0"  # Version of vendored connector-sdk
 
-    def __init__(self, executor: ExecutorProtocol):
-        """Initialize connector with an executor."""
-        self._executor = executor
-        self.articles = ArticlesQuery(self)
-        self.article_attachments = ArticleattachmentsQuery(self)
-
-    @classmethod
-    def create(
-        cls,
-        auth_config: Optional[ZendeskSupportAuthConfig] = None,
-        config_path: Optional[str] = None,
-        connector_id: Optional[str] = None,
-        airbyte_client_id: Optional[str] = None,
-        airbyte_client_secret: Optional[str] = None,
-        airbyte_connector_api_url: Optional[str] = None,
-        on_token_refresh: Optional[Any] = None,
-        subdomain: Optional[str] = None    ) -> Self:
+    def __init__(
+        self,
+        auth_config: ZendeskSupportAuthConfig | None = None,
+        config_path: str | None = None,
+        connector_id: str | None = None,
+        airbyte_client_id: str | None = None,
+        airbyte_client_secret: str | None = None,
+        airbyte_connector_api_url: str | None = None,
+        on_token_refresh: Any | None = None,
+        subdomain: str | None = None    ):
         """
-        Create a new zendesk-support connector instance.
+        Initialize a new zendesk-support connector instance.
 
         Supports both local and hosted execution modes:
         - Local mode: Provide `auth_config` for direct API calls
@@ -73,14 +65,11 @@ class ZendeskSupportConnector:
             on_token_refresh: Optional callback for OAuth2 token refresh persistence.
                 Called with new_tokens dict when tokens are refreshed. Can be sync or async.
                 Example: lambda tokens: save_to_database(tokens)            subdomain: Your Zendesk subdomain
-        Returns:
-            Configured ZendeskSupportConnector instance
-
         Examples:
             # Local mode (direct API calls)
-            connector = ZendeskSupportConnector.create(auth_config={"api_key": "sk_..."})
+            connector = ZendeskSupportConnector(auth_config={"api_key": "sk_..."})
             # Hosted mode (executed on Airbyte cloud)
-            connector = ZendeskSupportConnector.create(
+            connector = ZendeskSupportConnector(
                 connector_id="connector-456",
                 airbyte_client_id="client_abc123",
                 airbyte_client_secret="secret_xyz789"
@@ -92,7 +81,7 @@ class ZendeskSupportConnector:
                 with open("tokens.json", "w") as f:
                     json.dump(new_tokens, f)
 
-            connector = ZendeskSupportConnector.create(
+            connector = ZendeskSupportConnector(
                 auth_config={"access_token": "...", "refresh_token": "..."},
                 on_token_refresh=save_tokens
             )
@@ -100,47 +89,46 @@ class ZendeskSupportConnector:
         # Hosted mode: connector_id, airbyte_client_id, and airbyte_client_secret provided
         if connector_id and airbyte_client_id and airbyte_client_secret:
             from ._vendored.connector_sdk.executor import HostedExecutor
-            executor = HostedExecutor(
+            self._executor = HostedExecutor(
                 connector_id=connector_id,
                 airbyte_client_id=airbyte_client_id,
                 airbyte_client_secret=airbyte_client_secret,
                 api_url=airbyte_connector_api_url,
             )
-            return cls(executor)
+        else:
+            # Local mode: auth_config required
+            if not auth_config:
+                raise ValueError(
+                    "Either provide (connector_id, airbyte_client_id, airbyte_client_secret) for hosted mode "
+                    "or auth_config for local mode"
+                )
 
-        # Local mode: auth_config required
-        if not auth_config:
-            raise ValueError(
-                "Either provide (connector_id, airbyte_client_id, airbyte_client_secret) for hosted mode "
-                "or auth_config for local mode"
+            from ._vendored.connector_sdk.executor import LocalExecutor
+
+            if not config_path:
+                config_path = str(self.get_default_config_path())
+
+            # Build config_values dict from server variables
+            config_values: dict[str, str] = {}
+            if subdomain:
+                config_values["subdomain"] = subdomain
+
+            self._executor = LocalExecutor(
+                config_path=config_path,
+                auth_config=auth_config,
+                config_values=config_values,
+                on_token_refresh=on_token_refresh
             )
 
-        from ._vendored.connector_sdk.executor import LocalExecutor
+            # Update base_url with server variables if provided
+            base_url = self._executor.http_client.base_url
+            if subdomain:
+                base_url = base_url.replace("{subdomain}", subdomain)
+            self._executor.http_client.base_url = base_url
 
-        if not config_path:
-            config_path = str(cls.get_default_config_path())
-
-        # Build config_values dict from server variables
-        config_values = {}
-        if subdomain:
-            config_values["subdomain"] = subdomain
-
-        executor = LocalExecutor(
-            config_path=config_path,
-            auth_config=auth_config,
-            config_values=config_values,
-            on_token_refresh=on_token_refresh
-        )
-        connector = cls(executor)
-
-        # Update base_url with server variables if provided
-
-        base_url = executor.http_client.base_url
-        if subdomain:
-            base_url = base_url.replace("{subdomain}", subdomain)
-        executor.http_client.base_url = base_url
-
-        return connector
+        # Initialize entity query objects
+        self.articles = ArticlesQuery(self)
+        self.article_attachments = ArticleattachmentsQuery(self)
 
     @classmethod
     def get_default_config_path(cls) -> Path:
@@ -151,73 +139,73 @@ class ZendeskSupportConnector:
     @overload
     async def execute(
         self,
-        resource: Literal["articles"],
-        verb: Literal["list"],
+        entity: Literal["articles"],
+        action: Literal["list"],
         params: "ArticlesListParams"
     ) -> "ArticleList": ...
     @overload
     async def execute(
         self,
-        resource: Literal["articles"],
-        verb: Literal["get"],
+        entity: Literal["articles"],
+        action: Literal["get"],
         params: "ArticlesGetParams"
     ) -> "dict[str, Any]": ...
     @overload
     async def execute(
         self,
-        resource: Literal["article_attachments"],
-        verb: Literal["list"],
+        entity: Literal["article_attachments"],
+        action: Literal["list"],
         params: "ArticleAttachmentsListParams"
     ) -> "ArticleAttachmentList": ...
     @overload
     async def execute(
         self,
-        resource: Literal["article_attachments"],
-        verb: Literal["get"],
+        entity: Literal["article_attachments"],
+        action: Literal["get"],
         params: "ArticleAttachmentsGetParams"
     ) -> "ArticleAttachment": ...
     @overload
     async def execute(
         self,
-        resource: Literal["article_attachments"],
-        verb: Literal["download"],
+        entity: Literal["article_attachments"],
+        action: Literal["download"],
         params: "ArticleAttachmentsDownloadParams"
     ) -> "AsyncIterator[bytes]": ...
 
     @overload
     async def execute(
         self,
-        resource: str,
-        verb: str,
-        params: Dict[str, Any]
-    ) -> Dict[str, Any]: ...
+        entity: str,
+        action: str,
+        params: dict[str, Any]
+    ) -> dict[str, Any]: ...
 
     async def execute(
         self,
-        resource: str,
-        verb: str,
-        params: Optional[Dict[str, Any]] = None
+        entity: str,
+        action: str,
+        params: dict[str, Any] | None = None
     ) -> Any:
         """
-        Execute a resource operation with full type safety.
+        Execute an entity operation with full type safety.
 
         This is the recommended interface for blessed connectors as it:
         - Uses the same signature as non-blessed connectors
-        - Provides full IDE autocomplete for resource/verb/params
+        - Provides full IDE autocomplete for entity/action/params
         - Makes migration from generic to blessed connectors seamless
 
         Args:
-            resource: Resource name (e.g., "customers")
-            verb: Operation verb (e.g., "create", "get", "list")
-            params: Operation parameters (typed based on resource+verb)
+            entity: Entity name (e.g., "customers")
+            action: Operation action (e.g., "create", "get", "list")
+            params: Operation parameters (typed based on entity+action)
 
         Returns:
             Typed response based on the operation
 
         Example:
             customer = await connector.execute(
-                resource="customers",
-                verb="get",
+                entity="customers",
+                action="get",
                 params={"id": "cus_123"}
             )
         """
@@ -225,8 +213,8 @@ class ZendeskSupportConnector:
 
         # Use ExecutionConfig for both local and hosted executors
         config = ExecutionConfig(
-            resource=resource,
-            verb=verb,
+            entity=entity,
+            action=action,
             params=params
         )
 
@@ -241,7 +229,7 @@ class ZendeskSupportConnector:
 
 class ArticlesQuery:
     """
-    Query class for Articles resource operations.
+    Query class for Articles entity operations.
     """
 
     def __init__(self, connector: ZendeskSupportConnector):
@@ -250,10 +238,10 @@ class ArticlesQuery:
 
     async def list(
         self,
-        per_page: Optional[int] = None,
-        page: Optional[int] = None,
-        sort_by: Optional[str] = None,
-        sort_order: Optional[str] = None,
+        per_page: int | None = None,
+        page: int | None = None,
+        sort_by: str | None = None,
+        sort_order: str | None = None,
         **kwargs
     ) -> "ArticleList":
         """
@@ -280,7 +268,7 @@ class ArticlesQuery:
         return await self._connector.execute("articles", "list", params)
     async def get(
         self,
-        id: Optional[str] = None,
+        id: str | None = None,
         **kwargs
     ) -> "dict[str, Any]":
         """
@@ -301,7 +289,7 @@ class ArticlesQuery:
         return await self._connector.execute("articles", "get", params)
 class ArticleattachmentsQuery:
     """
-    Query class for Articleattachments resource operations.
+    Query class for Articleattachments entity operations.
     """
 
     def __init__(self, connector: ZendeskSupportConnector):
@@ -357,7 +345,7 @@ class ArticleattachmentsQuery:
         self,
         article_id: str,
         attachment_id: str,
-        range_header: Optional[str] = None,
+        range_header: str | None = None,
         **kwargs
     ) -> "AsyncIterator[bytes]":
         """
