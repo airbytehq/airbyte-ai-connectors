@@ -210,6 +210,14 @@ class CallsExtensiveListParams(TypedDict):
     """Parameters for calls_extensive.list operation"""
     pass
 
+class CallAudioDownloadParams(TypedDict):
+    """Parameters for call_audio.download operation"""
+    range_header: NotRequired[str]
+
+class CallVideoDownloadParams(TypedDict):
+    """Parameters for call_video.download operation"""
+    range_header: NotRequired[str]
+
 class WorkspacesListParams(TypedDict):
     """Parameters for workspaces.list operation"""
     pass

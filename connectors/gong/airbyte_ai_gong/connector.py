@@ -6,19 +6,25 @@ Generated from OpenAPI specification.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, overload
+from typing import TYPE_CHECKING, Any, AsyncIterator, overload
 try:
     from typing import Literal
 except ImportError:
     from typing_extensions import Literal
+
 from pathlib import Path
+
+from ._vendored.connector_sdk import save_download
 
 if TYPE_CHECKING:
     from .types import (
         ActivityAggregateResponse,
         ActivityDayByDayResponse,
+        AsyncIterator,
+        CallAudioDownloadParams,
         CallResponse,
         CallTranscriptsListParams,
+        CallVideoDownloadParams,
         CallsExtensiveListParams,
         CallsGetParams,
         CallsListParams,
@@ -72,6 +78,7 @@ class GongConnector:
             connector_id: Connector ID (required for hosted mode)
             airbyte_client_id: Airbyte OAuth client ID (required for hosted mode)
             airbyte_client_secret: Airbyte OAuth client secret (required for hosted mode)
+            airbyte_connector_api_url: Airbyte connector API URL (defaults to Airbyte Cloud API URL)
             on_token_refresh: Optional callback for OAuth2 token refresh persistence.
                 Called with new_tokens dict when tokens are refreshed. Can be sync or async.
                 Example: lambda tokens: save_to_database(tokens)
@@ -133,12 +140,14 @@ class GongConnector:
         # Initialize entity query objects
         self.users = UsersQuery(self)
         self.calls = CallsQuery(self)
-        self.calls_extensive = CallsextensiveQuery(self)
+        self.calls_extensive = CallsExtensiveQuery(self)
+        self.call_audio = CallAudioQuery(self)
+        self.call_video = CallVideoQuery(self)
         self.workspaces = WorkspacesQuery(self)
-        self.call_transcripts = CalltranscriptsQuery(self)
-        self.stats_activity_aggregate = StatsactivityaggregateQuery(self)
-        self.stats_activity_day_by_day = StatsactivitydaybydayQuery(self)
-        self.stats_interaction = StatsinteractionQuery(self)
+        self.call_transcripts = CallTranscriptsQuery(self)
+        self.stats_activity_aggregate = StatsActivityAggregateQuery(self)
+        self.stats_activity_day_by_day = StatsActivityDayByDayQuery(self)
+        self.stats_interaction = StatsInteractionQuery(self)
 
     @classmethod
     def get_default_config_path(cls) -> Path:
@@ -146,6 +155,7 @@ class GongConnector:
         return Path(__file__).parent / "connector.yaml"
 
     # ===== TYPED EXECUTE METHOD (Recommended Interface) =====
+
     @overload
     async def execute(
         self,
@@ -153,6 +163,7 @@ class GongConnector:
         action: Literal["list"],
         params: "UsersListParams"
     ) -> "UsersResponse": ...
+
     @overload
     async def execute(
         self,
@@ -160,6 +171,7 @@ class GongConnector:
         action: Literal["get"],
         params: "UsersGetParams"
     ) -> "UserResponse": ...
+
     @overload
     async def execute(
         self,
@@ -167,6 +179,7 @@ class GongConnector:
         action: Literal["list"],
         params: "CallsListParams"
     ) -> "CallsResponse": ...
+
     @overload
     async def execute(
         self,
@@ -174,6 +187,7 @@ class GongConnector:
         action: Literal["get"],
         params: "CallsGetParams"
     ) -> "CallResponse": ...
+
     @overload
     async def execute(
         self,
@@ -181,6 +195,23 @@ class GongConnector:
         action: Literal["list"],
         params: "CallsExtensiveListParams"
     ) -> "ExtensiveCallsResponse": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["call_audio"],
+        action: Literal["download"],
+        params: "CallAudioDownloadParams"
+    ) -> "AsyncIterator[bytes]": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["call_video"],
+        action: Literal["download"],
+        params: "CallVideoDownloadParams"
+    ) -> "AsyncIterator[bytes]": ...
+
     @overload
     async def execute(
         self,
@@ -188,6 +219,7 @@ class GongConnector:
         action: Literal["list"],
         params: "WorkspacesListParams"
     ) -> "WorkspacesResponse": ...
+
     @overload
     async def execute(
         self,
@@ -195,6 +227,7 @@ class GongConnector:
         action: Literal["list"],
         params: "CallTranscriptsListParams"
     ) -> "TranscriptsResponse": ...
+
     @overload
     async def execute(
         self,
@@ -202,6 +235,7 @@ class GongConnector:
         action: Literal["list"],
         params: "StatsActivityAggregateListParams"
     ) -> "ActivityAggregateResponse": ...
+
     @overload
     async def execute(
         self,
@@ -209,6 +243,7 @@ class GongConnector:
         action: Literal["list"],
         params: "StatsActivityDayByDayListParams"
     ) -> "ActivityDayByDayResponse": ...
+
     @overload
     async def execute(
         self,
@@ -216,6 +251,7 @@ class GongConnector:
         action: Literal["list"],
         params: "StatsInteractionListParams"
     ) -> "InteractionStatsResponse": ...
+
 
     @overload
     async def execute(
@@ -285,7 +321,7 @@ class UsersQuery:
         self,
         cursor: str | None = None,
         **kwargs
-    ) -> "UsersResponse":
+    ) -> UsersResponse:
         """
         List users
 
@@ -302,11 +338,14 @@ class UsersQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("users", "list", params)
+
+
+
     async def get(
         self,
         id: str | None = None,
         **kwargs
-    ) -> "UserResponse":
+    ) -> UserResponse:
         """
         Get a user
 
@@ -323,6 +362,9 @@ class UsersQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("users", "get", params)
+
+
+
 class CallsQuery:
     """
     Query class for Calls entity operations.
@@ -334,17 +376,17 @@ class CallsQuery:
 
     async def list(
         self,
-        fromDateTime: str,
-        toDateTime: str,
+        from_date_time: str,
+        to_date_time: str,
         cursor: str | None = None,
         **kwargs
-    ) -> "CallsResponse":
+    ) -> CallsResponse:
         """
         List calls
 
         Args:
-            fromDateTime: Start date in ISO 8601 format
-            toDateTime: End date in ISO 8601 format
+            from_date_time: Start date in ISO 8601 format
+            to_date_time: End date in ISO 8601 format
             cursor: Cursor for pagination
             **kwargs: Additional parameters
 
@@ -359,11 +401,14 @@ class CallsQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("calls", "list", params)
+
+
+
     async def get(
         self,
         id: str | None = None,
         **kwargs
-    ) -> "CallResponse":
+    ) -> CallResponse:
         """
         Get a call
 
@@ -380,9 +425,12 @@ class CallsQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("calls", "get", params)
-class CallsextensiveQuery:
+
+
+
+class CallsExtensiveQuery:
     """
-    Query class for Callsextensive entity operations.
+    Query class for CallsExtensive entity operations.
     """
 
     def __init__(self, connector: GongConnector):
@@ -392,7 +440,7 @@ class CallsextensiveQuery:
     async def list(
         self,
         **kwargs
-    ) -> "ExtensiveCallsResponse":
+    ) -> ExtensiveCallsResponse:
         """
         List calls with extensive data
 
@@ -404,6 +452,131 @@ class CallsextensiveQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("calls_extensive", "list", params)
+
+
+
+class CallAudioQuery:
+    """
+    Query class for CallAudio entity operations.
+    """
+
+    def __init__(self, connector: GongConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def download(
+        self,
+        range_header: str | None = None,
+        **kwargs
+    ) -> AsyncIterator[bytes]:
+        """
+        Download call audio
+
+        Args:
+            range_header: Optional Range header for partial downloads (e.g., 'bytes=0-99')
+            **kwargs: Additional parameters
+
+        Returns:
+            AsyncIterator[bytes]
+        """
+        params = {k: v for k, v in {
+            "range_header": range_header,
+            **kwargs
+        }.items() if v is not None}
+
+        return await self._connector.execute("call_audio", "download", params)
+
+
+    async def download_local(
+        self,
+        path: str,
+        range_header: str | None = None,
+        **kwargs
+    ) -> Path:
+        """
+        Download call audio and save to file.
+
+        Args:
+            range_header: Optional Range header for partial downloads (e.g., 'bytes=0-99')
+            path: File path to save downloaded content
+            **kwargs: Additional parameters
+
+        Returns:
+            str: Path to the downloaded file
+        """
+
+        # Get the async iterator
+        params = cast(CallAudioDownloadParams, {k: v for k, v in {
+            "range_header": range_header,
+            **kwargs
+        }.items() if v is not None})
+
+        content_iterator = await self._connector.execute("", "", params)
+
+        return await save_download(content_iterator, path)
+
+
+class CallVideoQuery:
+    """
+    Query class for CallVideo entity operations.
+    """
+
+    def __init__(self, connector: GongConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def download(
+        self,
+        range_header: str | None = None,
+        **kwargs
+    ) -> AsyncIterator[bytes]:
+        """
+        Download call video
+
+        Args:
+            range_header: Optional Range header for partial downloads (e.g., 'bytes=0-99')
+            **kwargs: Additional parameters
+
+        Returns:
+            AsyncIterator[bytes]
+        """
+        params = {k: v for k, v in {
+            "range_header": range_header,
+            **kwargs
+        }.items() if v is not None}
+
+        return await self._connector.execute("call_video", "download", params)
+
+
+    async def download_local(
+        self,
+        path: str,
+        range_header: str | None = None,
+        **kwargs
+    ) -> Path:
+        """
+        Download call video and save to file.
+
+        Args:
+            range_header: Optional Range header for partial downloads (e.g., 'bytes=0-99')
+            path: File path to save downloaded content
+            **kwargs: Additional parameters
+
+        Returns:
+            str: Path to the downloaded file
+        """
+
+        # Get the async iterator
+        params = cast(CallVideoDownloadParams, {k: v for k, v in {
+            "range_header": range_header,
+            **kwargs
+        }.items() if v is not None})
+
+        content_iterator = await self._connector.execute("", "", params)
+
+        return await save_download(content_iterator, path)
+
+
 class WorkspacesQuery:
     """
     Query class for Workspaces entity operations.
@@ -416,7 +589,7 @@ class WorkspacesQuery:
     async def list(
         self,
         **kwargs
-    ) -> "WorkspacesResponse":
+    ) -> WorkspacesResponse:
         """
         List workspaces
 
@@ -428,9 +601,12 @@ class WorkspacesQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("workspaces", "list", params)
-class CalltranscriptsQuery:
+
+
+
+class CallTranscriptsQuery:
     """
-    Query class for Calltranscripts entity operations.
+    Query class for CallTranscripts entity operations.
     """
 
     def __init__(self, connector: GongConnector):
@@ -440,7 +616,7 @@ class CalltranscriptsQuery:
     async def list(
         self,
         **kwargs
-    ) -> "TranscriptsResponse":
+    ) -> TranscriptsResponse:
         """
         Retrieve call transcripts
 
@@ -452,9 +628,12 @@ class CalltranscriptsQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("call_transcripts", "list", params)
-class StatsactivityaggregateQuery:
+
+
+
+class StatsActivityAggregateQuery:
     """
-    Query class for Statsactivityaggregate entity operations.
+    Query class for StatsActivityAggregate entity operations.
     """
 
     def __init__(self, connector: GongConnector):
@@ -464,7 +643,7 @@ class StatsactivityaggregateQuery:
     async def list(
         self,
         **kwargs
-    ) -> "ActivityAggregateResponse":
+    ) -> ActivityAggregateResponse:
         """
         Retrieve aggregated activity statistics
 
@@ -476,9 +655,12 @@ class StatsactivityaggregateQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("stats_activity_aggregate", "list", params)
-class StatsactivitydaybydayQuery:
+
+
+
+class StatsActivityDayByDayQuery:
     """
-    Query class for Statsactivitydaybyday entity operations.
+    Query class for StatsActivityDayByDay entity operations.
     """
 
     def __init__(self, connector: GongConnector):
@@ -488,7 +670,7 @@ class StatsactivitydaybydayQuery:
     async def list(
         self,
         **kwargs
-    ) -> "ActivityDayByDayResponse":
+    ) -> ActivityDayByDayResponse:
         """
         Retrieve daily activity statistics
 
@@ -500,9 +682,12 @@ class StatsactivitydaybydayQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("stats_activity_day_by_day", "list", params)
-class StatsinteractionQuery:
+
+
+
+class StatsInteractionQuery:
     """
-    Query class for Statsinteraction entity operations.
+    Query class for StatsInteraction entity operations.
     """
 
     def __init__(self, connector: GongConnector):
@@ -512,7 +697,7 @@ class StatsinteractionQuery:
     async def list(
         self,
         **kwargs
-    ) -> "InteractionStatsResponse":
+    ) -> InteractionStatsResponse:
         """
         Retrieve interaction statistics
 
@@ -524,3 +709,5 @@ class StatsinteractionQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("stats_interaction", "list", params)
+
+
