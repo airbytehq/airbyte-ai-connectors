@@ -11,7 +11,10 @@ try:
     from typing import Literal
 except ImportError:
     from typing_extensions import Literal
+
 from pathlib import Path
+
+from ._vendored.connector_sdk import save_download
 
 if TYPE_CHECKING:
     from .types import (
@@ -55,6 +58,7 @@ class GithubConnector:
             connector_id: Connector ID (required for hosted mode)
             airbyte_client_id: Airbyte OAuth client ID (required for hosted mode)
             airbyte_client_secret: Airbyte OAuth client secret (required for hosted mode)
+            airbyte_connector_api_url: Airbyte connector API URL (defaults to Airbyte Cloud API URL)
             on_token_refresh: Optional callback for OAuth2 token refresh persistence.
                 Called with new_tokens dict when tokens are refreshed. Can be sync or async.
                 Example: lambda tokens: save_to_database(tokens)
@@ -122,6 +126,7 @@ class GithubConnector:
         return Path(__file__).parent / "connector.yaml"
 
     # ===== TYPED EXECUTE METHOD (Recommended Interface) =====
+
     @overload
     async def execute(
         self,
@@ -129,6 +134,7 @@ class GithubConnector:
         action: Literal["get"],
         params: "RepositoriesGetParams"
     ) -> "dict[str, Any]": ...
+
     @overload
     async def execute(
         self,
@@ -136,6 +142,7 @@ class GithubConnector:
         action: Literal["list"],
         params: "RepositoriesListParams"
     ) -> "dict[str, Any]": ...
+
     @overload
     async def execute(
         self,
@@ -143,6 +150,7 @@ class GithubConnector:
         action: Literal["search"],
         params: "RepositoriesSearchParams"
     ) -> "dict[str, Any]": ...
+
 
     @overload
     async def execute(
@@ -214,7 +222,7 @@ class RepositoriesQuery:
         repo: str,
         fields: list[str] | None = None,
         **kwargs
-    ) -> "dict[str, Any]":
+    ) -> dict[str, Any]:
         """
         Get a repository
 
@@ -237,13 +245,16 @@ If not provided, uses default fields.
         }.items() if v is not None}
 
         return await self._connector.execute("repositories", "get", params)
+
+
+
     async def list(
         self,
         username: str,
         per_page: int | None = None,
         fields: list[str] | None = None,
         **kwargs
-    ) -> "dict[str, Any]":
+    ) -> dict[str, Any]:
         """
         List repositories for a user
 
@@ -266,13 +277,16 @@ If not provided, uses default fields.
         }.items() if v is not None}
 
         return await self._connector.execute("repositories", "list", params)
+
+
+
     async def search(
         self,
         query: str,
         limit: int | None = None,
         fields: list[str] | None = None,
         **kwargs
-    ) -> "dict[str, Any]":
+    ) -> dict[str, Any]:
         """
         Search GitHub repositories using GraphQL
 
@@ -299,3 +313,5 @@ If not provided, uses default fields.
         }.items() if v is not None}
 
         return await self._connector.execute("repositories", "search", params)
+
+
