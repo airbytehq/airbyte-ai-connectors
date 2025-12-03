@@ -11,7 +11,10 @@ try:
     from typing import Literal
 except ImportError:
     from typing_extensions import Literal
+
 from pathlib import Path
+
+from ._vendored.connector_sdk import save_download
 
 if TYPE_CHECKING:
     from .types import (
@@ -62,6 +65,7 @@ class ZendeskSupportConnector:
             connector_id: Connector ID (required for hosted mode)
             airbyte_client_id: Airbyte OAuth client ID (required for hosted mode)
             airbyte_client_secret: Airbyte OAuth client secret (required for hosted mode)
+            airbyte_connector_api_url: Airbyte connector API URL (defaults to Airbyte Cloud API URL)
             on_token_refresh: Optional callback for OAuth2 token refresh persistence.
                 Called with new_tokens dict when tokens are refreshed. Can be sync or async.
                 Example: lambda tokens: save_to_database(tokens)            subdomain: Your Zendesk subdomain
@@ -128,7 +132,7 @@ class ZendeskSupportConnector:
 
         # Initialize entity query objects
         self.articles = ArticlesQuery(self)
-        self.article_attachments = ArticleattachmentsQuery(self)
+        self.article_attachments = ArticleAttachmentsQuery(self)
 
     @classmethod
     def get_default_config_path(cls) -> Path:
@@ -136,6 +140,7 @@ class ZendeskSupportConnector:
         return Path(__file__).parent / "connector.yaml"
 
     # ===== TYPED EXECUTE METHOD (Recommended Interface) =====
+
     @overload
     async def execute(
         self,
@@ -143,6 +148,7 @@ class ZendeskSupportConnector:
         action: Literal["list"],
         params: "ArticlesListParams"
     ) -> "ArticleList": ...
+
     @overload
     async def execute(
         self,
@@ -150,6 +156,7 @@ class ZendeskSupportConnector:
         action: Literal["get"],
         params: "ArticlesGetParams"
     ) -> "dict[str, Any]": ...
+
     @overload
     async def execute(
         self,
@@ -157,6 +164,7 @@ class ZendeskSupportConnector:
         action: Literal["list"],
         params: "ArticleAttachmentsListParams"
     ) -> "ArticleAttachmentList": ...
+
     @overload
     async def execute(
         self,
@@ -164,6 +172,7 @@ class ZendeskSupportConnector:
         action: Literal["get"],
         params: "ArticleAttachmentsGetParams"
     ) -> "ArticleAttachment": ...
+
     @overload
     async def execute(
         self,
@@ -171,6 +180,7 @@ class ZendeskSupportConnector:
         action: Literal["download"],
         params: "ArticleAttachmentsDownloadParams"
     ) -> "AsyncIterator[bytes]": ...
+
 
     @overload
     async def execute(
@@ -243,7 +253,7 @@ class ArticlesQuery:
         sort_by: str | None = None,
         sort_order: str | None = None,
         **kwargs
-    ) -> "ArticleList":
+    ) -> ArticleList:
         """
         List all articles
 
@@ -266,11 +276,14 @@ class ArticlesQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("articles", "list", params)
+
+
+
     async def get(
         self,
         id: str | None = None,
         **kwargs
-    ) -> "dict[str, Any]":
+    ) -> dict[str, Any]:
         """
         Get an article by ID
 
@@ -287,9 +300,12 @@ class ArticlesQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("articles", "get", params)
-class ArticleattachmentsQuery:
+
+
+
+class ArticleAttachmentsQuery:
     """
-    Query class for Articleattachments entity operations.
+    Query class for ArticleAttachments entity operations.
     """
 
     def __init__(self, connector: ZendeskSupportConnector):
@@ -300,7 +316,7 @@ class ArticleattachmentsQuery:
         self,
         article_id: str,
         **kwargs
-    ) -> "ArticleAttachmentList":
+    ) -> ArticleAttachmentList:
         """
         List attachments for an article
 
@@ -317,12 +333,15 @@ class ArticleattachmentsQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("article_attachments", "list", params)
+
+
+
     async def get(
         self,
         article_id: str,
         attachment_id: str,
         **kwargs
-    ) -> "ArticleAttachment":
+    ) -> ArticleAttachment:
         """
         Retrieve attachment metadata
 
@@ -341,13 +360,16 @@ class ArticleattachmentsQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("article_attachments", "get", params)
+
+
+
     async def download(
         self,
         article_id: str,
         attachment_id: str,
         range_header: str | None = None,
         **kwargs
-    ) -> "AsyncIterator[bytes]":
+    ) -> AsyncIterator[bytes]:
         """
         Download attachment file
 
@@ -368,3 +390,39 @@ class ArticleattachmentsQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("article_attachments", "download", params)
+
+
+    async def download_local(
+        self,
+        article_id: str,
+        attachment_id: str,
+        path: str,
+        range_header: str | None = None,
+        **kwargs
+    ) -> Path:
+        """
+        Download attachment file and save to file.
+
+        Args:
+            article_id: The unique ID of the article
+            attachment_id: The unique ID of the attachment
+            range_header: Optional Range header for partial downloads (e.g., 'bytes=0-99')
+            path: File path to save downloaded content
+            **kwargs: Additional parameters
+
+        Returns:
+            str: Path to the downloaded file
+        """
+
+        # Get the async iterator
+        params = cast(ArticleAttachmentsDownloadParams, {k: v for k, v in {
+            "article_id": article_id,
+            "attachment_id": attachment_id,
+            "range_header": range_header,
+            **kwargs
+        }.items() if v is not None})
+
+        content_iterator = await self._connector.execute("", "", params)
+
+        return await save_download(content_iterator, path)
+
