@@ -6,7 +6,7 @@ Generated from OpenAPI specification.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, Any, Dict, overload, Self
+from typing import TYPE_CHECKING, Any, overload
 try:
     from typing import Literal
 except ImportError:
@@ -14,7 +14,6 @@ except ImportError:
 from pathlib import Path
 
 if TYPE_CHECKING:
-    from ._vendored.connector_sdk.executor import ExecutorProtocol
     from .types import (
         ProjectResponse,
         ProjectsGetParams,
@@ -47,26 +46,17 @@ class AsanaConnector:
     connector_version = "1.0.0"
     vendored_sdk_version = "0.1.0"  # Version of vendored connector-sdk
 
-    def __init__(self, executor: ExecutorProtocol):
-        """Initialize connector with an executor."""
-        self._executor = executor
-        self.tasks = TasksQuery(self)
-        self.projects = ProjectsQuery(self)
-        self.workspaces = WorkspacesQuery(self)
-        self.users = UsersQuery(self)
-
-    @classmethod
-    def create(
-        cls,
-        auth_config: Optional[AsanaAuthConfig] = None,
-        config_path: Optional[str] = None,
-        connector_id: Optional[str] = None,
-        airbyte_client_id: Optional[str] = None,
-        airbyte_client_secret: Optional[str] = None,
-        airbyte_connector_api_url: Optional[str] = None,
-        on_token_refresh: Optional[Any] = None    ) -> Self:
+    def __init__(
+        self,
+        auth_config: AsanaAuthConfig | None = None,
+        config_path: str | None = None,
+        connector_id: str | None = None,
+        airbyte_client_id: str | None = None,
+        airbyte_client_secret: str | None = None,
+        airbyte_connector_api_url: str | None = None,
+        on_token_refresh: Any | None = None    ):
         """
-        Create a new asana connector instance.
+        Initialize a new asana connector instance.
 
         Supports both local and hosted execution modes:
         - Local mode: Provide `auth_config` for direct API calls
@@ -81,14 +71,11 @@ class AsanaConnector:
             on_token_refresh: Optional callback for OAuth2 token refresh persistence.
                 Called with new_tokens dict when tokens are refreshed. Can be sync or async.
                 Example: lambda tokens: save_to_database(tokens)
-        Returns:
-            Configured AsanaConnector instance
-
         Examples:
             # Local mode (direct API calls)
-            connector = AsanaConnector.create(auth_config={"api_key": "sk_..."})
+            connector = AsanaConnector(auth_config={"api_key": "sk_..."})
             # Hosted mode (executed on Airbyte cloud)
-            connector = AsanaConnector.create(
+            connector = AsanaConnector(
                 connector_id="connector-456",
                 airbyte_client_id="client_abc123",
                 airbyte_client_secret="secret_xyz789"
@@ -100,7 +87,7 @@ class AsanaConnector:
                 with open("tokens.json", "w") as f:
                     json.dump(new_tokens, f)
 
-            connector = AsanaConnector.create(
+            connector = AsanaConnector(
                 auth_config={"access_token": "...", "refresh_token": "..."},
                 on_token_refresh=save_tokens
             )
@@ -108,40 +95,42 @@ class AsanaConnector:
         # Hosted mode: connector_id, airbyte_client_id, and airbyte_client_secret provided
         if connector_id and airbyte_client_id and airbyte_client_secret:
             from ._vendored.connector_sdk.executor import HostedExecutor
-            executor = HostedExecutor(
+            self._executor = HostedExecutor(
                 connector_id=connector_id,
                 airbyte_client_id=airbyte_client_id,
                 airbyte_client_secret=airbyte_client_secret,
                 api_url=airbyte_connector_api_url,
             )
-            return cls(executor)
+        else:
+            # Local mode: auth_config required
+            if not auth_config:
+                raise ValueError(
+                    "Either provide (connector_id, airbyte_client_id, airbyte_client_secret) for hosted mode "
+                    "or auth_config for local mode"
+                )
 
-        # Local mode: auth_config required
-        if not auth_config:
-            raise ValueError(
-                "Either provide (connector_id, airbyte_client_id, airbyte_client_secret) for hosted mode "
-                "or auth_config for local mode"
+            from ._vendored.connector_sdk.executor import LocalExecutor
+
+            if not config_path:
+                config_path = str(self.get_default_config_path())
+
+            # Build config_values dict from server variables
+            config_values = None
+
+            self._executor = LocalExecutor(
+                config_path=config_path,
+                auth_config=auth_config,
+                config_values=config_values,
+                on_token_refresh=on_token_refresh
             )
 
-        from ._vendored.connector_sdk.executor import LocalExecutor
+            # Update base_url with server variables if provided
 
-        if not config_path:
-            config_path = str(cls.get_default_config_path())
-
-        # Build config_values dict from server variables
-        config_values = None
-
-        executor = LocalExecutor(
-            config_path=config_path,
-            auth_config=auth_config,
-            config_values=config_values,
-            on_token_refresh=on_token_refresh
-        )
-        connector = cls(executor)
-
-        # Update base_url with server variables if provided
-
-        return connector
+        # Initialize entity query objects
+        self.tasks = TasksQuery(self)
+        self.projects = ProjectsQuery(self)
+        self.workspaces = WorkspacesQuery(self)
+        self.users = UsersQuery(self)
 
     @classmethod
     def get_default_config_path(cls) -> Path:
@@ -152,94 +141,94 @@ class AsanaConnector:
     @overload
     async def execute(
         self,
-        resource: Literal["tasks"],
-        verb: Literal["list"],
+        entity: Literal["tasks"],
+        action: Literal["list"],
         params: "TasksListParams"
     ) -> "TasksList": ...
     @overload
     async def execute(
         self,
-        resource: Literal["tasks"],
-        verb: Literal["get"],
+        entity: Literal["tasks"],
+        action: Literal["get"],
         params: "TasksGetParams"
     ) -> "TaskResponse": ...
     @overload
     async def execute(
         self,
-        resource: Literal["projects"],
-        verb: Literal["list"],
+        entity: Literal["projects"],
+        action: Literal["list"],
         params: "ProjectsListParams"
     ) -> "ProjectsList": ...
     @overload
     async def execute(
         self,
-        resource: Literal["projects"],
-        verb: Literal["get"],
+        entity: Literal["projects"],
+        action: Literal["get"],
         params: "ProjectsGetParams"
     ) -> "ProjectResponse": ...
     @overload
     async def execute(
         self,
-        resource: Literal["workspaces"],
-        verb: Literal["list"],
+        entity: Literal["workspaces"],
+        action: Literal["list"],
         params: "WorkspacesListParams"
     ) -> "WorkspacesList": ...
     @overload
     async def execute(
         self,
-        resource: Literal["workspaces"],
-        verb: Literal["get"],
+        entity: Literal["workspaces"],
+        action: Literal["get"],
         params: "WorkspacesGetParams"
     ) -> "WorkspaceResponse": ...
     @overload
     async def execute(
         self,
-        resource: Literal["users"],
-        verb: Literal["list"],
+        entity: Literal["users"],
+        action: Literal["list"],
         params: "UsersListParams"
     ) -> "UsersList": ...
     @overload
     async def execute(
         self,
-        resource: Literal["users"],
-        verb: Literal["get"],
+        entity: Literal["users"],
+        action: Literal["get"],
         params: "UsersGetParams"
     ) -> "UserResponse": ...
 
     @overload
     async def execute(
         self,
-        resource: str,
-        verb: str,
-        params: Dict[str, Any]
-    ) -> Dict[str, Any]: ...
+        entity: str,
+        action: str,
+        params: dict[str, Any]
+    ) -> dict[str, Any]: ...
 
     async def execute(
         self,
-        resource: str,
-        verb: str,
-        params: Optional[Dict[str, Any]] = None
+        entity: str,
+        action: str,
+        params: dict[str, Any] | None = None
     ) -> Any:
         """
-        Execute a resource operation with full type safety.
+        Execute an entity operation with full type safety.
 
         This is the recommended interface for blessed connectors as it:
         - Uses the same signature as non-blessed connectors
-        - Provides full IDE autocomplete for resource/verb/params
+        - Provides full IDE autocomplete for entity/action/params
         - Makes migration from generic to blessed connectors seamless
 
         Args:
-            resource: Resource name (e.g., "customers")
-            verb: Operation verb (e.g., "create", "get", "list")
-            params: Operation parameters (typed based on resource+verb)
+            entity: Entity name (e.g., "customers")
+            action: Operation action (e.g., "create", "get", "list")
+            params: Operation parameters (typed based on entity+action)
 
         Returns:
             Typed response based on the operation
 
         Example:
             customer = await connector.execute(
-                resource="customers",
-                verb="get",
+                entity="customers",
+                action="get",
                 params={"id": "cus_123"}
             )
         """
@@ -247,8 +236,8 @@ class AsanaConnector:
 
         # Use ExecutionConfig for both local and hosted executors
         config = ExecutionConfig(
-            resource=resource,
-            verb=verb,
+            entity=entity,
+            action=action,
             params=params
         )
 
@@ -263,7 +252,7 @@ class AsanaConnector:
 
 class TasksQuery:
     """
-    Query class for Tasks resource operations.
+    Query class for Tasks entity operations.
     """
 
     def __init__(self, connector: AsanaConnector):
@@ -273,8 +262,8 @@ class TasksQuery:
     async def list(
         self,
         project_gid: str,
-        limit: Optional[int] = None,
-        offset: Optional[str] = None,
+        limit: int | None = None,
+        offset: str | None = None,
         **kwargs
     ) -> "TasksList":
         """
@@ -320,7 +309,7 @@ class TasksQuery:
         return await self._connector.execute("tasks", "get", params)
 class ProjectsQuery:
     """
-    Query class for Projects resource operations.
+    Query class for Projects entity operations.
     """
 
     def __init__(self, connector: AsanaConnector):
@@ -329,9 +318,9 @@ class ProjectsQuery:
 
     async def list(
         self,
-        limit: Optional[int] = None,
-        offset: Optional[str] = None,
-        workspace: Optional[str] = None,
+        limit: int | None = None,
+        offset: str | None = None,
+        workspace: str | None = None,
         **kwargs
     ) -> "ProjectsList":
         """
@@ -377,7 +366,7 @@ class ProjectsQuery:
         return await self._connector.execute("projects", "get", params)
 class WorkspacesQuery:
     """
-    Query class for Workspaces resource operations.
+    Query class for Workspaces entity operations.
     """
 
     def __init__(self, connector: AsanaConnector):
@@ -386,8 +375,8 @@ class WorkspacesQuery:
 
     async def list(
         self,
-        limit: Optional[int] = None,
-        offset: Optional[str] = None,
+        limit: int | None = None,
+        offset: str | None = None,
         **kwargs
     ) -> "WorkspacesList":
         """
@@ -431,7 +420,7 @@ class WorkspacesQuery:
         return await self._connector.execute("workspaces", "get", params)
 class UsersQuery:
     """
-    Query class for Users resource operations.
+    Query class for Users entity operations.
     """
 
     def __init__(self, connector: AsanaConnector):
@@ -440,9 +429,9 @@ class UsersQuery:
 
     async def list(
         self,
-        limit: Optional[int] = None,
-        offset: Optional[str] = None,
-        workspace: Optional[str] = None,
+        limit: int | None = None,
+        offset: str | None = None,
+        workspace: str | None = None,
         **kwargs
     ) -> "UsersList":
         """

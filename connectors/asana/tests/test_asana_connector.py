@@ -7,7 +7,7 @@ from airbyte_ai_asana import AsanaConnector
 
 def test_connector_creation():
     """Test creating AsanaConnector instance with Authentication."""
-    connector = AsanaConnector.create(auth_config={"token": "test_token"})
+    connector = AsanaConnector(auth_config={"token": "test_token"})
     assert connector.connector_name == "asana"
     assert connector.connector_version
 

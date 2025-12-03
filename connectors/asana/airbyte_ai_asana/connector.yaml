@@ -39,8 +39,8 @@ paths:
       summary: List tasks from a project
       description: Returns all tasks in a project
       operationId: listTasks
-      x-airbyte-resource: tasks
-      x-airbyte-verb: list
+      x-airbyte-entity: tasks
+      x-airbyte-action: list
       parameters:
         - name: project_gid
           in: path
@@ -76,8 +76,8 @@ paths:
       summary: Get a task
       description: Get a single task by its ID
       operationId: getTask
-      x-airbyte-resource: tasks
-      x-airbyte-verb: get
+      x-airbyte-entity: tasks
+      x-airbyte-action: get
       parameters:
         - name: task_gid
           in: path
@@ -103,8 +103,8 @@ paths:
       summary: List projects
       description: Returns a paginated list of projects
       operationId: listProjects
-      x-airbyte-resource: projects
-      x-airbyte-verb: list
+      x-airbyte-entity: projects
+      x-airbyte-action: list
       parameters:
         - name: limit
           in: query
@@ -139,8 +139,8 @@ paths:
       summary: Get a project
       description: Get a single project by its ID
       operationId: getProject
-      x-airbyte-resource: projects
-      x-airbyte-verb: get
+      x-airbyte-entity: projects
+      x-airbyte-action: get
       parameters:
         - name: project_gid
           in: path
@@ -166,8 +166,8 @@ paths:
       summary: List workspaces
       description: Returns a paginated list of workspaces
       operationId: listWorkspaces
-      x-airbyte-resource: workspaces
-      x-airbyte-verb: list
+      x-airbyte-entity: workspaces
+      x-airbyte-action: list
       parameters:
         - name: limit
           in: query
@@ -197,8 +197,8 @@ paths:
       summary: Get a workspace
       description: Get a single workspace by its ID
       operationId: getWorkspace
-      x-airbyte-resource: workspaces
-      x-airbyte-verb: get
+      x-airbyte-entity: workspaces
+      x-airbyte-action: get
       parameters:
         - name: workspace_gid
           in: path
@@ -224,8 +224,8 @@ paths:
       summary: List users
       description: Returns a paginated list of users
       operationId: listUsers
-      x-airbyte-resource: users
-      x-airbyte-verb: list
+      x-airbyte-entity: users
+      x-airbyte-action: list
       parameters:
         - name: limit
           in: query
@@ -260,8 +260,8 @@ paths:
       summary: Get a user
       description: Get a single user by their ID
       operationId: getUser
-      x-airbyte-resource: users
-      x-airbyte-verb: get
+      x-airbyte-entity: users
+      x-airbyte-action: get
       parameters:
         - name: user_gid
           in: path
@@ -292,7 +292,7 @@ components:
     # Task schemas
     Task:
       type: object
-      x-airbyte-resource-name: tasks
+      x-airbyte-entity-name: tasks
       description: Compact task object
       properties:
         gid:
@@ -333,7 +333,7 @@ components:
     # Project schemas
     Project:
       type: object
-      x-airbyte-resource-name: projects
+      x-airbyte-entity-name: projects
       description: Compact project object
       properties:
         gid:
@@ -374,7 +374,7 @@ components:
     # Workspace schemas
     Workspace:
       type: object
-      x-airbyte-resource-name: workspaces
+      x-airbyte-entity-name: workspaces
       description: Compact workspace object
       properties:
         gid:
@@ -415,7 +415,7 @@ components:
     # User schemas
     User:
       type: object
-      x-airbyte-resource-name: users
+      x-airbyte-entity-name: users
       description: Compact user object
       properties:
         gid:
