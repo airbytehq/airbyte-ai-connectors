@@ -11,7 +11,6 @@ from unittest.mock import AsyncMock, patch
 from airbyte_ai_linear import LinearConnector
 
 
-
 @pytest.mark.asyncio
 async def test_issues_get_id_7673b1ad_d549_4086_94cb_a7b102e911fa():
     """Captured from real API call on 2025-11-20"""
@@ -26,7 +25,6 @@ async def test_issues_get_id_7673b1ad_d549_4086_94cb_a7b102e911fa():
         result = await connector.issues.get(id="7673b1ad-d549-4086-94cb-a7b102e911fa")
 
     assert result == mock_response
-
 
 @pytest.mark.asyncio
 async def test_issues_list():
@@ -43,7 +41,6 @@ async def test_issues_list():
 
     assert result == mock_response
 
-
 @pytest.mark.asyncio
 async def test_projects_get_id_6b01548e_c9a3_420f_9992_ece7edeb6b28():
     """Captured from real API call on 2025-11-20"""
@@ -58,7 +55,6 @@ async def test_projects_get_id_6b01548e_c9a3_420f_9992_ece7edeb6b28():
         result = await connector.projects.get(id="6b01548e-c9a3-420f-9992-ece7edeb6b28")
 
     assert result == mock_response
-
 
 @pytest.mark.asyncio
 async def test_projects_list():
@@ -75,7 +71,6 @@ async def test_projects_list():
 
     assert result == mock_response
 
-
 @pytest.mark.asyncio
 async def test_teams_get_id_1c5bad49_8001_4c2e_82d4_9783030d2d24():
     """Captured from real API call on 2025-11-20"""
@@ -91,7 +86,6 @@ async def test_teams_get_id_1c5bad49_8001_4c2e_82d4_9783030d2d24():
 
     assert result == mock_response
 
-
 @pytest.mark.asyncio
 async def test_teams_list():
     """Captured from real API call on 2025-11-20"""
@@ -106,4 +100,3 @@ async def test_teams_list():
         result = await connector.teams.list(first=10, after=None)
 
     assert result == mock_response
-
