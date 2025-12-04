@@ -2,7 +2,7 @@
 
 Type-safe Stripe API connector with full IDE autocomplete support for AI applications.
 
-**Package Version:** 0.1.20
+**Package Version:** 0.1.21
 
 **Connector Version:** 0.0.1
 
@@ -29,8 +29,8 @@ connector = StripeConnector(auth_config={"api_key": "your_api_key"})
 ## Available Operations
 
 ### Customers Operations
-- `customers__list()` - List all customers
-- `customers__get()` - Get a customer
+- `customers__list()` - Returns a list of customers
+- `customers__get()` - Gets the details of an existing customer
 
 ## Type Definitions
 

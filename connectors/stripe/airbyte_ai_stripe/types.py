@@ -1,7 +1,5 @@
 """
-Auto-generated type definitions for stripe connector.
-
-Generated from OpenAPI specification schemas.
+Type definitions for stripe connector.
 """
 from typing import TypedDict, NotRequired
 
