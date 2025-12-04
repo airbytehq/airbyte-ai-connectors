@@ -16,12 +16,18 @@ class GithubAuthConfig(TypedDict):
 
 # ===== RESPONSE TYPE DEFINITIONS =====
 
-class RepositorySecurityAndAnalysisSecretScanning(TypedDict):
-    """Nested schema for RepositorySecurityAndAnalysis.secret_scanning"""
-    status: NotRequired[str]
+class RepositoryPermissions(TypedDict):
+    """User permissions for the repository"""
+    admin: NotRequired[bool]
+    push: NotRequired[bool]
+    pull: NotRequired[bool]
 
 class RepositorySecurityAndAnalysisSecretScanningPushProtection(TypedDict):
     """Nested schema for RepositorySecurityAndAnalysis.secret_scanning_push_protection"""
+    status: NotRequired[str]
+
+class RepositorySecurityAndAnalysisSecretScanning(TypedDict):
+    """Nested schema for RepositorySecurityAndAnalysis.secret_scanning"""
     status: NotRequired[str]
 
 class RepositorySecurityAndAnalysisAdvancedSecurity(TypedDict):
@@ -33,21 +39,6 @@ class RepositorySecurityAndAnalysis(TypedDict):
     advanced_security: NotRequired[RepositorySecurityAndAnalysisAdvancedSecurity]
     secret_scanning: NotRequired[RepositorySecurityAndAnalysisSecretScanning]
     secret_scanning_push_protection: NotRequired[RepositorySecurityAndAnalysisSecretScanningPushProtection]
-
-class RepositoryPermissions(TypedDict):
-    """User permissions for the repository"""
-    admin: NotRequired[bool]
-    push: NotRequired[bool]
-    pull: NotRequired[bool]
-
-class RepositoryLicense(TypedDict):
-    """Repository license information"""
-    key: NotRequired[str]
-    name: NotRequired[str]
-    url: NotRequired[str | None]
-    spdx_id: NotRequired[str | None]
-    node_id: NotRequired[str]
-    html_url: NotRequired[str | None]
 
 class RepositoryOwner(TypedDict):
     """Repository owner information"""
@@ -69,6 +60,15 @@ class RepositoryOwner(TypedDict):
     received_events_url: NotRequired[str]
     type: NotRequired[str]
     site_admin: NotRequired[bool]
+
+class RepositoryLicense(TypedDict):
+    """Repository license information"""
+    key: NotRequired[str]
+    name: NotRequired[str]
+    url: NotRequired[str | None]
+    spdx_id: NotRequired[str | None]
+    node_id: NotRequired[str]
+    html_url: NotRequired[str | None]
 
 class Repository(TypedDict):
     """GitHub repository object"""

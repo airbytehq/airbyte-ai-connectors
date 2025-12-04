@@ -11,7 +11,6 @@ from unittest.mock import AsyncMock, patch
 from airbyte_ai_github import GithubConnector
 
 
-
 @pytest.mark.asyncio
 async def test_repositories_get():
     """Captured from real API call on 2025-12-01"""
@@ -26,7 +25,6 @@ async def test_repositories_get():
         result = await connector.repositories.get(owner="octocat", repo="Hello-World")
 
     assert result == mock_response
-
 
 @pytest.mark.asyncio
 async def test_repositories_list():
@@ -43,7 +41,6 @@ async def test_repositories_list():
 
     assert result == mock_response
 
-
 @pytest.mark.asyncio
 async def test_repositories_search():
     """Captured from real API call on 2025-12-01"""
@@ -58,4 +55,3 @@ async def test_repositories_search():
         result = await connector.repositories.search(query="language:python stars:>10000", limit=5)
 
     assert result == mock_response
-
