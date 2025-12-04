@@ -11,7 +11,6 @@ from unittest.mock import AsyncMock, patch
 from airbyte_ai_stripe import StripeConnector
 
 
-
 @pytest.mark.asyncio
 async def test_customers_get():
     """Captured from real API call on 2025-11-12"""
@@ -26,7 +25,6 @@ async def test_customers_get():
         result = await connector.customers.get(id="cus_TLTWhRfiG8of9k")
 
     assert result == mock_response
-
 
 @pytest.mark.asyncio
 async def test_customers_get_id_cus_TLTWhRfiG8of9k():
@@ -43,7 +41,6 @@ async def test_customers_get_id_cus_TLTWhRfiG8of9k():
 
     assert result == mock_response
 
-
 @pytest.mark.asyncio
 async def test_customers_list():
     """Captured from real API call on 2025-11-12"""
@@ -58,4 +55,3 @@ async def test_customers_list():
         result = await connector.customers.list()
 
     assert result == mock_response
-
