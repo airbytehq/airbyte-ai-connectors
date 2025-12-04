@@ -3,6 +3,7 @@ info:
   title: Stripe API Connector
   version: 0.0.1
   x-airbyte-connector-name: stripe
+  x-airbyte-connector-id: e094cb9a-26de-4645-8761-65c0c425d1de
   x-airbyte-external-documentation-urls:
     - title: Stripe API Changelog documentation
       type: changelog

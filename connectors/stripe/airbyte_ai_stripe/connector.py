@@ -11,10 +11,7 @@ try:
     from typing import Literal
 except ImportError:
     from typing_extensions import Literal
-
 from pathlib import Path
-
-from ._vendored.connector_sdk import save_download
 
 if TYPE_CHECKING:
     from .types import (
@@ -36,6 +33,12 @@ class StripeConnector:
     connector_name = "stripe"
     connector_version = "0.0.1"
     vendored_sdk_version = "0.1.0"  # Version of vendored connector-sdk
+
+    # Map of (entity, action) -> has_extractors for envelope wrapping decision
+    _EXTRACTOR_MAP = {
+        ("customers", "list"): False,
+        ("customers", "get"): False,
+    }
 
     def __init__(
         self,
@@ -59,7 +62,6 @@ class StripeConnector:
             connector_id: Connector ID (required for hosted mode)
             airbyte_client_id: Airbyte OAuth client ID (required for hosted mode)
             airbyte_client_secret: Airbyte OAuth client secret (required for hosted mode)
-            airbyte_connector_api_url: Airbyte connector API URL (defaults to Airbyte Cloud API URL)
             on_token_refresh: Optional callback for OAuth2 token refresh persistence.
                 Called with new_tokens dict when tokens are refreshed. Can be sync or async.
                 Example: lambda tokens: save_to_database(tokens)
@@ -127,7 +129,6 @@ class StripeConnector:
         return Path(__file__).parent / "connector.yaml"
 
     # ===== TYPED EXECUTE METHOD (Recommended Interface) =====
-
     @overload
     async def execute(
         self,
@@ -135,7 +136,6 @@ class StripeConnector:
         action: Literal["list"],
         params: "CustomersListParams"
     ) -> "CustomerList": ...
-
     @overload
     async def execute(
         self,
@@ -143,7 +143,6 @@ class StripeConnector:
         action: Literal["get"],
         params: "CustomersGetParams"
     ) -> "Customer": ...
-
 
     @overload
     async def execute(
@@ -196,7 +195,18 @@ class StripeConnector:
         if not result.success:
             raise RuntimeError(f"Execution failed: {result.error}")
 
-        return result.data
+        # Check if this operation has extractors configured
+        has_extractors = self._EXTRACTOR_MAP.get((entity, action), False)
+
+        if has_extractors:
+            # With extractors - return envelope with data and meta
+            envelope: dict[str, Any] = {"data": result.data}
+            if result.meta is not None:
+                envelope["meta"] = result.meta
+            return envelope
+        else:
+            # No extractors - return raw response data
+            return result.data
 
 
 
@@ -216,7 +226,7 @@ class CustomersQuery:
         ending_before: str | None = None,
         email: str | None = None,
         **kwargs
-    ) -> CustomerList:
+    ) -> "CustomerList":
         """
         List all customers
 
@@ -239,14 +249,11 @@ class CustomersQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("customers", "list", params)
-
-
-
     async def get(
         self,
         id: str | None = None,
         **kwargs
-    ) -> Customer:
+    ) -> "Customer":
         """
         Get a customer
 
@@ -263,5 +270,3 @@ class CustomersQuery:
         }.items() if v is not None}
 
         return await self._connector.execute("customers", "get", params)
-
-
