@@ -85,7 +85,7 @@ class AsanaConnector:
                 Example: lambda tokens: save_to_database(tokens)
         Examples:
             # Local mode (direct API calls)
-            connector = AsanaConnector(auth_config={"api_key": "sk_..."})
+            connector = AsanaConnector(auth_config={"token": "..."})
             # Hosted mode (executed on Airbyte cloud)
             connector = AsanaConnector(
                 connector_id="connector-456",
