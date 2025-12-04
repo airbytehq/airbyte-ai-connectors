@@ -1,7 +1,5 @@
 """
-Auto-generated type definitions for hubspot connector.
-
-Generated from OpenAPI specification schemas.
+Type definitions for hubspot connector.
 """
 from typing import TypedDict, NotRequired, Any
 

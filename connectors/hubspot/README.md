@@ -2,7 +2,7 @@
 
 Type-safe Hubspot API connector with full IDE autocomplete support for AI applications.
 
-**Package Version:** 0.8.0
+**Package Version:** 0.9.0
 
 **Connector Version:** 1.0.0
 
@@ -29,27 +29,27 @@ connector = HubspotConnector(auth_config={"api_key": "your_api_key"})
 ## Available Operations
 
 ### Contacts Operations
-- `list_contacts()` - List contacts
-- `get_contact()` - Get a contact
+- `list_contacts()` - Returns a paginated list of contacts
+- `get_contact()` - Get a single contact by ID
 
 ### Companies Operations
-- `list_companies()` - List companies
-- `get_company()` - Get a company
+- `list_companies()` - Returns a paginated list of companies
+- `get_company()` - Get a single company by ID
 
 ### Deals Operations
-- `list_deals()` - List deals
-- `get_deal()` - Get a deal
+- `list_deals()` - Returns a paginated list of deals
+- `get_deal()` - Get a single deal by ID
 
 ### Tickets Operations
-- `list_tickets()` - List tickets
-- `get_ticket()` - Get a ticket
+- `list_tickets()` - Returns a paginated list of tickets
+- `get_ticket()` - Get a single ticket by ID
 
 ### Schemas Operations
-- `list_schemas()` - List custom object schemas
+- `list_schemas()` - Returns all custom object schemas to discover available custom objects
 
 ### Objects Operations
-- `list_objects()` - List objects
-- `get_object()` - Get an object
+- `list_objects()` - Returns a paginated list of objects for any custom object type
+- `get_object()` - Get a single object by ID for any custom object type
 
 ## Type Definitions
 
