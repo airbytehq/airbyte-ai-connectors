@@ -2,7 +2,7 @@
 
 Type-safe Github API connector with full IDE autocomplete support for AI applications.
 
-**Package Version:** 0.11.0
+**Package Version:** 0.12.0
 
 **Connector Version:** 1.0.0
 
@@ -29,9 +29,11 @@ connector = GithubConnector(auth_config={"api_key": "your_api_key"})
 ## Available Operations
 
 ### Repositories Operations
-- `repositories__get()` - Get a repository
-- `repositories__list()` - List repositories for a user
-- `repositories__search()` - Search GitHub repositories using GraphQL
+- `repositories__get()` - Gets information about a specific GitHub repository using GraphQL
+- `repositories__list()` - Returns a list of repositories for the specified user using GraphQL
+- `repositories__search()` - Search for GitHub repositories using GitHub's powerful search syntax.
+Examples: "language:python stars:>1000", "topic:machine-learning", "org:facebook is:public"
+
 
 ## Type Definitions
 

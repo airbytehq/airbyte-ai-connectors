@@ -1,7 +1,5 @@
 """
-Auto-generated github connector. Do not edit manually.
-
-Generated from OpenAPI specification.
+github connector.
 """
 
 from __future__ import annotations
@@ -11,6 +9,7 @@ try:
     from typing import Literal
 except ImportError:
     from typing_extensions import Literal
+
 from pathlib import Path
 
 if TYPE_CHECKING:
@@ -62,6 +61,7 @@ class GithubConnector:
             connector_id: Connector ID (required for hosted mode)
             airbyte_client_id: Airbyte OAuth client ID (required for hosted mode)
             airbyte_client_secret: Airbyte OAuth client secret (required for hosted mode)
+            airbyte_connector_api_url: Airbyte connector API URL (defaults to Airbyte Cloud API URL)
             on_token_refresh: Optional callback for OAuth2 token refresh persistence.
                 Called with new_tokens dict when tokens are refreshed. Can be sync or async.
                 Example: lambda tokens: save_to_database(tokens)
@@ -129,6 +129,7 @@ class GithubConnector:
         return Path(__file__).parent / "connector.yaml"
 
     # ===== TYPED EXECUTE METHOD (Recommended Interface) =====
+
     @overload
     async def execute(
         self,
@@ -136,6 +137,7 @@ class GithubConnector:
         action: Literal["get"],
         params: "RepositoriesGetParams"
     ) -> "dict[str, Any]": ...
+
     @overload
     async def execute(
         self,
@@ -143,6 +145,7 @@ class GithubConnector:
         action: Literal["list"],
         params: "RepositoriesListParams"
     ) -> "dict[str, Any]": ...
+
     @overload
     async def execute(
         self,
@@ -150,6 +153,7 @@ class GithubConnector:
         action: Literal["search"],
         params: "RepositoriesSearchParams"
     ) -> "dict[str, Any]": ...
+
 
     @overload
     async def execute(
@@ -232,9 +236,9 @@ class RepositoriesQuery:
         repo: str,
         fields: list[str] | None = None,
         **kwargs
-    ) -> "dict[str, Any]":
+    ) -> dict[str, Any]:
         """
-        Get a repository
+        Gets information about a specific GitHub repository using GraphQL
 
         Args:
             owner: The account owner of the repository (username or organization)
@@ -255,15 +259,18 @@ If not provided, uses default fields.
         }.items() if v is not None}
 
         return await self._connector.execute("repositories", "get", params)
+
+
+
     async def list(
         self,
         username: str,
         per_page: int | None = None,
         fields: list[str] | None = None,
         **kwargs
-    ) -> "dict[str, Any]":
+    ) -> dict[str, Any]:
         """
-        List repositories for a user
+        Returns a list of repositories for the specified user using GraphQL
 
         Args:
             username: The username of the user whose repositories to list
@@ -284,15 +291,20 @@ If not provided, uses default fields.
         }.items() if v is not None}
 
         return await self._connector.execute("repositories", "list", params)
+
+
+
     async def search(
         self,
         query: str,
         limit: int | None = None,
         fields: list[str] | None = None,
         **kwargs
-    ) -> "dict[str, Any]":
+    ) -> dict[str, Any]:
         """
-        Search GitHub repositories using GraphQL
+        Search for GitHub repositories using GitHub's powerful search syntax.
+Examples: "language:python stars:>1000", "topic:machine-learning", "org:facebook is:public"
+
 
         Args:
             query: GitHub repository search query. Examples:
@@ -317,3 +329,5 @@ If not provided, uses default fields.
         }.items() if v is not None}
 
         return await self._connector.execute("repositories", "search", params)
+
+
