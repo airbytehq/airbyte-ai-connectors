@@ -11,7 +11,6 @@ from unittest.mock import AsyncMock, patch
 from airbyte_ai_zendesk_support import ZendeskSupportConnector
 
 
-
 @pytest.mark.asyncio
 async def test_article_attachments_download():
     """Download article attachment file (first 100 bytes)"""
@@ -143,7 +142,6 @@ async def test_article_attachments_get():
 
     assert result == mock_response
 
-
 @pytest.mark.asyncio
 async def test_article_attachments_list():
     """Captured from real API call on 2025-12-01"""
@@ -158,7 +156,6 @@ async def test_article_attachments_list():
         result = await connector.article_attachments.list(article_id="7253394952591")
 
     assert result == mock_response
-
 
 @pytest.mark.asyncio
 async def test_articles_get():
@@ -175,7 +172,6 @@ async def test_articles_get():
 
     assert result == mock_response
 
-
 @pytest.mark.asyncio
 async def test_articles_list():
     """Captured from real API call on 2025-12-01"""
@@ -190,4 +186,3 @@ async def test_articles_list():
         result = await connector.articles.list()
 
     assert result == mock_response
-

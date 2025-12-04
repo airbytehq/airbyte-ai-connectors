@@ -6,11 +6,11 @@ from airbyte_ai_zendesk_support import ZendeskSupportConnector
 
 
 def test_connector_creation():
-    """Test creating ZendeskSupportConnector instance with Authentication."""
+    """Test creating ZendeskSupportConnector instance with Authentication.
+    """
     connector = ZendeskSupportConnector(auth_config={"access_token": "test_access_token", "refresh_token": "test_refresh_token", "client_id": "test_client_id", "client_secret": "test_client_secret"})
     assert connector.connector_name == "zendesk-support"
     assert connector.connector_version
-
 
 def test_connector_metadata():
     """Test connector metadata."""
