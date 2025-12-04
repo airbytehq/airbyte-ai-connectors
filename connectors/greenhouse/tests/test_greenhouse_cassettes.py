@@ -11,7 +11,6 @@ from unittest.mock import AsyncMock, patch
 from airbyte_ai_greenhouse import GreenhouseConnector
 
 
-
 @pytest.mark.asyncio
 async def test_applications_get_id_169024258003():
     """Captured from real API call on 2025-11-19"""
@@ -26,7 +25,6 @@ async def test_applications_get_id_169024258003():
         result = await connector.applications.get(id="169024258003")
 
     assert result == mock_response
-
 
 @pytest.mark.asyncio
 async def test_applications_list():
@@ -43,7 +41,6 @@ async def test_applications_list():
 
     assert result == mock_response
 
-
 @pytest.mark.asyncio
 async def test_candidates_get_id_160875821003():
     """Captured from real API call on 2025-11-19"""
@@ -58,7 +55,6 @@ async def test_candidates_get_id_160875821003():
         result = await connector.candidates.get(id="160875821003")
 
     assert result == mock_response
-
 
 @pytest.mark.asyncio
 async def test_candidates_list():
@@ -75,7 +71,6 @@ async def test_candidates_list():
 
     assert result == mock_response
 
-
 @pytest.mark.asyncio
 async def test_jobs_get_id_5254492003():
     """Captured from real API call on 2025-11-19"""
@@ -91,7 +86,6 @@ async def test_jobs_get_id_5254492003():
 
     assert result == mock_response
 
-
 @pytest.mark.asyncio
 async def test_jobs_list():
     """Captured from real API call on 2025-11-19"""
@@ -106,4 +100,3 @@ async def test_jobs_list():
         result = await connector.jobs.list(per_page=2)
 
     assert result == mock_response
-

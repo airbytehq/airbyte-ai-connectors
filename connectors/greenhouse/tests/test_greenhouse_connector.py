@@ -6,11 +6,11 @@ from airbyte_ai_greenhouse import GreenhouseConnector
 
 
 def test_connector_creation():
-    """Test creating GreenhouseConnector instance with Harvest API Key Authentication."""
+    """Test creating GreenhouseConnector instance with Harvest API Key Authentication.
+    """
     connector = GreenhouseConnector(auth_config={"api_key": "test_api_key"})
     assert connector.connector_name == "greenhouse"
     assert connector.connector_version
-
 
 def test_connector_metadata():
     """Test connector metadata."""
