@@ -106,7 +106,7 @@ class GongConnector:
                 Example: lambda tokens: save_to_database(tokens)
         Examples:
             # Local mode (direct API calls)
-            connector = GongConnector(auth_config={"api_key": "sk_..."})
+            connector = GongConnector(auth_config={"access_key": "...", "access_key_secret": "..."})
             # Hosted mode (executed on Airbyte cloud)
             connector = GongConnector(
                 connector_id="connector-456",

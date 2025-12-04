@@ -19,6 +19,11 @@ class PaginationRecords(TypedDict):
     currentPageNumber: NotRequired[int]
     cursor: NotRequired[str]
 
+class UserSpokenlanguagesItem(TypedDict):
+    """Nested schema for User.spokenLanguages_item"""
+    language: NotRequired[str]
+    primary: NotRequired[bool]
+
 class UserSettings(TypedDict):
     """User settings"""
     webConferencesRecorded: NotRequired[bool]
@@ -28,11 +33,6 @@ class UserSettings(TypedDict):
     preventEmailImport: NotRequired[bool]
     nonRecordedMeetingsImported: NotRequired[bool]
     gongConnectEnabled: NotRequired[bool]
-
-class UserSpokenlanguagesItem(TypedDict):
-    """Nested schema for User.spokenLanguages_item"""
-    language: NotRequired[str]
-    primary: NotRequired[bool]
 
 class User(TypedDict):
     """User object"""
@@ -133,44 +133,6 @@ class TranscriptsResponse(TypedDict):
     records: NotRequired[PaginationRecords]
     requestId: NotRequired[str]
 
-class ExtensiveCallCollaboration(TypedDict):
-    """Collaboration data"""
-    publicComments: NotRequired[list[dict[str, Any]]]
-
-class ExtensiveCallInteractionInteractionstatsItem(TypedDict):
-    """Nested schema for ExtensiveCallInteraction.interactionStats_item"""
-    name: NotRequired[str]
-    value: NotRequired[float]
-
-class ExtensiveCallInteractionQuestions(TypedDict):
-    """Nested schema for ExtensiveCallInteraction.questions"""
-    companyCount: NotRequired[int]
-    nonCompanyCount: NotRequired[int]
-
-class ExtensiveCallInteraction(TypedDict):
-    """Interaction statistics"""
-    interactionStats: NotRequired[list[ExtensiveCallInteractionInteractionstatsItem]]
-    questions: NotRequired[ExtensiveCallInteractionQuestions]
-
-class ExtensiveCallContentTrackersItem(TypedDict):
-    """Nested schema for ExtensiveCallContent.trackers_item"""
-    id: NotRequired[str]
-    name: NotRequired[str]
-    count: NotRequired[int]
-    type: NotRequired[str]
-    occurrences: NotRequired[list[dict[str, Any]]]
-
-class ExtensiveCallContentTopicsItem(TypedDict):
-    """Nested schema for ExtensiveCallContent.topics_item"""
-    name: NotRequired[str]
-    duration: NotRequired[float]
-
-class ExtensiveCallContent(TypedDict):
-    """Content data including topics and trackers"""
-    topics: NotRequired[list[ExtensiveCallContentTopicsItem]]
-    trackers: NotRequired[list[ExtensiveCallContentTrackersItem]]
-    pointsOfInterest: NotRequired[dict[str, Any]]
-
 class ExtensiveCallPartiesItemContextItem(TypedDict):
     """Nested schema for ExtensiveCallPartiesItem.context_item"""
     system: NotRequired[str]
@@ -188,11 +150,6 @@ class ExtensiveCallPartiesItem(TypedDict):
     methods: NotRequired[list[str]]
     phoneNumber: NotRequired[str]
     context: NotRequired[list[ExtensiveCallPartiesItemContextItem]]
-
-class ExtensiveCallMedia(TypedDict):
-    """Media URLs"""
-    audioUrl: NotRequired[str]
-    videoUrl: NotRequired[str]
 
 class ExtensiveCallMetadata(TypedDict):
     """Call metadata"""
@@ -216,6 +173,49 @@ class ExtensiveCallMetadata(TypedDict):
     isPrivate: NotRequired[bool]
     meetingUrl: NotRequired[str]
     calendarEventId: NotRequired[str | None]
+
+class ExtensiveCallCollaboration(TypedDict):
+    """Collaboration data"""
+    publicComments: NotRequired[list[dict[str, Any]]]
+
+class ExtensiveCallMedia(TypedDict):
+    """Media URLs"""
+    audioUrl: NotRequired[str]
+    videoUrl: NotRequired[str]
+
+class ExtensiveCallInteractionQuestions(TypedDict):
+    """Nested schema for ExtensiveCallInteraction.questions"""
+    companyCount: NotRequired[int]
+    nonCompanyCount: NotRequired[int]
+
+class ExtensiveCallInteractionInteractionstatsItem(TypedDict):
+    """Nested schema for ExtensiveCallInteraction.interactionStats_item"""
+    name: NotRequired[str]
+    value: NotRequired[float]
+
+class ExtensiveCallInteraction(TypedDict):
+    """Interaction statistics"""
+    interactionStats: NotRequired[list[ExtensiveCallInteractionInteractionstatsItem]]
+    questions: NotRequired[ExtensiveCallInteractionQuestions]
+
+class ExtensiveCallContentTopicsItem(TypedDict):
+    """Nested schema for ExtensiveCallContent.topics_item"""
+    name: NotRequired[str]
+    duration: NotRequired[float]
+
+class ExtensiveCallContentTrackersItem(TypedDict):
+    """Nested schema for ExtensiveCallContent.trackers_item"""
+    id: NotRequired[str]
+    name: NotRequired[str]
+    count: NotRequired[int]
+    type: NotRequired[str]
+    occurrences: NotRequired[list[dict[str, Any]]]
+
+class ExtensiveCallContent(TypedDict):
+    """Content data including topics and trackers"""
+    topics: NotRequired[list[ExtensiveCallContentTopicsItem]]
+    trackers: NotRequired[list[ExtensiveCallContentTrackersItem]]
+    pointsOfInterest: NotRequired[dict[str, Any]]
 
 class ExtensiveCall(TypedDict):
     """Detailed call object with extended information"""
