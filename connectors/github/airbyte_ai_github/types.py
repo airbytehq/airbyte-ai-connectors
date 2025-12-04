@@ -16,13 +16,67 @@ class GithubAuthConfig(TypedDict):
 
 # ===== RESPONSE TYPE DEFINITIONS =====
 
+class RepositorySecurityAndAnalysisSecretScanning(TypedDict):
+    """Nested schema for RepositorySecurityAndAnalysis.secret_scanning"""
+    status: NotRequired[str]
+
+class RepositorySecurityAndAnalysisSecretScanningPushProtection(TypedDict):
+    """Nested schema for RepositorySecurityAndAnalysis.secret_scanning_push_protection"""
+    status: NotRequired[str]
+
+class RepositorySecurityAndAnalysisAdvancedSecurity(TypedDict):
+    """Nested schema for RepositorySecurityAndAnalysis.advanced_security"""
+    status: NotRequired[str]
+
+class RepositorySecurityAndAnalysis(TypedDict):
+    """Security and analysis settings"""
+    advanced_security: NotRequired[RepositorySecurityAndAnalysisAdvancedSecurity]
+    secret_scanning: NotRequired[RepositorySecurityAndAnalysisSecretScanning]
+    secret_scanning_push_protection: NotRequired[RepositorySecurityAndAnalysisSecretScanningPushProtection]
+
+class RepositoryPermissions(TypedDict):
+    """User permissions for the repository"""
+    admin: NotRequired[bool]
+    push: NotRequired[bool]
+    pull: NotRequired[bool]
+
+class RepositoryLicense(TypedDict):
+    """Repository license information"""
+    key: NotRequired[str]
+    name: NotRequired[str]
+    url: NotRequired[str | None]
+    spdx_id: NotRequired[str | None]
+    node_id: NotRequired[str]
+    html_url: NotRequired[str | None]
+
+class RepositoryOwner(TypedDict):
+    """Repository owner information"""
+    login: NotRequired[str]
+    id: NotRequired[int]
+    node_id: NotRequired[str]
+    avatar_url: NotRequired[str]
+    gravatar_id: NotRequired[str]
+    url: NotRequired[str]
+    html_url: NotRequired[str]
+    followers_url: NotRequired[str]
+    following_url: NotRequired[str]
+    gists_url: NotRequired[str]
+    starred_url: NotRequired[str]
+    subscriptions_url: NotRequired[str]
+    organizations_url: NotRequired[str]
+    repos_url: NotRequired[str]
+    events_url: NotRequired[str]
+    received_events_url: NotRequired[str]
+    type: NotRequired[str]
+    site_admin: NotRequired[bool]
+
 class Repository(TypedDict):
     """GitHub repository object"""
     id: int
     node_id: str
     name: str
     full_name: str
-    owner: dict[str, Any]
+    owner: RepositoryOwner
     private: bool
     html_url: str
     description: NotRequired[str | None]
@@ -94,7 +148,7 @@ class Repository(TypedDict):
     pushed_at: NotRequired[str | None]
     created_at: NotRequired[str]
     updated_at: NotRequired[str]
-    permissions: NotRequired[dict[str, Any]]
+    permissions: NotRequired[RepositoryPermissions]
     allow_rebase_merge: NotRequired[bool]
     allow_squash_merge: NotRequired[bool]
     allow_merge_commit: NotRequired[bool]
@@ -103,13 +157,15 @@ class Repository(TypedDict):
     allow_forking: NotRequired[bool]
     subscribers_count: NotRequired[int]
     network_count: NotRequired[int]
-    license: NotRequired[dict[str, Any] | None]
+    license: NotRequired[RepositoryLicense | None]
     parent: NotRequired[dict[str, Any] | None]
     source: NotRequired[dict[str, Any] | None]
     template_repository: NotRequired[dict[str, Any] | None]
     organization: NotRequired[dict[str, Any] | None]
-    security_and_analysis: NotRequired[dict[str, Any] | None]
+    security_and_analysis: NotRequired[RepositorySecurityAndAnalysis | None]
     temp_clone_token: NotRequired[str | None]
+
+# ===== ENVELOPE TYPE DEFINITIONS =====
 
 # ===== OPERATION PARAMS TYPE DEFINITIONS =====
 
