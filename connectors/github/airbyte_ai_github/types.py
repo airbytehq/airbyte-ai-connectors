@@ -14,24 +14,6 @@ class GithubAuthConfig(TypedDict):
 
 # ===== RESPONSE TYPE DEFINITIONS =====
 
-class RepositorySecurityAndAnalysisAdvancedSecurity(TypedDict):
-    """Nested schema for RepositorySecurityAndAnalysis.advanced_security"""
-    status: NotRequired[str]
-
-class RepositorySecurityAndAnalysisSecretScanning(TypedDict):
-    """Nested schema for RepositorySecurityAndAnalysis.secret_scanning"""
-    status: NotRequired[str]
-
-class RepositorySecurityAndAnalysisSecretScanningPushProtection(TypedDict):
-    """Nested schema for RepositorySecurityAndAnalysis.secret_scanning_push_protection"""
-    status: NotRequired[str]
-
-class RepositorySecurityAndAnalysis(TypedDict):
-    """Security and analysis settings"""
-    advanced_security: NotRequired[RepositorySecurityAndAnalysisAdvancedSecurity]
-    secret_scanning: NotRequired[RepositorySecurityAndAnalysisSecretScanning]
-    secret_scanning_push_protection: NotRequired[RepositorySecurityAndAnalysisSecretScanningPushProtection]
-
 class RepositoryPermissions(TypedDict):
     """User permissions for the repository"""
     admin: NotRequired[bool]
@@ -67,6 +49,24 @@ class RepositoryLicense(TypedDict):
     spdx_id: NotRequired[str | None]
     node_id: NotRequired[str]
     html_url: NotRequired[str | None]
+
+class RepositorySecurityAndAnalysisSecretScanningPushProtection(TypedDict):
+    """Nested schema for RepositorySecurityAndAnalysis.secret_scanning_push_protection"""
+    status: NotRequired[str]
+
+class RepositorySecurityAndAnalysisAdvancedSecurity(TypedDict):
+    """Nested schema for RepositorySecurityAndAnalysis.advanced_security"""
+    status: NotRequired[str]
+
+class RepositorySecurityAndAnalysisSecretScanning(TypedDict):
+    """Nested schema for RepositorySecurityAndAnalysis.secret_scanning"""
+    status: NotRequired[str]
+
+class RepositorySecurityAndAnalysis(TypedDict):
+    """Security and analysis settings"""
+    advanced_security: NotRequired[RepositorySecurityAndAnalysisAdvancedSecurity]
+    secret_scanning: NotRequired[RepositorySecurityAndAnalysisSecretScanning]
+    secret_scanning_push_protection: NotRequired[RepositorySecurityAndAnalysisSecretScanningPushProtection]
 
 class Repository(TypedDict):
     """GitHub repository object"""
