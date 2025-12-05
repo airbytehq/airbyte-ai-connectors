@@ -20,7 +20,12 @@ uv pip install airbyte-ai-gong
 from airbyte_ai_gong import GongConnector
 
 # Create connector
-connector = GongConnector(auth_config={"api_key": "your_api_key"})
+connector = GongConnector(
+    auth_config=GongAuthConfig(
+        access_key=os.getenv("GONG_ACCESS_KEY"),
+        access_key_secret=os.getenv("GONG_ACCESS_KEY_SECRET"),
+    )
+)
 
 # Use typed methods with full IDE autocomplete
 # (See Available Operations below for all methods)
