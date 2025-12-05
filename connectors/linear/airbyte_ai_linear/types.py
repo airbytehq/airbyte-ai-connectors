@@ -1,13 +1,13 @@
 """
 Type definitions for linear connector.
 """
-from typing import TypedDict, NotRequired, Any
+# Use typing_extensions.TypedDict for Pydantic compatibility on Python < 3.12
+try:
+    from typing_extensions import TypedDict, NotRequired
+except ImportError:
+    from typing import TypedDict, NotRequired  # type: ignore[attr-defined]
 
-# ===== AUTH CONFIG TYPE DEFINITIONS =====
-
-class LinearAuthConfig(TypedDict):
-    """Authentication"""
-    api_key: str  # API authentication key
+from typing import Any
 
 # ===== RESPONSE TYPE DEFINITIONS =====
 
@@ -122,7 +122,8 @@ class TeamResponse(TypedDict):
     """GraphQL response for single team"""
     data: NotRequired[TeamResponseData]
 
-# ===== ENVELOPE TYPE DEFINITIONS =====
+# ===== METADATA TYPE DEFINITIONS =====
+# Meta types for operations that extract metadata (e.g., pagination info)
 
 # ===== OPERATION PARAMS TYPE DEFINITIONS =====
 

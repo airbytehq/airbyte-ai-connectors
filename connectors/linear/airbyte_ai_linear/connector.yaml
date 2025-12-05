@@ -6,7 +6,7 @@ openapi: 3.1.0
 
 info:
   title: Linear API Connector
-  version: 1.0.0
+  version: 0.1.0
   description: Connector for Linear GraphQL API
   x-airbyte-connector-name: linear
   x-airbyte-connector-id: 1c5d8316-ed42-4473-8fbc-2626f03f070c

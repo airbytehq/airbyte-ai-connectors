@@ -12,22 +12,29 @@ except ImportError:
 
 from pathlib import Path
 
+from .types import (
+    IssueResponse,
+    IssuesGetParams,
+    IssuesListParams,
+    IssuesListResponse,
+    ProjectResponse,
+    ProjectsGetParams,
+    ProjectsListParams,
+    ProjectsListResponse,
+    TeamResponse,
+    TeamsGetParams,
+    TeamsListParams,
+    TeamsListResponse,
+)
+
 if TYPE_CHECKING:
-    from .types import (
-        IssueResponse,
-        IssuesGetParams,
-        IssuesListParams,
-        IssuesListResponse,
-        ProjectResponse,
-        ProjectsGetParams,
-        ProjectsListParams,
-        ProjectsListResponse,
-        TeamResponse,
-        TeamsGetParams,
-        TeamsListParams,
-        TeamsListResponse,
-        LinearAuthConfig,
-    )
+    from .models import LinearAuthConfig
+
+# Import envelope models at runtime (needed for instantiation in action methods)
+from .models import (
+    LinearExecuteResult,
+    LinearExecuteResultWithMeta,
+)
 
 
 class LinearConnector:
@@ -38,7 +45,7 @@ class LinearConnector:
     """
 
     connector_name = "linear"
-    connector_version = "1.0.0"
+    connector_version = "0.1.0"
     vendored_sdk_version = "0.1.0"  # Version of vendored connector-sdk
 
     # Map of (entity, action) -> has_extractors for envelope wrapping decision
@@ -79,7 +86,7 @@ class LinearConnector:
                 Example: lambda tokens: save_to_database(tokens)
         Examples:
             # Local mode (direct API calls)
-            connector = LinearConnector(auth_config={"api_key": "..."})
+            connector = LinearConnector(auth_config=LinearAuthConfig(api_key="..."))
             # Hosted mode (executed on Airbyte cloud)
             connector = LinearConnector(
                 connector_id="connector-456",
@@ -94,7 +101,7 @@ class LinearConnector:
                     json.dump(new_tokens, f)
 
             connector = LinearConnector(
-                auth_config={"access_token": "...", "refresh_token": "..."},
+                auth_config=LinearAuthConfig(access_token="...", refresh_token="..."),
                 on_token_refresh=save_tokens
             )
         """
@@ -125,7 +132,7 @@ class LinearConnector:
 
             self._executor = LocalExecutor(
                 config_path=config_path,
-                auth_config=auth_config,
+                auth_config=auth_config.model_dump() if auth_config else None,
                 config_values=config_values,
                 on_token_refresh=on_token_refresh
             )
@@ -199,7 +206,7 @@ class LinearConnector:
         entity: str,
         action: str,
         params: dict[str, Any]
-    ) -> dict[str, Any]: ...
+    ) -> LinearExecuteResult[Any] | LinearExecuteResultWithMeta[Any, Any] | Any: ...
 
     async def execute(
         self,
@@ -248,11 +255,14 @@ class LinearConnector:
         has_extractors = self._EXTRACTOR_MAP.get((entity, action), False)
 
         if has_extractors:
-            # With extractors - return envelope with data and meta
-            envelope: dict[str, Any] = {"data": result.data}
+            # With extractors - return Pydantic envelope with data and meta
             if result.meta is not None:
-                envelope["meta"] = result.meta
-            return envelope
+                return LinearExecuteResultWithMeta[Any, Any](
+                    data=result.data,
+                    meta=result.meta
+                )
+            else:
+                return LinearExecuteResult[Any](data=result.data)
         else:
             # No extractors - return raw response data
             return result.data
@@ -291,7 +301,8 @@ class IssuesQuery:
             **kwargs
         }.items() if v is not None}
 
-        return await self._connector.execute("issues", "list", params)
+        result = await self._connector.execute("issues", "list", params)
+        return result
 
 
 
@@ -315,7 +326,8 @@ class IssuesQuery:
             **kwargs
         }.items() if v is not None}
 
-        return await self._connector.execute("issues", "get", params)
+        result = await self._connector.execute("issues", "get", params)
+        return result
 
 
 
@@ -351,7 +363,8 @@ class ProjectsQuery:
             **kwargs
         }.items() if v is not None}
 
-        return await self._connector.execute("projects", "list", params)
+        result = await self._connector.execute("projects", "list", params)
+        return result
 
 
 
@@ -375,7 +388,8 @@ class ProjectsQuery:
             **kwargs
         }.items() if v is not None}
 
-        return await self._connector.execute("projects", "get", params)
+        result = await self._connector.execute("projects", "get", params)
+        return result
 
 
 
@@ -411,7 +425,8 @@ class TeamsQuery:
             **kwargs
         }.items() if v is not None}
 
-        return await self._connector.execute("teams", "list", params)
+        result = await self._connector.execute("teams", "list", params)
+        return result
 
 
 
@@ -435,6 +450,7 @@ class TeamsQuery:
             **kwargs
         }.items() if v is not None}
 
-        return await self._connector.execute("teams", "get", params)
+        result = await self._connector.execute("teams", "get", params)
+        return result
 
 
