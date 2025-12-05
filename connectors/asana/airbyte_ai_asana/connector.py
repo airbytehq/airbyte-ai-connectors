@@ -12,26 +12,33 @@ except ImportError:
 
 from pathlib import Path
 
+from .types import (
+    ProjectResponse,
+    ProjectsGetParams,
+    ProjectsList,
+    ProjectsListParams,
+    TaskResponse,
+    TasksGetParams,
+    TasksList,
+    TasksListParams,
+    UserResponse,
+    UsersGetParams,
+    UsersList,
+    UsersListParams,
+    WorkspaceResponse,
+    WorkspacesGetParams,
+    WorkspacesList,
+    WorkspacesListParams,
+)
+
 if TYPE_CHECKING:
-    from .types import (
-        ProjectResponse,
-        ProjectsGetParams,
-        ProjectsList,
-        ProjectsListParams,
-        TaskResponse,
-        TasksGetParams,
-        TasksList,
-        TasksListParams,
-        UserResponse,
-        UsersGetParams,
-        UsersList,
-        UsersListParams,
-        WorkspaceResponse,
-        WorkspacesGetParams,
-        WorkspacesList,
-        WorkspacesListParams,
-        AsanaAuthConfig,
-    )
+    from .models import AsanaAuthConfig
+
+# Import envelope models at runtime (needed for instantiation in action methods)
+from .models import (
+    AsanaExecuteResult,
+    AsanaExecuteResultWithMeta,
+)
 
 
 class AsanaConnector:
@@ -42,7 +49,7 @@ class AsanaConnector:
     """
 
     connector_name = "asana"
-    connector_version = "1.0.0"
+    connector_version = "0.1.0"
     vendored_sdk_version = "0.1.0"  # Version of vendored connector-sdk
 
     # Map of (entity, action) -> has_extractors for envelope wrapping decision
@@ -85,7 +92,7 @@ class AsanaConnector:
                 Example: lambda tokens: save_to_database(tokens)
         Examples:
             # Local mode (direct API calls)
-            connector = AsanaConnector(auth_config={"token": "..."})
+            connector = AsanaConnector(auth_config=AsanaAuthConfig(token="..."))
             # Hosted mode (executed on Airbyte cloud)
             connector = AsanaConnector(
                 connector_id="connector-456",
@@ -100,7 +107,7 @@ class AsanaConnector:
                     json.dump(new_tokens, f)
 
             connector = AsanaConnector(
-                auth_config={"access_token": "...", "refresh_token": "..."},
+                auth_config=AsanaAuthConfig(access_token="...", refresh_token="..."),
                 on_token_refresh=save_tokens
             )
         """
@@ -131,7 +138,7 @@ class AsanaConnector:
 
             self._executor = LocalExecutor(
                 config_path=config_path,
-                auth_config=auth_config,
+                auth_config=auth_config.model_dump() if auth_config else None,
                 config_values=config_values,
                 on_token_refresh=on_token_refresh
             )
@@ -222,7 +229,7 @@ class AsanaConnector:
         entity: str,
         action: str,
         params: dict[str, Any]
-    ) -> dict[str, Any]: ...
+    ) -> AsanaExecuteResult[Any] | AsanaExecuteResultWithMeta[Any, Any] | Any: ...
 
     async def execute(
         self,
@@ -271,11 +278,14 @@ class AsanaConnector:
         has_extractors = self._EXTRACTOR_MAP.get((entity, action), False)
 
         if has_extractors:
-            # With extractors - return envelope with data and meta
-            envelope: dict[str, Any] = {"data": result.data}
+            # With extractors - return Pydantic envelope with data and meta
             if result.meta is not None:
-                envelope["meta"] = result.meta
-            return envelope
+                return AsanaExecuteResultWithMeta[Any, Any](
+                    data=result.data,
+                    meta=result.meta
+                )
+            else:
+                return AsanaExecuteResult[Any](data=result.data)
         else:
             # No extractors - return raw response data
             return result.data
@@ -317,7 +327,8 @@ class TasksQuery:
             **kwargs
         }.items() if v is not None}
 
-        return await self._connector.execute("tasks", "list", params)
+        result = await self._connector.execute("tasks", "list", params)
+        return result
 
 
 
@@ -341,7 +352,8 @@ class TasksQuery:
             **kwargs
         }.items() if v is not None}
 
-        return await self._connector.execute("tasks", "get", params)
+        result = await self._connector.execute("tasks", "get", params)
+        return result
 
 
 
@@ -380,7 +392,8 @@ class ProjectsQuery:
             **kwargs
         }.items() if v is not None}
 
-        return await self._connector.execute("projects", "list", params)
+        result = await self._connector.execute("projects", "list", params)
+        return result
 
 
 
@@ -404,7 +417,8 @@ class ProjectsQuery:
             **kwargs
         }.items() if v is not None}
 
-        return await self._connector.execute("projects", "get", params)
+        result = await self._connector.execute("projects", "get", params)
+        return result
 
 
 
@@ -440,7 +454,8 @@ class WorkspacesQuery:
             **kwargs
         }.items() if v is not None}
 
-        return await self._connector.execute("workspaces", "list", params)
+        result = await self._connector.execute("workspaces", "list", params)
+        return result
 
 
 
@@ -464,7 +479,8 @@ class WorkspacesQuery:
             **kwargs
         }.items() if v is not None}
 
-        return await self._connector.execute("workspaces", "get", params)
+        result = await self._connector.execute("workspaces", "get", params)
+        return result
 
 
 
@@ -503,7 +519,8 @@ class UsersQuery:
             **kwargs
         }.items() if v is not None}
 
-        return await self._connector.execute("users", "list", params)
+        result = await self._connector.execute("users", "list", params)
+        return result
 
 
 
@@ -527,6 +544,7 @@ class UsersQuery:
             **kwargs
         }.items() if v is not None}
 
-        return await self._connector.execute("users", "get", params)
+        result = await self._connector.execute("users", "get", params)
+        return result
 
 

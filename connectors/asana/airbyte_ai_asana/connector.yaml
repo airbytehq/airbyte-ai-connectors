@@ -5,7 +5,7 @@ openapi: 3.1.0
 
 info:
   title: Asana API Connector
-  version: 1.0.0
+  version: 0.1.0
   description: Connector for Asana API
   x-airbyte-connector-name: asana
   x-airbyte-connector-id: d0243522-dccf-4978-8ba0-37ed47a0bdbf
