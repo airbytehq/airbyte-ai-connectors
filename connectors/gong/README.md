@@ -2,7 +2,7 @@
 
 Type-safe Gong API connector with full IDE autocomplete support for AI applications.
 
-**Package Version:** 0.16.0
+**Package Version:** 0.17.0
 
 **Connector Version:** 0.1.0
 
@@ -21,12 +21,7 @@ from airbyte_ai_gong import GongConnector
 from airbyte_ai_gong.models import GongAuthConfig
 
 # Create connector
-connector = GongConnector(
-    auth_config=GongAuthConfig(
-        access_key=os.getenv("GONG_ACCESS_KEY"),
-        access_key_secret=os.getenv("GONG_ACCESS_KEY_SECRET"),
-    )
-)
+connector = GongConnector(auth_config=GongAuthConfig(access_key="...", access_key_secret="..."))
 
 # Use typed methods with full IDE autocomplete
 # (See Available Operations below for all methods)
