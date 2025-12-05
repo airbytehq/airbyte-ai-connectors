@@ -2,7 +2,7 @@
 
 Type-safe Asana API connector with full IDE autocomplete support for AI applications.
 
-**Package Version:** 0.16.0
+**Package Version:** 0.17.0
 
 **Connector Version:** 0.1.0
 
@@ -18,9 +18,10 @@ uv pip install airbyte-ai-asana
 
 ```python
 from airbyte_ai_asana import AsanaConnector
+from airbyte_ai_asana.models import AsanaAuthConfig
 
 # Create connector
-connector = AsanaConnector(auth_config={"api_key": "your_api_key"})
+connector = AsanaConnector(auth_config=AsanaAuthConfig(token="..."))
 
 # Use typed methods with full IDE autocomplete
 # (See Available Operations below for all methods)
