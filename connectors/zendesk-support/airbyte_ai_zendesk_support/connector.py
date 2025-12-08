@@ -13,88 +13,45 @@ except ImportError:
 from pathlib import Path
 
 from .types import (
-    Article,
-    ArticleAttachment,
     ArticleAttachmentsDownloadParams,
     ArticleAttachmentsGetParams,
     ArticleAttachmentsListParams,
-    ArticleAttachmentsListResultMeta,
     ArticlesGetParams,
     ArticlesListParams,
-    ArticlesListResultMeta,
-    Attachment,
     AttachmentsDownloadParams,
     AttachmentsGetParams,
-    Automation,
     AutomationsGetParams,
     AutomationsListParams,
-    AutomationsListResultMeta,
-    Brand,
     BrandsGetParams,
     BrandsListParams,
-    BrandsListResultMeta,
-    Group,
-    GroupMembership,
     GroupMembershipsListParams,
-    GroupMembershipsListResultMeta,
     GroupsGetParams,
     GroupsListParams,
-    GroupsListResultMeta,
-    Macro,
     MacrosGetParams,
     MacrosListParams,
-    MacrosListResultMeta,
-    Organization,
-    OrganizationMembership,
     OrganizationMembershipsListParams,
-    OrganizationMembershipsListResultMeta,
     OrganizationsGetParams,
     OrganizationsListParams,
-    OrganizationsListResultMeta,
-    SLAPolicy,
-    SatisfactionRating,
     SatisfactionRatingsGetParams,
     SatisfactionRatingsListParams,
-    SatisfactionRatingsListResultMeta,
     SlaPoliciesGetParams,
     SlaPoliciesListParams,
-    SlaPoliciesListResultMeta,
-    Tag,
     TagsListParams,
-    TagsListResultMeta,
-    Ticket,
-    TicketAudit,
     TicketAuditsListParams,
-    TicketAuditsListResultMeta,
-    TicketComment,
     TicketCommentsListParams,
-    TicketCommentsListResultMeta,
-    TicketField,
     TicketFieldsGetParams,
     TicketFieldsListParams,
-    TicketFieldsListResultMeta,
-    TicketForm,
     TicketFormsGetParams,
     TicketFormsListParams,
-    TicketFormsListResultMeta,
-    TicketMetric,
     TicketMetricsListParams,
-    TicketMetricsListResultMeta,
     TicketsGetParams,
     TicketsListParams,
-    TicketsListResultMeta,
-    Trigger,
     TriggersGetParams,
     TriggersListParams,
-    TriggersListResultMeta,
-    User,
     UsersGetParams,
     UsersListParams,
-    UsersListResultMeta,
-    View,
     ViewsGetParams,
     ViewsListParams,
-    ViewsListResultMeta,
 )
 
 if TYPE_CHECKING:
@@ -104,6 +61,44 @@ if TYPE_CHECKING:
 from .models import (
     ZendeskSupportExecuteResult,
     ZendeskSupportExecuteResultWithMeta,
+    TicketsListResult,
+    TicketsGetResult,
+    UsersListResult,
+    UsersGetResult,
+    OrganizationsListResult,
+    OrganizationsGetResult,
+    GroupsListResult,
+    GroupsGetResult,
+    TicketCommentsListResult,
+    AttachmentsGetResult,
+    TicketAuditsListResult,
+    TicketAuditsListResult,
+    TicketMetricsListResult,
+    TicketFieldsListResult,
+    TicketFieldsGetResult,
+    BrandsListResult,
+    BrandsGetResult,
+    ViewsListResult,
+    ViewsGetResult,
+    MacrosListResult,
+    MacrosGetResult,
+    TriggersListResult,
+    TriggersGetResult,
+    AutomationsListResult,
+    AutomationsGetResult,
+    TagsListResult,
+    SatisfactionRatingsListResult,
+    SatisfactionRatingsGetResult,
+    GroupMembershipsListResult,
+    OrganizationMembershipsListResult,
+    SlaPoliciesListResult,
+    SlaPoliciesGetResult,
+    TicketFormsListResult,
+    TicketFormsGetResult,
+    ArticlesListResult,
+    ArticlesGetResult,
+    ArticleAttachmentsListResult,
+    ArticleAttachmentsGetResult,
 )
 
 
@@ -287,7 +282,7 @@ class ZendeskSupportConnector:
         entity: Literal["tickets"],
         action: Literal["list"],
         params: "TicketsListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[Ticket], TicketsListResultMeta]": ...
+    ) -> "TicketsListResult": ...
 
     @overload
     async def execute(
@@ -295,7 +290,7 @@ class ZendeskSupportConnector:
         entity: Literal["tickets"],
         action: Literal["get"],
         params: "TicketsGetParams"
-    ) -> "ZendeskSupportExecuteResult[Ticket]": ...
+    ) -> "TicketsGetResult": ...
 
     @overload
     async def execute(
@@ -303,7 +298,7 @@ class ZendeskSupportConnector:
         entity: Literal["users"],
         action: Literal["list"],
         params: "UsersListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[User], UsersListResultMeta]": ...
+    ) -> "UsersListResult": ...
 
     @overload
     async def execute(
@@ -311,7 +306,7 @@ class ZendeskSupportConnector:
         entity: Literal["users"],
         action: Literal["get"],
         params: "UsersGetParams"
-    ) -> "ZendeskSupportExecuteResult[User]": ...
+    ) -> "UsersGetResult": ...
 
     @overload
     async def execute(
@@ -319,7 +314,7 @@ class ZendeskSupportConnector:
         entity: Literal["organizations"],
         action: Literal["list"],
         params: "OrganizationsListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[Organization], OrganizationsListResultMeta]": ...
+    ) -> "OrganizationsListResult": ...
 
     @overload
     async def execute(
@@ -327,7 +322,7 @@ class ZendeskSupportConnector:
         entity: Literal["organizations"],
         action: Literal["get"],
         params: "OrganizationsGetParams"
-    ) -> "ZendeskSupportExecuteResult[Organization]": ...
+    ) -> "OrganizationsGetResult": ...
 
     @overload
     async def execute(
@@ -335,7 +330,7 @@ class ZendeskSupportConnector:
         entity: Literal["groups"],
         action: Literal["list"],
         params: "GroupsListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[Group], GroupsListResultMeta]": ...
+    ) -> "GroupsListResult": ...
 
     @overload
     async def execute(
@@ -343,7 +338,7 @@ class ZendeskSupportConnector:
         entity: Literal["groups"],
         action: Literal["get"],
         params: "GroupsGetParams"
-    ) -> "ZendeskSupportExecuteResult[Group]": ...
+    ) -> "GroupsGetResult": ...
 
     @overload
     async def execute(
@@ -351,7 +346,7 @@ class ZendeskSupportConnector:
         entity: Literal["ticket_comments"],
         action: Literal["list"],
         params: "TicketCommentsListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[TicketComment], TicketCommentsListResultMeta]": ...
+    ) -> "TicketCommentsListResult": ...
 
     @overload
     async def execute(
@@ -359,7 +354,7 @@ class ZendeskSupportConnector:
         entity: Literal["attachments"],
         action: Literal["get"],
         params: "AttachmentsGetParams"
-    ) -> "ZendeskSupportExecuteResult[Attachment]": ...
+    ) -> "AttachmentsGetResult": ...
 
     @overload
     async def execute(
@@ -375,7 +370,7 @@ class ZendeskSupportConnector:
         entity: Literal["ticket_audits"],
         action: Literal["list"],
         params: "TicketAuditsListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[TicketAudit], TicketAuditsListResultMeta]": ...
+    ) -> "TicketAuditsListResult": ...
 
     @overload
     async def execute(
@@ -383,7 +378,7 @@ class ZendeskSupportConnector:
         entity: Literal["ticket_audits"],
         action: Literal["list"],
         params: "TicketAuditsListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[TicketAudit], TicketAuditsListResultMeta]": ...
+    ) -> "TicketAuditsListResult": ...
 
     @overload
     async def execute(
@@ -391,7 +386,7 @@ class ZendeskSupportConnector:
         entity: Literal["ticket_metrics"],
         action: Literal["list"],
         params: "TicketMetricsListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[TicketMetric], TicketMetricsListResultMeta]": ...
+    ) -> "TicketMetricsListResult": ...
 
     @overload
     async def execute(
@@ -399,7 +394,7 @@ class ZendeskSupportConnector:
         entity: Literal["ticket_fields"],
         action: Literal["list"],
         params: "TicketFieldsListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[TicketField], TicketFieldsListResultMeta]": ...
+    ) -> "TicketFieldsListResult": ...
 
     @overload
     async def execute(
@@ -407,7 +402,7 @@ class ZendeskSupportConnector:
         entity: Literal["ticket_fields"],
         action: Literal["get"],
         params: "TicketFieldsGetParams"
-    ) -> "ZendeskSupportExecuteResult[TicketField]": ...
+    ) -> "TicketFieldsGetResult": ...
 
     @overload
     async def execute(
@@ -415,7 +410,7 @@ class ZendeskSupportConnector:
         entity: Literal["brands"],
         action: Literal["list"],
         params: "BrandsListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[Brand], BrandsListResultMeta]": ...
+    ) -> "BrandsListResult": ...
 
     @overload
     async def execute(
@@ -423,7 +418,7 @@ class ZendeskSupportConnector:
         entity: Literal["brands"],
         action: Literal["get"],
         params: "BrandsGetParams"
-    ) -> "ZendeskSupportExecuteResult[Brand]": ...
+    ) -> "BrandsGetResult": ...
 
     @overload
     async def execute(
@@ -431,7 +426,7 @@ class ZendeskSupportConnector:
         entity: Literal["views"],
         action: Literal["list"],
         params: "ViewsListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[View], ViewsListResultMeta]": ...
+    ) -> "ViewsListResult": ...
 
     @overload
     async def execute(
@@ -439,7 +434,7 @@ class ZendeskSupportConnector:
         entity: Literal["views"],
         action: Literal["get"],
         params: "ViewsGetParams"
-    ) -> "ZendeskSupportExecuteResult[View]": ...
+    ) -> "ViewsGetResult": ...
 
     @overload
     async def execute(
@@ -447,7 +442,7 @@ class ZendeskSupportConnector:
         entity: Literal["macros"],
         action: Literal["list"],
         params: "MacrosListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[Macro], MacrosListResultMeta]": ...
+    ) -> "MacrosListResult": ...
 
     @overload
     async def execute(
@@ -455,7 +450,7 @@ class ZendeskSupportConnector:
         entity: Literal["macros"],
         action: Literal["get"],
         params: "MacrosGetParams"
-    ) -> "ZendeskSupportExecuteResult[Macro]": ...
+    ) -> "MacrosGetResult": ...
 
     @overload
     async def execute(
@@ -463,7 +458,7 @@ class ZendeskSupportConnector:
         entity: Literal["triggers"],
         action: Literal["list"],
         params: "TriggersListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[Trigger], TriggersListResultMeta]": ...
+    ) -> "TriggersListResult": ...
 
     @overload
     async def execute(
@@ -471,7 +466,7 @@ class ZendeskSupportConnector:
         entity: Literal["triggers"],
         action: Literal["get"],
         params: "TriggersGetParams"
-    ) -> "ZendeskSupportExecuteResult[Trigger]": ...
+    ) -> "TriggersGetResult": ...
 
     @overload
     async def execute(
@@ -479,7 +474,7 @@ class ZendeskSupportConnector:
         entity: Literal["automations"],
         action: Literal["list"],
         params: "AutomationsListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[Automation], AutomationsListResultMeta]": ...
+    ) -> "AutomationsListResult": ...
 
     @overload
     async def execute(
@@ -487,7 +482,7 @@ class ZendeskSupportConnector:
         entity: Literal["automations"],
         action: Literal["get"],
         params: "AutomationsGetParams"
-    ) -> "ZendeskSupportExecuteResult[Automation]": ...
+    ) -> "AutomationsGetResult": ...
 
     @overload
     async def execute(
@@ -495,7 +490,7 @@ class ZendeskSupportConnector:
         entity: Literal["tags"],
         action: Literal["list"],
         params: "TagsListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[Tag], TagsListResultMeta]": ...
+    ) -> "TagsListResult": ...
 
     @overload
     async def execute(
@@ -503,7 +498,7 @@ class ZendeskSupportConnector:
         entity: Literal["satisfaction_ratings"],
         action: Literal["list"],
         params: "SatisfactionRatingsListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[SatisfactionRating], SatisfactionRatingsListResultMeta]": ...
+    ) -> "SatisfactionRatingsListResult": ...
 
     @overload
     async def execute(
@@ -511,7 +506,7 @@ class ZendeskSupportConnector:
         entity: Literal["satisfaction_ratings"],
         action: Literal["get"],
         params: "SatisfactionRatingsGetParams"
-    ) -> "ZendeskSupportExecuteResult[SatisfactionRating]": ...
+    ) -> "SatisfactionRatingsGetResult": ...
 
     @overload
     async def execute(
@@ -519,7 +514,7 @@ class ZendeskSupportConnector:
         entity: Literal["group_memberships"],
         action: Literal["list"],
         params: "GroupMembershipsListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[GroupMembership], GroupMembershipsListResultMeta]": ...
+    ) -> "GroupMembershipsListResult": ...
 
     @overload
     async def execute(
@@ -527,7 +522,7 @@ class ZendeskSupportConnector:
         entity: Literal["organization_memberships"],
         action: Literal["list"],
         params: "OrganizationMembershipsListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[OrganizationMembership], OrganizationMembershipsListResultMeta]": ...
+    ) -> "OrganizationMembershipsListResult": ...
 
     @overload
     async def execute(
@@ -535,7 +530,7 @@ class ZendeskSupportConnector:
         entity: Literal["sla_policies"],
         action: Literal["list"],
         params: "SlaPoliciesListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[SLAPolicy], SlaPoliciesListResultMeta]": ...
+    ) -> "SlaPoliciesListResult": ...
 
     @overload
     async def execute(
@@ -543,7 +538,7 @@ class ZendeskSupportConnector:
         entity: Literal["sla_policies"],
         action: Literal["get"],
         params: "SlaPoliciesGetParams"
-    ) -> "ZendeskSupportExecuteResult[SLAPolicy]": ...
+    ) -> "SlaPoliciesGetResult": ...
 
     @overload
     async def execute(
@@ -551,7 +546,7 @@ class ZendeskSupportConnector:
         entity: Literal["ticket_forms"],
         action: Literal["list"],
         params: "TicketFormsListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[TicketForm], TicketFormsListResultMeta]": ...
+    ) -> "TicketFormsListResult": ...
 
     @overload
     async def execute(
@@ -559,7 +554,7 @@ class ZendeskSupportConnector:
         entity: Literal["ticket_forms"],
         action: Literal["get"],
         params: "TicketFormsGetParams"
-    ) -> "ZendeskSupportExecuteResult[TicketForm]": ...
+    ) -> "TicketFormsGetResult": ...
 
     @overload
     async def execute(
@@ -567,7 +562,7 @@ class ZendeskSupportConnector:
         entity: Literal["articles"],
         action: Literal["list"],
         params: "ArticlesListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[Article], ArticlesListResultMeta]": ...
+    ) -> "ArticlesListResult": ...
 
     @overload
     async def execute(
@@ -575,7 +570,7 @@ class ZendeskSupportConnector:
         entity: Literal["articles"],
         action: Literal["get"],
         params: "ArticlesGetParams"
-    ) -> "ZendeskSupportExecuteResult[Article]": ...
+    ) -> "ArticlesGetResult": ...
 
     @overload
     async def execute(
@@ -583,7 +578,7 @@ class ZendeskSupportConnector:
         entity: Literal["article_attachments"],
         action: Literal["list"],
         params: "ArticleAttachmentsListParams"
-    ) -> "ZendeskSupportExecuteResultWithMeta[list[ArticleAttachment], ArticleAttachmentsListResultMeta]": ...
+    ) -> "ArticleAttachmentsListResult": ...
 
     @overload
     async def execute(
@@ -591,7 +586,7 @@ class ZendeskSupportConnector:
         entity: Literal["article_attachments"],
         action: Literal["get"],
         params: "ArticleAttachmentsGetParams"
-    ) -> "ZendeskSupportExecuteResult[ArticleAttachment]": ...
+    ) -> "ArticleAttachmentsGetResult": ...
 
     @overload
     async def execute(
@@ -686,7 +681,7 @@ class TicketsQuery:
         external_id: str | None = None,
         sort: str | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[Ticket], TicketsListResultMeta]:
+    ) -> TicketsListResult:
         """
         Returns a list of all tickets in your account
 
@@ -697,7 +692,7 @@ class TicketsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[Ticket], TicketsListResultMeta]
+            TicketsListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -707,11 +702,10 @@ class TicketsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("tickets", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[Ticket], TicketsListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return TicketsListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -719,7 +713,7 @@ class TicketsQuery:
         self,
         ticket_id: str,
         **kwargs
-    ) -> ZendeskSupportExecuteResult[Ticket]:
+    ) -> TicketsGetResult:
         """
         Returns a ticket by its ID
 
@@ -728,7 +722,7 @@ class TicketsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResult[Ticket]
+            TicketsGetResult
         """
         params = {k: v for k, v in {
             "ticket_id": ticket_id,
@@ -736,8 +730,9 @@ class TicketsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("tickets", "get", params)
-        # Cast generic envelope to typed envelope with proper data type
-        return ZendeskSupportExecuteResult[Ticket](data=result.data)
+        # Cast generic envelope to concrete typed result
+        return TicketsGetResult(
+            data=result.data        )
 
 
 
@@ -756,7 +751,7 @@ class UsersQuery:
         role: str | None = None,
         external_id: str | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[User], UsersListResultMeta]:
+    ) -> UsersListResult:
         """
         Returns a list of all users in your account
 
@@ -767,7 +762,7 @@ class UsersQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[User], UsersListResultMeta]
+            UsersListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -777,11 +772,10 @@ class UsersQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("users", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[User], UsersListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return UsersListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -789,7 +783,7 @@ class UsersQuery:
         self,
         user_id: str,
         **kwargs
-    ) -> ZendeskSupportExecuteResult[User]:
+    ) -> UsersGetResult:
         """
         Returns a user by their ID
 
@@ -798,7 +792,7 @@ class UsersQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResult[User]
+            UsersGetResult
         """
         params = {k: v for k, v in {
             "user_id": user_id,
@@ -806,8 +800,9 @@ class UsersQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("users", "get", params)
-        # Cast generic envelope to typed envelope with proper data type
-        return ZendeskSupportExecuteResult[User](data=result.data)
+        # Cast generic envelope to concrete typed result
+        return UsersGetResult(
+            data=result.data        )
 
 
 
@@ -824,7 +819,7 @@ class OrganizationsQuery:
         self,
         page: int | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[Organization], OrganizationsListResultMeta]:
+    ) -> OrganizationsListResult:
         """
         Returns a list of all organizations in your account
 
@@ -833,7 +828,7 @@ class OrganizationsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[Organization], OrganizationsListResultMeta]
+            OrganizationsListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -841,11 +836,10 @@ class OrganizationsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("organizations", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[Organization], OrganizationsListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return OrganizationsListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -853,7 +847,7 @@ class OrganizationsQuery:
         self,
         organization_id: str,
         **kwargs
-    ) -> ZendeskSupportExecuteResult[Organization]:
+    ) -> OrganizationsGetResult:
         """
         Returns an organization by its ID
 
@@ -862,7 +856,7 @@ class OrganizationsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResult[Organization]
+            OrganizationsGetResult
         """
         params = {k: v for k, v in {
             "organization_id": organization_id,
@@ -870,8 +864,9 @@ class OrganizationsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("organizations", "get", params)
-        # Cast generic envelope to typed envelope with proper data type
-        return ZendeskSupportExecuteResult[Organization](data=result.data)
+        # Cast generic envelope to concrete typed result
+        return OrganizationsGetResult(
+            data=result.data        )
 
 
 
@@ -889,7 +884,7 @@ class GroupsQuery:
         page: int | None = None,
         exclude_deleted: bool | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[Group], GroupsListResultMeta]:
+    ) -> GroupsListResult:
         """
         Returns a list of all groups in your account
 
@@ -899,7 +894,7 @@ class GroupsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[Group], GroupsListResultMeta]
+            GroupsListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -908,11 +903,10 @@ class GroupsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("groups", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[Group], GroupsListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return GroupsListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -920,7 +914,7 @@ class GroupsQuery:
         self,
         group_id: str,
         **kwargs
-    ) -> ZendeskSupportExecuteResult[Group]:
+    ) -> GroupsGetResult:
         """
         Returns a group by its ID
 
@@ -929,7 +923,7 @@ class GroupsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResult[Group]
+            GroupsGetResult
         """
         params = {k: v for k, v in {
             "group_id": group_id,
@@ -937,8 +931,9 @@ class GroupsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("groups", "get", params)
-        # Cast generic envelope to typed envelope with proper data type
-        return ZendeskSupportExecuteResult[Group](data=result.data)
+        # Cast generic envelope to concrete typed result
+        return GroupsGetResult(
+            data=result.data        )
 
 
 
@@ -958,7 +953,7 @@ class TicketCommentsQuery:
         include_inline_images: bool | None = None,
         sort: str | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[TicketComment], TicketCommentsListResultMeta]:
+    ) -> TicketCommentsListResult:
         """
         Returns a list of comments for a specific ticket
 
@@ -970,7 +965,7 @@ class TicketCommentsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[TicketComment], TicketCommentsListResultMeta]
+            TicketCommentsListResult
         """
         params = {k: v for k, v in {
             "ticket_id": ticket_id,
@@ -981,11 +976,10 @@ class TicketCommentsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("ticket_comments", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[TicketComment], TicketCommentsListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return TicketCommentsListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -1002,7 +996,7 @@ class AttachmentsQuery:
         self,
         attachment_id: str,
         **kwargs
-    ) -> ZendeskSupportExecuteResult[Attachment]:
+    ) -> AttachmentsGetResult:
         """
         Returns an attachment by its ID
 
@@ -1011,7 +1005,7 @@ class AttachmentsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResult[Attachment]
+            AttachmentsGetResult
         """
         params = {k: v for k, v in {
             "attachment_id": attachment_id,
@@ -1019,8 +1013,9 @@ class AttachmentsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("attachments", "get", params)
-        # Cast generic envelope to typed envelope with proper data type
-        return ZendeskSupportExecuteResult[Attachment](data=result.data)
+        # Cast generic envelope to concrete typed result
+        return AttachmentsGetResult(
+            data=result.data        )
 
 
 
@@ -1095,7 +1090,7 @@ class TicketAuditsQuery:
         self,
         page: int | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[TicketAudit], TicketAuditsListResultMeta]:
+    ) -> TicketAuditsListResult:
         """
         Returns a list of all ticket audits
 
@@ -1104,7 +1099,7 @@ class TicketAuditsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[TicketAudit], TicketAuditsListResultMeta]
+            TicketAuditsListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -1112,11 +1107,10 @@ class TicketAuditsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("ticket_audits", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[TicketAudit], TicketAuditsListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return TicketAuditsListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -1125,7 +1119,7 @@ class TicketAuditsQuery:
         ticket_id: str,
         page: int | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[TicketAudit], TicketAuditsListResultMeta]:
+    ) -> TicketAuditsListResult:
         """
         Returns a list of audits for a specific ticket
 
@@ -1135,7 +1129,7 @@ class TicketAuditsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[TicketAudit], TicketAuditsListResultMeta]
+            TicketAuditsListResult
         """
         params = {k: v for k, v in {
             "ticket_id": ticket_id,
@@ -1144,11 +1138,10 @@ class TicketAuditsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("ticket_audits", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[TicketAudit], TicketAuditsListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return TicketAuditsListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -1165,7 +1158,7 @@ class TicketMetricsQuery:
         self,
         page: int | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[TicketMetric], TicketMetricsListResultMeta]:
+    ) -> TicketMetricsListResult:
         """
         Returns a list of all ticket metrics
 
@@ -1174,7 +1167,7 @@ class TicketMetricsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[TicketMetric], TicketMetricsListResultMeta]
+            TicketMetricsListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -1182,11 +1175,10 @@ class TicketMetricsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("ticket_metrics", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[TicketMetric], TicketMetricsListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return TicketMetricsListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -1204,7 +1196,7 @@ class TicketFieldsQuery:
         page: int | None = None,
         locale: str | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[TicketField], TicketFieldsListResultMeta]:
+    ) -> TicketFieldsListResult:
         """
         Returns a list of all ticket fields
 
@@ -1214,7 +1206,7 @@ class TicketFieldsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[TicketField], TicketFieldsListResultMeta]
+            TicketFieldsListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -1223,11 +1215,10 @@ class TicketFieldsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("ticket_fields", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[TicketField], TicketFieldsListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return TicketFieldsListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -1235,7 +1226,7 @@ class TicketFieldsQuery:
         self,
         ticket_field_id: str,
         **kwargs
-    ) -> ZendeskSupportExecuteResult[TicketField]:
+    ) -> TicketFieldsGetResult:
         """
         Returns a ticket field by its ID
 
@@ -1244,7 +1235,7 @@ class TicketFieldsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResult[TicketField]
+            TicketFieldsGetResult
         """
         params = {k: v for k, v in {
             "ticket_field_id": ticket_field_id,
@@ -1252,8 +1243,9 @@ class TicketFieldsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("ticket_fields", "get", params)
-        # Cast generic envelope to typed envelope with proper data type
-        return ZendeskSupportExecuteResult[TicketField](data=result.data)
+        # Cast generic envelope to concrete typed result
+        return TicketFieldsGetResult(
+            data=result.data        )
 
 
 
@@ -1270,7 +1262,7 @@ class BrandsQuery:
         self,
         page: int | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[Brand], BrandsListResultMeta]:
+    ) -> BrandsListResult:
         """
         Returns a list of all brands for the account
 
@@ -1279,7 +1271,7 @@ class BrandsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[Brand], BrandsListResultMeta]
+            BrandsListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -1287,11 +1279,10 @@ class BrandsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("brands", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[Brand], BrandsListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return BrandsListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -1299,7 +1290,7 @@ class BrandsQuery:
         self,
         brand_id: str,
         **kwargs
-    ) -> ZendeskSupportExecuteResult[Brand]:
+    ) -> BrandsGetResult:
         """
         Returns a brand by its ID
 
@@ -1308,7 +1299,7 @@ class BrandsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResult[Brand]
+            BrandsGetResult
         """
         params = {k: v for k, v in {
             "brand_id": brand_id,
@@ -1316,8 +1307,9 @@ class BrandsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("brands", "get", params)
-        # Cast generic envelope to typed envelope with proper data type
-        return ZendeskSupportExecuteResult[Brand](data=result.data)
+        # Cast generic envelope to concrete typed result
+        return BrandsGetResult(
+            data=result.data        )
 
 
 
@@ -1339,7 +1331,7 @@ class ViewsQuery:
         sort_by: str | None = None,
         sort_order: str | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[View], ViewsListResultMeta]:
+    ) -> ViewsListResult:
         """
         Returns a list of all views for the account
 
@@ -1353,7 +1345,7 @@ class ViewsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[View], ViewsListResultMeta]
+            ViewsListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -1366,11 +1358,10 @@ class ViewsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("views", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[View], ViewsListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return ViewsListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -1378,7 +1369,7 @@ class ViewsQuery:
         self,
         view_id: str,
         **kwargs
-    ) -> ZendeskSupportExecuteResult[View]:
+    ) -> ViewsGetResult:
         """
         Returns a view by its ID
 
@@ -1387,7 +1378,7 @@ class ViewsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResult[View]
+            ViewsGetResult
         """
         params = {k: v for k, v in {
             "view_id": view_id,
@@ -1395,8 +1386,9 @@ class ViewsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("views", "get", params)
-        # Cast generic envelope to typed envelope with proper data type
-        return ZendeskSupportExecuteResult[View](data=result.data)
+        # Cast generic envelope to concrete typed result
+        return ViewsGetResult(
+            data=result.data        )
 
 
 
@@ -1420,7 +1412,7 @@ class MacrosQuery:
         sort_by: str | None = None,
         sort_order: str | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[Macro], MacrosListResultMeta]:
+    ) -> MacrosListResult:
         """
         Returns a list of all macros for the account
 
@@ -1436,7 +1428,7 @@ class MacrosQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[Macro], MacrosListResultMeta]
+            MacrosListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -1451,11 +1443,10 @@ class MacrosQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("macros", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[Macro], MacrosListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return MacrosListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -1463,7 +1454,7 @@ class MacrosQuery:
         self,
         macro_id: str,
         **kwargs
-    ) -> ZendeskSupportExecuteResult[Macro]:
+    ) -> MacrosGetResult:
         """
         Returns a macro by its ID
 
@@ -1472,7 +1463,7 @@ class MacrosQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResult[Macro]
+            MacrosGetResult
         """
         params = {k: v for k, v in {
             "macro_id": macro_id,
@@ -1480,8 +1471,9 @@ class MacrosQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("macros", "get", params)
-        # Cast generic envelope to typed envelope with proper data type
-        return ZendeskSupportExecuteResult[Macro](data=result.data)
+        # Cast generic envelope to concrete typed result
+        return MacrosGetResult(
+            data=result.data        )
 
 
 
@@ -1501,7 +1493,7 @@ class TriggersQuery:
         category_id: str | None = None,
         sort: str | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[Trigger], TriggersListResultMeta]:
+    ) -> TriggersListResult:
         """
         Returns a list of all triggers for the account
 
@@ -1513,7 +1505,7 @@ class TriggersQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[Trigger], TriggersListResultMeta]
+            TriggersListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -1524,11 +1516,10 @@ class TriggersQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("triggers", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[Trigger], TriggersListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return TriggersListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -1536,7 +1527,7 @@ class TriggersQuery:
         self,
         trigger_id: str,
         **kwargs
-    ) -> ZendeskSupportExecuteResult[Trigger]:
+    ) -> TriggersGetResult:
         """
         Returns a trigger by its ID
 
@@ -1545,7 +1536,7 @@ class TriggersQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResult[Trigger]
+            TriggersGetResult
         """
         params = {k: v for k, v in {
             "trigger_id": trigger_id,
@@ -1553,8 +1544,9 @@ class TriggersQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("triggers", "get", params)
-        # Cast generic envelope to typed envelope with proper data type
-        return ZendeskSupportExecuteResult[Trigger](data=result.data)
+        # Cast generic envelope to concrete typed result
+        return TriggersGetResult(
+            data=result.data        )
 
 
 
@@ -1573,7 +1565,7 @@ class AutomationsQuery:
         active: bool | None = None,
         sort: str | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[Automation], AutomationsListResultMeta]:
+    ) -> AutomationsListResult:
         """
         Returns a list of all automations for the account
 
@@ -1584,7 +1576,7 @@ class AutomationsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[Automation], AutomationsListResultMeta]
+            AutomationsListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -1594,11 +1586,10 @@ class AutomationsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("automations", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[Automation], AutomationsListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return AutomationsListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -1606,7 +1597,7 @@ class AutomationsQuery:
         self,
         automation_id: str,
         **kwargs
-    ) -> ZendeskSupportExecuteResult[Automation]:
+    ) -> AutomationsGetResult:
         """
         Returns an automation by its ID
 
@@ -1615,7 +1606,7 @@ class AutomationsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResult[Automation]
+            AutomationsGetResult
         """
         params = {k: v for k, v in {
             "automation_id": automation_id,
@@ -1623,8 +1614,9 @@ class AutomationsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("automations", "get", params)
-        # Cast generic envelope to typed envelope with proper data type
-        return ZendeskSupportExecuteResult[Automation](data=result.data)
+        # Cast generic envelope to concrete typed result
+        return AutomationsGetResult(
+            data=result.data        )
 
 
 
@@ -1641,7 +1633,7 @@ class TagsQuery:
         self,
         page: int | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[Tag], TagsListResultMeta]:
+    ) -> TagsListResult:
         """
         Returns a list of all tags used in the account
 
@@ -1650,7 +1642,7 @@ class TagsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[Tag], TagsListResultMeta]
+            TagsListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -1658,11 +1650,10 @@ class TagsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("tags", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[Tag], TagsListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return TagsListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -1682,7 +1673,7 @@ class SatisfactionRatingsQuery:
         start_time: int | None = None,
         end_time: int | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[SatisfactionRating], SatisfactionRatingsListResultMeta]:
+    ) -> SatisfactionRatingsListResult:
         """
         Returns a list of all satisfaction ratings
 
@@ -1694,7 +1685,7 @@ class SatisfactionRatingsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[SatisfactionRating], SatisfactionRatingsListResultMeta]
+            SatisfactionRatingsListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -1705,11 +1696,10 @@ class SatisfactionRatingsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("satisfaction_ratings", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[SatisfactionRating], SatisfactionRatingsListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return SatisfactionRatingsListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -1717,7 +1707,7 @@ class SatisfactionRatingsQuery:
         self,
         satisfaction_rating_id: str,
         **kwargs
-    ) -> ZendeskSupportExecuteResult[SatisfactionRating]:
+    ) -> SatisfactionRatingsGetResult:
         """
         Returns a satisfaction rating by its ID
 
@@ -1726,7 +1716,7 @@ class SatisfactionRatingsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResult[SatisfactionRating]
+            SatisfactionRatingsGetResult
         """
         params = {k: v for k, v in {
             "satisfaction_rating_id": satisfaction_rating_id,
@@ -1734,8 +1724,9 @@ class SatisfactionRatingsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("satisfaction_ratings", "get", params)
-        # Cast generic envelope to typed envelope with proper data type
-        return ZendeskSupportExecuteResult[SatisfactionRating](data=result.data)
+        # Cast generic envelope to concrete typed result
+        return SatisfactionRatingsGetResult(
+            data=result.data        )
 
 
 
@@ -1752,7 +1743,7 @@ class GroupMembershipsQuery:
         self,
         page: int | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[GroupMembership], GroupMembershipsListResultMeta]:
+    ) -> GroupMembershipsListResult:
         """
         Returns a list of all group memberships
 
@@ -1761,7 +1752,7 @@ class GroupMembershipsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[GroupMembership], GroupMembershipsListResultMeta]
+            GroupMembershipsListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -1769,11 +1760,10 @@ class GroupMembershipsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("group_memberships", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[GroupMembership], GroupMembershipsListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return GroupMembershipsListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -1790,7 +1780,7 @@ class OrganizationMembershipsQuery:
         self,
         page: int | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[OrganizationMembership], OrganizationMembershipsListResultMeta]:
+    ) -> OrganizationMembershipsListResult:
         """
         Returns a list of all organization memberships
 
@@ -1799,7 +1789,7 @@ class OrganizationMembershipsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[OrganizationMembership], OrganizationMembershipsListResultMeta]
+            OrganizationMembershipsListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -1807,11 +1797,10 @@ class OrganizationMembershipsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("organization_memberships", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[OrganizationMembership], OrganizationMembershipsListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return OrganizationMembershipsListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -1828,7 +1817,7 @@ class SlaPoliciesQuery:
         self,
         page: int | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[SLAPolicy], SlaPoliciesListResultMeta]:
+    ) -> SlaPoliciesListResult:
         """
         Returns a list of all SLA policies
 
@@ -1837,7 +1826,7 @@ class SlaPoliciesQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[SLAPolicy], SlaPoliciesListResultMeta]
+            SlaPoliciesListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -1845,11 +1834,10 @@ class SlaPoliciesQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("sla_policies", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[SLAPolicy], SlaPoliciesListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return SlaPoliciesListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -1857,7 +1845,7 @@ class SlaPoliciesQuery:
         self,
         sla_policy_id: str,
         **kwargs
-    ) -> ZendeskSupportExecuteResult[SLAPolicy]:
+    ) -> SlaPoliciesGetResult:
         """
         Returns an SLA policy by its ID
 
@@ -1866,7 +1854,7 @@ class SlaPoliciesQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResult[SLAPolicy]
+            SlaPoliciesGetResult
         """
         params = {k: v for k, v in {
             "sla_policy_id": sla_policy_id,
@@ -1874,8 +1862,9 @@ class SlaPoliciesQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("sla_policies", "get", params)
-        # Cast generic envelope to typed envelope with proper data type
-        return ZendeskSupportExecuteResult[SLAPolicy](data=result.data)
+        # Cast generic envelope to concrete typed result
+        return SlaPoliciesGetResult(
+            data=result.data        )
 
 
 
@@ -1894,7 +1883,7 @@ class TicketFormsQuery:
         active: bool | None = None,
         end_user_visible: bool | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[TicketForm], TicketFormsListResultMeta]:
+    ) -> TicketFormsListResult:
         """
         Returns a list of all ticket forms for the account
 
@@ -1905,7 +1894,7 @@ class TicketFormsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[TicketForm], TicketFormsListResultMeta]
+            TicketFormsListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -1915,11 +1904,10 @@ class TicketFormsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("ticket_forms", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[TicketForm], TicketFormsListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return TicketFormsListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -1927,7 +1915,7 @@ class TicketFormsQuery:
         self,
         ticket_form_id: str,
         **kwargs
-    ) -> ZendeskSupportExecuteResult[TicketForm]:
+    ) -> TicketFormsGetResult:
         """
         Returns a ticket form by its ID
 
@@ -1936,7 +1924,7 @@ class TicketFormsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResult[TicketForm]
+            TicketFormsGetResult
         """
         params = {k: v for k, v in {
             "ticket_form_id": ticket_form_id,
@@ -1944,8 +1932,9 @@ class TicketFormsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("ticket_forms", "get", params)
-        # Cast generic envelope to typed envelope with proper data type
-        return ZendeskSupportExecuteResult[TicketForm](data=result.data)
+        # Cast generic envelope to concrete typed result
+        return TicketFormsGetResult(
+            data=result.data        )
 
 
 
@@ -1964,7 +1953,7 @@ class ArticlesQuery:
         sort_by: str | None = None,
         sort_order: str | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[Article], ArticlesListResultMeta]:
+    ) -> ArticlesListResult:
         """
         Returns a list of all articles in the Help Center
 
@@ -1975,7 +1964,7 @@ class ArticlesQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[Article], ArticlesListResultMeta]
+            ArticlesListResult
         """
         params = {k: v for k, v in {
             "page": page,
@@ -1985,11 +1974,10 @@ class ArticlesQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("articles", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[Article], ArticlesListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return ArticlesListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -1997,7 +1985,7 @@ class ArticlesQuery:
         self,
         id: str | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResult[Article]:
+    ) -> ArticlesGetResult:
         """
         Retrieves the details of a specific article
 
@@ -2006,7 +1994,7 @@ class ArticlesQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResult[Article]
+            ArticlesGetResult
         """
         params = {k: v for k, v in {
             "id": id,
@@ -2014,8 +2002,9 @@ class ArticlesQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("articles", "get", params)
-        # Cast generic envelope to typed envelope with proper data type
-        return ZendeskSupportExecuteResult[Article](data=result.data)
+        # Cast generic envelope to concrete typed result
+        return ArticlesGetResult(
+            data=result.data        )
 
 
 
@@ -2033,7 +2022,7 @@ class ArticleAttachmentsQuery:
         article_id: str,
         page: int | None = None,
         **kwargs
-    ) -> ZendeskSupportExecuteResultWithMeta[list[ArticleAttachment], ArticleAttachmentsListResultMeta]:
+    ) -> ArticleAttachmentsListResult:
         """
         Returns a list of all attachments for a specific article
 
@@ -2043,7 +2032,7 @@ class ArticleAttachmentsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResultWithMeta[list[ArticleAttachment], ArticleAttachmentsListResultMeta]
+            ArticleAttachmentsListResult
         """
         params = {k: v for k, v in {
             "article_id": article_id,
@@ -2052,11 +2041,10 @@ class ArticleAttachmentsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("article_attachments", "list", params)
-        # Cast generic envelope to typed envelope with proper data/meta types
-        return ZendeskSupportExecuteResultWithMeta[list[ArticleAttachment], ArticleAttachmentsListResultMeta](
+        # Cast generic envelope to concrete typed result
+        return ArticleAttachmentsListResult(
             data=result.data,
-            meta=result.meta
-        )
+            meta=result.meta        )
 
 
 
@@ -2065,7 +2053,7 @@ class ArticleAttachmentsQuery:
         article_id: str,
         attachment_id: str,
         **kwargs
-    ) -> ZendeskSupportExecuteResult[ArticleAttachment]:
+    ) -> ArticleAttachmentsGetResult:
         """
         Retrieves the metadata of a specific attachment for a specific article
 
@@ -2075,7 +2063,7 @@ class ArticleAttachmentsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ZendeskSupportExecuteResult[ArticleAttachment]
+            ArticleAttachmentsGetResult
         """
         params = {k: v for k, v in {
             "article_id": article_id,
@@ -2084,8 +2072,9 @@ class ArticleAttachmentsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("article_attachments", "get", params)
-        # Cast generic envelope to typed envelope with proper data type
-        return ZendeskSupportExecuteResult[ArticleAttachment](data=result.data)
+        # Cast generic envelope to concrete typed result
+        return ArticleAttachmentsGetResult(
+            data=result.data        )
 
 
 
