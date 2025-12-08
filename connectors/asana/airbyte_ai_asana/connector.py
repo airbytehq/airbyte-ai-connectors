@@ -13,31 +13,31 @@ except ImportError:
 from pathlib import Path
 
 from .types import (
-    ProjectResponse,
     ProjectsGetParams,
-    ProjectsList,
     ProjectsListParams,
-    TaskResponse,
     TasksGetParams,
-    TasksList,
     TasksListParams,
-    UserResponse,
     UsersGetParams,
-    UsersList,
     UsersListParams,
-    WorkspaceResponse,
     WorkspacesGetParams,
-    WorkspacesList,
     WorkspacesListParams,
 )
 
 if TYPE_CHECKING:
     from .models import AsanaAuthConfig
 
-# Import envelope models at runtime (needed for instantiation in action methods)
+# Import response models and envelope models at runtime
 from .models import (
     AsanaExecuteResult,
     AsanaExecuteResultWithMeta,
+    ProjectResponse,
+    ProjectsList,
+    TaskResponse,
+    TasksList,
+    UserResponse,
+    UsersList,
+    WorkspaceResponse,
+    WorkspacesList,
 )
 
 
