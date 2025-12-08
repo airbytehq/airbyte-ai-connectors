@@ -1,6 +1,8 @@
 """
 Type definitions for asana connector.
 """
+from __future__ import annotations
+
 # Use typing_extensions.TypedDict for Pydantic compatibility on Python < 3.12
 try:
     from typing_extensions import TypedDict, NotRequired
@@ -8,17 +10,9 @@ except ImportError:
     from typing import TypedDict, NotRequired  # type: ignore[attr-defined]
 
 
-# ===== RESPONSE TYPE DEFINITIONS =====
 
-class Task(TypedDict):
-    """Compact task object"""
-    gid: NotRequired[str]
-    resource_type: NotRequired[str]
-    name: NotRequired[str]
-
-class TaskResponse(TypedDict):
-    """Task response wrapper"""
-    data: NotRequired[Task]
+# ===== NESTED PARAM TYPE DEFINITIONS =====
+# Nested parameter schemas discovered during parameter extraction
 
 class TasksListNextPage(TypedDict):
     """Nested schema for TasksList.next_page"""
@@ -26,41 +20,11 @@ class TasksListNextPage(TypedDict):
     path: NotRequired[str]
     uri: NotRequired[str]
 
-class TasksList(TypedDict):
-    """Paginated list of tasks"""
-    data: NotRequired[list[Task]]
-    next_page: NotRequired[TasksListNextPage | None]
-
-class Project(TypedDict):
-    """Compact project object"""
-    gid: NotRequired[str]
-    resource_type: NotRequired[str]
-    name: NotRequired[str]
-
-class ProjectResponse(TypedDict):
-    """Project response wrapper"""
-    data: NotRequired[Project]
-
 class ProjectsListNextPage(TypedDict):
     """Nested schema for ProjectsList.next_page"""
     offset: NotRequired[str]
     path: NotRequired[str]
     uri: NotRequired[str]
-
-class ProjectsList(TypedDict):
-    """Paginated list of projects"""
-    data: NotRequired[list[Project]]
-    next_page: NotRequired[ProjectsListNextPage | None]
-
-class Workspace(TypedDict):
-    """Compact workspace object"""
-    gid: NotRequired[str]
-    resource_type: NotRequired[str]
-    name: NotRequired[str]
-
-class WorkspaceResponse(TypedDict):
-    """Workspace response wrapper"""
-    data: NotRequired[Workspace]
 
 class WorkspacesListNextPage(TypedDict):
     """Nested schema for WorkspacesList.next_page"""
@@ -68,34 +32,11 @@ class WorkspacesListNextPage(TypedDict):
     path: NotRequired[str]
     uri: NotRequired[str]
 
-class WorkspacesList(TypedDict):
-    """Paginated list of workspaces"""
-    data: NotRequired[list[Workspace]]
-    next_page: NotRequired[WorkspacesListNextPage | None]
-
-class User(TypedDict):
-    """Compact user object"""
-    gid: NotRequired[str]
-    resource_type: NotRequired[str]
-    name: NotRequired[str]
-
-class UserResponse(TypedDict):
-    """User response wrapper"""
-    data: NotRequired[User]
-
 class UsersListNextPage(TypedDict):
     """Nested schema for UsersList.next_page"""
     offset: NotRequired[str]
     path: NotRequired[str]
     uri: NotRequired[str]
-
-class UsersList(TypedDict):
-    """Paginated list of users"""
-    data: NotRequired[list[User]]
-    next_page: NotRequired[UsersListNextPage | None]
-
-# ===== METADATA TYPE DEFINITIONS =====
-# Meta types for operations that extract metadata (e.g., pagination info)
 
 # ===== OPERATION PARAMS TYPE DEFINITIONS =====
 
