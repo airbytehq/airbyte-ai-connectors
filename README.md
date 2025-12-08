@@ -1,9 +1,13 @@
 # AI Connectors
+### A unified interface for AI agents to fetch your data.
+Airbyte AI Connectors are auto‑generated Python connector packages that let AI agents call third‑party APIs through strongly typed, well‑documented tools. Each connector is a standalone Python package that you can use directly in your app, plug into an agent framework, or expose through MCP (coming soon) and APIs(coming soon).
 
-This repository contains auto-generated Python connector packages for Airbyte AI integrations. These connectors are designed to interface directly with AI Agents to quickly fetch data from external services on-demand. These connectors can be made available to your agents via Python SDK, MCP (coming soon) or API (coming soon).
+## What this repo contains
+* Auto‑generated Python SDKs for specific SaaS APIs (for example Gong, Stripe, GitHub). 
+* A consistent connector layout so you can understand and extend any connector quickly. 
+* Ready‑to-use clients that validate auth, handle schemas, and expose typed methods for each operation.
 
-## Python SDK Example Installation
-
+## Quickstart with the Python SDK
 The Python SDK exposes Airbyte AI Connectors as native Python clients. These can run standalone or be attached as tools inside frameworks like PydanticAI or LangChain. To get started, add the connector package to your dependencies or `pyproject.toml`. For this installation, we will use Gong as an example:
 
 ```yaml
@@ -57,7 +61,6 @@ async def get_user(user_id: str):
 You can see a detailed list of supported entities and methods for each connector by navigating to its [available operations](https://github.com/airbytehq/airbyte-ai-connectors/tree/main/connectors/gong#available-operations).
 
 ## Connector Structure
-
 Each connector is a standalone Python package:
 
 ```
@@ -71,3 +74,26 @@ connectors/
 │   └── ...
 └── ...
 ```
+Inside each connector folder, you’ll find:
+* Generated Python client
+* Connector-specific README with supported operations
+* Typed methods generated from Airbyte’s connector definitions
+* Validation + error handling
+
+## When to use these connectors
+Use Airbyte AI Connectors when you want:
+* Agent‑friendly data access: Let LLM agents call real SaaS APIs (e.g., CRM, billing, analytics) with guardrails and typed responses. 
+* Consistent auth and schemas: Reuse a uniform configuration and error‑handling pattern across many APIs. Use connectors inside frameworks like PydanticAI, LangChain, or any custom agent loop
+* Composable building blocks: Combine multiple connectors in a single agent to orchestrate multi‑system workflows. 
+Compared to building ad‑hoc API wrappers, these connectors give you a shared structure, generated clients, and alignment with the rest of the Airbyte ecosystem.
+
+## Roadmap
+We are actively expanding AI Connectors. Coming soon:
+* MCP support (Model Context Protocol)
+* Hosted API Gateway for managed tool execution
+* Demo apps + starter templates
+* More connectors added weekly
+
+## Contributing / Feedback
+We actively welcome feedback, ideas, and bug reports. 
+If you're building AI agents with Airbyte AI Connectors and want to share ideas or get help, join our community on [slack](https://airbytehq.slack.com/ssb/redirect#/shared-invite/email). We’d love to hear what you're building and what connectors or capabilities you’d like to see next.
