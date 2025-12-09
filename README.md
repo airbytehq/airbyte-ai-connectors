@@ -21,11 +21,12 @@ Next, import the generated connector class for the integration you plan to use. 
 
 ```py
 from airbyte_ai_gong import GongConnector
+from airbyte_ai_gong.models import GongAuthConfig
 
-connector = GongConnector.create(secrets={
-    "access_key": "...",
-    "access_key_secret": "...",
-})
+connector = GongConnector.create(auth_config=GongAuthConfig(
+    access_key="...",
+    access_key_secret="...",
+))
 ```
 
 Once this is done, you may attach connector calls as tools so your agent can call them during reasoning or tool execution. See the following example using a PydanticAI Agent:
@@ -34,11 +35,12 @@ Once this is done, you may attach connector calls as tools so your agent can cal
 import os
 from pydantic_ai import Agent
 from airbyte_ai_gong import GongConnector
+from airbyte_ai_gong.models import GongAuthConfig
 
-connector = GongConnector(auth_config={
-    "access_key": os.environ["GONG_ACCESS_KEY"],
-    "access_key_secret": os.environ["GONG_ACCESS_KEY_SECRET"],
-})
+connector = GongConnector(auth_config=GongAuthConfig(
+    access_key=os.environ["GONG_ACCESS_KEY"],
+    access_key_secret=os.environ["GONG_ACCESS_KEY_SECRET"],
+))
 
 agent = Agent(
     "openai:gpt-4o",
@@ -65,8 +67,8 @@ Each connector is a standalone Python package:
 
 ```
 connectors/
-├── stripe/
-│   ├── airbyte_ai_stripe/
+├── gong/
+│   ├── airbyte_ai_gong/
 │   ├── pyproject.toml
 │   ├── CHANGELOG.md
 │   └── README.md
