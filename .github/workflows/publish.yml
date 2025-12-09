@@ -58,18 +58,19 @@ jobs:
           CONNECTOR="${{ matrix.connector }}"
           PACKAGE_NAME="airbyte_ai_$(echo "$CONNECTOR" | tr '-' '_')"
           
-          # Pre-filled URL for adding trusted publisher on PyPI
+          # URL with encoded parameters for adding trusted publisher on PyPI
           PYPI_URL="https://pypi.org/manage/account/publishing/?project_name=${PACKAGE_NAME}&owner=airbytehq&repository=airbyte-ai-connectors&workflow_filename=publish.yml&environment=PyPI&provider=github"
 
           echo "::error::Failed to publish $PACKAGE_NAME to PyPI using trusted publishing."
           echo ""
-          echo "To enable trusted publishing for this package, click the link below:"
+          echo "To enable trusted publishing, open this link and fill in the form:"
           echo "  $PYPI_URL"
           echo ""
-          echo "The link above will pre-fill the trusted publisher form with:"
-          echo "  Owner:       airbytehq"
-          echo "  Repository:  airbyte-ai-connectors"
-          echo "  Workflow:    publish.yml"
-          echo "  Environment: PyPI"
+          echo "Enter these values in the GitHub publisher form:"
+          echo "  PyPI Project Name: ${PACKAGE_NAME}"
+          echo "  Owner:             airbytehq"
+          echo "  Repository:        airbyte-ai-connectors"
+          echo "  Workflow name:     publish.yml"
+          echo "  Environment:       PyPI"
 
           exit 1
