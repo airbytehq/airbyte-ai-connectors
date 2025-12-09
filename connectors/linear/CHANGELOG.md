@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.20.0] - 2025-12-09
+- **MAJOR EXPANSION**: Increased API coverage from ~5% to ~50-70%
+- Added server-side filtering for issues (assignee, team, state, priority, labels, dates)
+- Added Comments entity (list by issue, get)
+- Added Cycles/Sprints entity (list, get, getActive)
+- Added Users entity (list, get, me/viewer)
+- Added Labels entity (list, get)
+- Added Workflow States entity (list)
+- Expanded Issue schema with labels, cycle, parent, children, relations, dueDate, estimate
+- Expanded Teams schema with members, activeCycle, labels, states
+- Expanded Projects schema with progress, teams, issues
+- Updated connector definition (YAML version 0.2.0)
+- SDK version: 0.1.0
+
 ## [0.19.0] - 2025-12-08
 - Updated connector definition (YAML version 0.1.0)
 - Source commit: f2ad5029

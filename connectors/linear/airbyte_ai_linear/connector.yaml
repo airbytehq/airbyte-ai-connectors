@@ -1,13 +1,22 @@
-# Linear API Connector
+# Linear API Connector - Expanded Version
 # OpenAPI 3.0 specification with Airbyte extensions
 # Linear uses GraphQL API - all endpoints are POST to /graphql with query in body
+#
+# This expanded version adds:
+# - Server-side filtering for issues
+# - Comments entity
+# - Cycles entity
+# - Users entity (including viewer/me)
+# - Labels entity
+# - Workflow states entity
+# - Expanded issue fields (labels, cycle, parent, children, relations, dueDate, estimate)
 
 openapi: 3.1.0
 
 info:
   title: Linear API Connector
-  version: 0.1.0
-  description: Connector for Linear GraphQL API
+  version: 0.2.0
+  description: Expanded connector for Linear GraphQL API with filtering, comments, cycles, and relationships
   x-airbyte-connector-name: linear
   x-airbyte-connector-id: 1c5d8316-ed42-4473-8fbc-2626f03f070c
   x-airbyte-external-documentation-urls:
@@ -47,11 +56,14 @@ security:
   - apiKeyAuth: []
 
 paths:
-  # Issues Resource
+  # ==========================================================================
+  # ISSUES RESOURCE
+  # ==========================================================================
+  
   "/graphql:listIssues":
     post:
       summary: List issues
-      description: Returns a paginated list of issues via GraphQL with pagination support
+      description: Returns a paginated list of issues via GraphQL with pagination support. Returns expanded fields including labels, cycle, parent, and relationships.
       operationId: listIssues
       x-airbyte-entity: issues
       x-airbyte-action: list
@@ -81,7 +93,7 @@ paths:
         required: true
         x-airbyte-body-type:
           type: graphql
-          query: "query($first: Int, $after: String) { issues(first: $first, after: $after) { nodes { id title description state { name } priority assignee { name email } createdAt updatedAt } pageInfo { hasNextPage endCursor } } }"
+          query: "query($first: Int, $after: String) { issues(first: $first, after: $after) { nodes { id identifier title description state { id name type color } priority priorityLabel assignee { id name email } team { id name key } labels { nodes { id name color } } cycle { id name number startsAt endsAt } parent { id identifier title } children { nodes { id identifier title } } dueDate estimate createdAt updatedAt completedAt canceledAt } pageInfo { hasNextPage endCursor } } }"
           variables:
             first: "{{ first }}"
             after: "{{ after }}"
@@ -99,10 +111,156 @@ paths:
         "401":
           description: Unauthorized
 
+  "/graphql:listIssuesFiltered":
+    post:
+      summary: List issues with filters
+      description: Returns a filtered list of issues. Supports filtering by assignee, team, state, priority, labels, and date ranges.
+      operationId: listIssuesFiltered
+      x-airbyte-entity: issues
+      x-airbyte-action: search
+      x-airbyte-path-override:
+        path: /graphql
+      parameters:
+        - name: x-apollo-operation-name
+          in: header
+          required: true
+          schema:
+            type: string
+            default: "listIssuesFiltered"
+        - name: first
+          in: query
+          description: Number of items to return (max 250)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 250
+            default: 50
+        - name: after
+          in: query
+          description: Cursor to start after (for pagination)
+          schema:
+            type: string
+        - name: assigneeId
+          in: query
+          description: Filter by assignee user ID
+          schema:
+            type: string
+        - name: teamId
+          in: query
+          description: Filter by team ID
+          schema:
+            type: string
+        - name: stateId
+          in: query
+          description: Filter by workflow state ID
+          schema:
+            type: string
+        - name: stateName
+          in: query
+          description: Filter by workflow state name (e.g., "In Progress", "Todo", "Done")
+          schema:
+            type: string
+        - name: priority
+          in: query
+          description: Filter by priority (0=No priority, 1=Urgent, 2=High, 3=Normal, 4=Low)
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 4
+        - name: labelIds
+          in: query
+          description: Filter by label IDs (comma-separated)
+          schema:
+            type: string
+        - name: createdAfter
+          in: query
+          description: Filter issues created after this date (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          description: Filter issues created before this date (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+        - name: updatedAfter
+          in: query
+          description: Filter issues updated after this date (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+        - name: updatedBefore
+          in: query
+          description: Filter issues updated before this date (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+        - name: cycleId
+          in: query
+          description: Filter by cycle/sprint ID
+          schema:
+            type: string
+        - name: projectId
+          in: query
+          description: Filter by project ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        x-airbyte-body-type:
+          type: graphql
+          query: "query($first: Int, $after: String, $filter: IssueFilter) { issues(first: $first, after: $after, filter: $filter) { nodes { id identifier title description state { id name type color } priority priorityLabel assignee { id name email } team { id name key } labels { nodes { id name color } } cycle { id name number startsAt endsAt } parent { id identifier title } children { nodes { id identifier title } } dueDate estimate createdAt updatedAt completedAt canceledAt } pageInfo { hasNextPage endCursor } } }"
+          variables:
+            first: "{{ first }}"
+            after: "{{ after }}"
+            filter:
+              assignee:
+                id:
+                  eq: "{{ assigneeId }}"
+              team:
+                id:
+                  eq: "{{ teamId }}"
+              state:
+                id:
+                  eq: "{{ stateId }}"
+                name:
+                  eq: "{{ stateName }}"
+              priority:
+                eq: "{{ priority }}"
+              labels:
+                id:
+                  in: "{{ labelIds }}"
+              createdAt:
+                gte: "{{ createdAfter }}"
+                lte: "{{ createdBefore }}"
+              updatedAt:
+                gte: "{{ updatedAfter }}"
+                lte: "{{ updatedBefore }}"
+              cycle:
+                id:
+                  eq: "{{ cycleId }}"
+              project:
+                id:
+                  eq: "{{ projectId }}"
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: GraphQL response with filtered issues data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IssuesListResponse"
+        "401":
+          description: Unauthorized
+
   "/graphql:getIssue":
     post:
       summary: Get an issue
-      description: Get a single issue by ID via GraphQL
+      description: Get a single issue by ID via GraphQL with full details including comments, relations, and history
       operationId: getIssue
       x-airbyte-entity: issues
       x-airbyte-action: get
@@ -125,7 +283,7 @@ paths:
         required: true
         x-airbyte-body-type:
           type: graphql
-          query: "query($id: String!) { issue(id: $id) { id title description state { name } priority assignee { name email } createdAt updatedAt } }"
+          query: "query($id: String!) { issue(id: $id) { id identifier title description state { id name type color } priority priorityLabel assignee { id name email } team { id name key } labels { nodes { id name color } } cycle { id name number startsAt endsAt } project { id name } parent { id identifier title } children { nodes { id identifier title state { name } } } relations { nodes { id type relatedIssue { id identifier title } } } dueDate estimate createdAt updatedAt completedAt canceledAt comments { nodes { id body createdAt user { id name email } } } } }"
           variables:
             id: "{{ id }}"
         content:
@@ -144,7 +302,559 @@ paths:
         "401":
           description: Unauthorized
 
-  # Projects Resource
+  # ==========================================================================
+  # COMMENTS RESOURCE
+  # ==========================================================================
+
+  "/graphql:listComments":
+    post:
+      summary: List comments for an issue
+      description: Returns all comments for a specific issue
+      operationId: listComments
+      x-airbyte-entity: comments
+      x-airbyte-action: list
+      x-airbyte-path-override:
+        path: /graphql
+      parameters:
+        - name: x-apollo-operation-name
+          in: header
+          required: true
+          schema:
+            type: string
+            default: "listComments"
+        - name: issueId
+          in: query
+          required: true
+          description: Issue ID to get comments for
+          schema:
+            type: string
+        - name: first
+          in: query
+          description: Number of comments to return
+          schema:
+            type: integer
+            default: 50
+        - name: after
+          in: query
+          description: Cursor for pagination
+          schema:
+            type: string
+      requestBody:
+        required: true
+        x-airbyte-body-type:
+          type: graphql
+          query: "query($issueId: String!, $first: Int, $after: String) { issue(id: $issueId) { comments(first: $first, after: $after) { nodes { id body bodyData createdAt updatedAt editedAt archivedAt url quotedText resolvedAt user { id name email displayName } issue { id identifier title } parent { id } resolvingComment { id } resolvingUser { id } } pageInfo { hasNextPage endCursor } } } }"
+          variables:
+            issueId: "{{ issueId }}"
+            first: "{{ first }}"
+            after: "{{ after }}"
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: GraphQL response with comments data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentsListResponse"
+        "401":
+          description: Unauthorized
+
+  "/graphql:getComment":
+    post:
+      summary: Get a comment
+      description: Get a single comment by ID
+      operationId: getComment
+      x-airbyte-entity: comments
+      x-airbyte-action: get
+      x-airbyte-path-override:
+        path: /graphql
+      parameters:
+        - name: x-apollo-operation-name
+          in: header
+          required: true
+          schema:
+            type: string
+            default: "getComment"
+        - name: id
+          in: query
+          required: true
+          description: Comment ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        x-airbyte-body-type:
+          type: graphql
+          query: "query($id: String!) { comment(id: $id) { id body createdAt updatedAt user { id name email displayName } issue { id identifier title } } }"
+          variables:
+            id: "{{ id }}"
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: GraphQL response with comment data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentResponse"
+        "401":
+          description: Unauthorized
+
+  # ==========================================================================
+  # CYCLES (SPRINTS) RESOURCE
+  # ==========================================================================
+
+  "/graphql:listCycles":
+    post:
+      summary: List cycles
+      description: Returns a paginated list of cycles (sprints) for a team
+      operationId: listCycles
+      x-airbyte-entity: cycles
+      x-airbyte-action: list
+      x-airbyte-path-override:
+        path: /graphql
+      parameters:
+        - name: x-apollo-operation-name
+          in: header
+          required: true
+          schema:
+            type: string
+            default: "listCycles"
+        - name: teamId
+          in: query
+          description: Team ID to filter cycles by
+          schema:
+            type: string
+        - name: first
+          in: query
+          description: Number of items to return
+          schema:
+            type: integer
+            default: 50
+        - name: after
+          in: query
+          description: Cursor for pagination
+          schema:
+            type: string
+      requestBody:
+        required: true
+        x-airbyte-body-type:
+          type: graphql
+          query: "query($first: Int, $after: String, $filter: CycleFilter) { cycles(first: $first, after: $after, filter: $filter) { nodes { id name number description startsAt endsAt completedAt archivedAt autoArchivedAt createdAt updatedAt team { id name key } progress completedIssueCountHistory completedScopeHistory inProgressScopeHistory issueCountHistory scopeHistory uncompletedIssuesUponClose { nodes { id identifier title } } } pageInfo { hasNextPage endCursor } } }"
+          variables:
+            first: "{{ first }}"
+            after: "{{ after }}"
+            filter:
+              team:
+                id:
+                  eq: "{{ teamId }}"
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: GraphQL response with cycles data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CyclesListResponse"
+        "401":
+          description: Unauthorized
+
+  "/graphql:getCycle":
+    post:
+      summary: Get a cycle
+      description: Get a single cycle by ID with its issues
+      operationId: getCycle
+      x-airbyte-entity: cycles
+      x-airbyte-action: get
+      x-airbyte-path-override:
+        path: /graphql
+      parameters:
+        - name: x-apollo-operation-name
+          in: header
+          required: true
+          schema:
+            type: string
+            default: "getCycle"
+        - name: id
+          in: query
+          required: true
+          description: Cycle ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        x-airbyte-body-type:
+          type: graphql
+          query: "query($id: String!) { cycle(id: $id) { id name number description startsAt endsAt completedAt team { id name key } progress completedIssueCountHistory issueCountHistory scopeHistory issues { nodes { id identifier title state { name } priority assignee { name } } } uncompletedIssuesUponClose { nodes { id identifier title } } } }"
+          variables:
+            id: "{{ id }}"
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: GraphQL response with cycle data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CycleResponse"
+        "401":
+          description: Unauthorized
+
+  "/graphql:getActiveCycle":
+    post:
+      summary: Get active cycle for a team
+      description: Get the currently active cycle for a specific team
+      operationId: getActiveCycle
+      x-airbyte-entity: activeCycle
+      x-airbyte-action: get
+      x-airbyte-path-override:
+        path: /graphql
+      parameters:
+        - name: x-apollo-operation-name
+          in: header
+          required: true
+          schema:
+            type: string
+            default: "getActiveCycle"
+        - name: teamId
+          in: query
+          required: true
+          description: Team ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        x-airbyte-body-type:
+          type: graphql
+          query: "query($teamId: String!) { team(id: $teamId) { activeCycle { id name number description startsAt endsAt team { id name key } progress issues { nodes { id identifier title state { name } priority assignee { name } } } } } }"
+          variables:
+            teamId: "{{ teamId }}"
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: GraphQL response with active cycle data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActiveCycleResponse"
+        "401":
+          description: Unauthorized
+
+  # ==========================================================================
+  # USERS RESOURCE
+  # ==========================================================================
+
+  "/graphql:listUsers":
+    post:
+      summary: List users
+      description: Returns a paginated list of users in the organization
+      operationId: listUsers
+      x-airbyte-entity: users
+      x-airbyte-action: list
+      x-airbyte-path-override:
+        path: /graphql
+      parameters:
+        - name: x-apollo-operation-name
+          in: header
+          required: true
+          schema:
+            type: string
+            default: "listUsers"
+        - name: first
+          in: query
+          description: Number of items to return
+          schema:
+            type: integer
+            default: 50
+        - name: after
+          in: query
+          description: Cursor for pagination
+          schema:
+            type: string
+      requestBody:
+        required: true
+        x-airbyte-body-type:
+          type: graphql
+          query: "query($first: Int, $after: String) { users(first: $first, after: $after) { nodes { id name email displayName avatarUrl admin active guest archivedAt createdAt updatedAt lastSeen statusEmoji statusLabel statusUntilAt timezone description isMe teams { nodes { id name key } } } pageInfo { hasNextPage endCursor } } }"
+          variables:
+            first: "{{ first }}"
+            after: "{{ after }}"
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: GraphQL response with users data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersListResponse"
+        "401":
+          description: Unauthorized
+
+  "/graphql:getUser":
+    post:
+      summary: Get a user
+      description: Get a single user by ID
+      operationId: getUser
+      x-airbyte-entity: users
+      x-airbyte-action: get
+      x-airbyte-path-override:
+        path: /graphql
+      parameters:
+        - name: x-apollo-operation-name
+          in: header
+          required: true
+          schema:
+            type: string
+            default: "getUser"
+        - name: id
+          in: query
+          required: true
+          description: User ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        x-airbyte-body-type:
+          type: graphql
+          query: "query($id: String!) { user(id: $id) { id name email displayName avatarUrl admin active guest archivedAt createdAt updatedAt lastSeen statusEmoji statusLabel timezone description isMe teams { nodes { id name key } } assignedIssues { nodes { id identifier title state { name } priority } } } }"
+          variables:
+            id: "{{ id }}"
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: GraphQL response with user data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "401":
+          description: Unauthorized
+
+  "/graphql:getViewer":
+    post:
+      summary: Get current user (me)
+      description: Get the currently authenticated user
+      operationId: getViewer
+      x-airbyte-entity: viewer
+      x-airbyte-action: get
+      x-airbyte-path-override:
+        path: /graphql
+      parameters:
+        - name: x-apollo-operation-name
+          in: header
+          required: true
+          schema:
+            type: string
+            default: "getViewer"
+      requestBody:
+        required: true
+        x-airbyte-body-type:
+          type: graphql
+          query: "query { viewer { id name email displayName avatarUrl admin active guest archivedAt createdAt updatedAt lastSeen statusEmoji statusLabel timezone description isMe teams { nodes { id name key } } assignedIssues(first: 50) { nodes { id identifier title state { name } priority dueDate } } teamMemberships { nodes { team { id name key } } } } }"
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: GraphQL response with viewer data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ViewerResponse"
+        "401":
+          description: Unauthorized
+
+  # ==========================================================================
+  # LABELS RESOURCE
+  # ==========================================================================
+
+  "/graphql:listLabels":
+    post:
+      summary: List labels
+      description: Returns a paginated list of labels
+      operationId: listLabels
+      x-airbyte-entity: labels
+      x-airbyte-action: list
+      x-airbyte-path-override:
+        path: /graphql
+      parameters:
+        - name: x-apollo-operation-name
+          in: header
+          required: true
+          schema:
+            type: string
+            default: "listLabels"
+        - name: teamId
+          in: query
+          description: Filter by team ID
+          schema:
+            type: string
+        - name: first
+          in: query
+          description: Number of items to return
+          schema:
+            type: integer
+            default: 50
+        - name: after
+          in: query
+          description: Cursor for pagination
+          schema:
+            type: string
+      requestBody:
+        required: true
+        x-airbyte-body-type:
+          type: graphql
+          query: "query($first: Int, $after: String, $filter: IssueLabelFilter) { issueLabels(first: $first, after: $after, filter: $filter) { nodes { id name description color isGroup archivedAt team { id name } parent { id name } children { nodes { id name } } creator { id name } inheritedFrom { id } createdAt updatedAt } pageInfo { hasNextPage endCursor } } }"
+          variables:
+            first: "{{ first }}"
+            after: "{{ after }}"
+            filter:
+              team:
+                id:
+                  eq: "{{ teamId }}"
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: GraphQL response with labels data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LabelsListResponse"
+        "401":
+          description: Unauthorized
+
+  "/graphql:getLabel":
+    post:
+      summary: Get a label
+      description: Get a single label by ID
+      operationId: getLabel
+      x-airbyte-entity: labels
+      x-airbyte-action: get
+      x-airbyte-path-override:
+        path: /graphql
+      parameters:
+        - name: x-apollo-operation-name
+          in: header
+          required: true
+          schema:
+            type: string
+            default: "getLabel"
+        - name: id
+          in: query
+          required: true
+          description: Label ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        x-airbyte-body-type:
+          type: graphql
+          query: "query($id: String!) { issueLabel(id: $id) { id name description color isGroup archivedAt team { id name } parent { id name } children { nodes { id name } } creator { id name } inheritedFrom { id } issues { nodes { id identifier title } } createdAt updatedAt } }"
+          variables:
+            id: "{{ id }}"
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: GraphQL response with label data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LabelResponse"
+        "401":
+          description: Unauthorized
+
+  # ==========================================================================
+  # WORKFLOW STATES RESOURCE
+  # ==========================================================================
+
+  "/graphql:listWorkflowStates":
+    post:
+      summary: List workflow states
+      description: Returns a list of workflow states for filtering
+      operationId: listWorkflowStates
+      x-airbyte-entity: workflowStates
+      x-airbyte-action: list
+      x-airbyte-path-override:
+        path: /graphql
+      parameters:
+        - name: x-apollo-operation-name
+          in: header
+          required: true
+          schema:
+            type: string
+            default: "listWorkflowStates"
+        - name: teamId
+          in: query
+          description: Filter by team ID
+          schema:
+            type: string
+        - name: first
+          in: query
+          description: Number of items to return
+          schema:
+            type: integer
+            default: 50
+        - name: after
+          in: query
+          description: Cursor for pagination
+          schema:
+            type: string
+      requestBody:
+        required: true
+        x-airbyte-body-type:
+          type: graphql
+          query: "query($first: Int, $after: String, $filter: WorkflowStateFilter) { workflowStates(first: $first, after: $after, filter: $filter) { nodes { id name description color type position archivedAt createdAt updatedAt team { id name key } inheritedFrom { id } } pageInfo { hasNextPage endCursor } } }"
+          variables:
+            first: "{{ first }}"
+            after: "{{ after }}"
+            filter:
+              team:
+                id:
+                  eq: "{{ teamId }}"
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: GraphQL response with workflow states data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowStatesListResponse"
+        "401":
+          description: Unauthorized
+
+  # ==========================================================================
+  # PROJECTS RESOURCE
+  # ==========================================================================
+
   "/graphql:listProjects":
     post:
       summary: List projects
@@ -178,7 +888,7 @@ paths:
         required: true
         x-airbyte-body-type:
           type: graphql
-          query: "query($first: Int, $after: String) { projects(first: $first, after: $after) { nodes { id name description state startDate targetDate lead { name email } createdAt updatedAt } pageInfo { hasNextPage endCursor } } }"
+          query: "query($first: Int, $after: String) { projects(first: $first, after: $after) { nodes { id name description state startDate targetDate progress lead { id name email } teams { nodes { id name key } } issues { nodes { id identifier title state { name } } } createdAt updatedAt } pageInfo { hasNextPage endCursor } } }"
           variables:
             first: "{{ first }}"
             after: "{{ after }}"
@@ -222,7 +932,7 @@ paths:
         required: true
         x-airbyte-body-type:
           type: graphql
-          query: "query($id: String!) { project(id: $id) { id name description state startDate targetDate lead { name email } createdAt updatedAt } }"
+          query: "query($id: String!) { project(id: $id) { id name description state startDate targetDate progress lead { id name email } teams { nodes { id name key } } issues { nodes { id identifier title state { name } priority assignee { name } } } createdAt updatedAt } }"
           variables:
             id: "{{ id }}"
         content:
@@ -241,7 +951,10 @@ paths:
         "401":
           description: Unauthorized
 
-  # Teams Resource
+  # ==========================================================================
+  # TEAMS RESOURCE
+  # ==========================================================================
+
   "/graphql:listTeams":
     post:
       summary: List teams
@@ -275,7 +988,7 @@ paths:
         required: true
         x-airbyte-body-type:
           type: graphql
-          query: "query($first: Int, $after: String) { teams(first: $first, after: $after) { nodes { id name key description timezone createdAt updatedAt } pageInfo { hasNextPage endCursor } } }"
+          query: "query($first: Int, $after: String) { teams(first: $first, after: $after) { nodes { id name key description timezone private cyclesEnabled cycleDuration cycleStartDay color icon issueCount archivedAt activeCycle { id } createdAt updatedAt } pageInfo { hasNextPage endCursor } } }"
           variables:
             first: "{{ first }}"
             after: "{{ after }}"
@@ -319,7 +1032,7 @@ paths:
         required: true
         x-airbyte-body-type:
           type: graphql
-          query: "query($id: String!) { team(id: $id) { id name key description timezone createdAt updatedAt } }"
+          query: "query($id: String!) { team(id: $id) { id name key description timezone private cyclesEnabled cycleDuration cycleStartDay color icon issueCount archivedAt activeCycle { id name number startsAt endsAt progress } labels { nodes { id name color } } states { nodes { id name type color } } createdAt updatedAt } }"
           variables:
             id: "{{ id }}"
         content:
@@ -347,11 +1060,14 @@ components:
       description: API key authentication (format - API key directly, no Bearer prefix)
 
   schemas:
-    # Issue Schemas
+    # ==========================================================================
+    # ISSUE SCHEMAS
+    # ==========================================================================
+    
     Issue:
       type: object
       x-airbyte-entity-name: issues
-      description: Linear issue object
+      description: Linear issue object with expanded fields
       required:
         - id
         - title
@@ -359,6 +1075,9 @@ components:
         id:
           type: string
           description: Unique issue identifier
+        identifier:
+          type: string
+          description: Issue identifier (e.g., ABC-123)
         title:
           type: string
           description: Issue title
@@ -371,25 +1090,158 @@ components:
           oneOf:
             - type: object
               properties:
+                id:
+                  type: string
                 name:
                   type: string
+                type:
+                  type: string
+                color:
+                  type: string
             - type: "null"
-          description: Issue state
+          description: Issue workflow state
         priority:
           oneOf:
             - type: number
             - type: "null"
-          description: Issue priority (0-4)
+          description: Issue priority (0=No priority, 1=Urgent, 2=High, 3=Normal, 4=Low)
+        priorityLabel:
+          oneOf:
+            - type: string
+            - type: "null"
+          description: Priority label (Urgent, High, Normal, Low, No priority)
         assignee:
           oneOf:
             - type: object
               properties:
+                id:
+                  type: string
                 name:
                   type: string
                 email:
                   type: string
             - type: "null"
           description: Assigned user
+        team:
+          oneOf:
+            - type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                key:
+                  type: string
+            - type: "null"
+          description: Team the issue belongs to
+        labels:
+          oneOf:
+            - type: object
+              properties:
+                nodes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      color:
+                        type: string
+            - type: "null"
+          description: Issue labels
+        cycle:
+          oneOf:
+            - type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                number:
+                  type: number
+                startsAt:
+                  type: string
+                endsAt:
+                  type: string
+            - type: "null"
+          description: Associated cycle/sprint
+        project:
+          oneOf:
+            - type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+            - type: "null"
+          description: Associated project
+        parent:
+          oneOf:
+            - type: object
+              properties:
+                id:
+                  type: string
+                identifier:
+                  type: string
+                title:
+                  type: string
+            - type: "null"
+          description: Parent issue
+        children:
+          oneOf:
+            - type: object
+              properties:
+                nodes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      identifier:
+                        type: string
+                      title:
+                        type: string
+            - type: "null"
+          description: Child issues
+        relations:
+          oneOf:
+            - type: object
+              properties:
+                nodes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      type:
+                        type: string
+                        description: Relation type (blocks, blocked, related, duplicate)
+                      relatedIssue:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          identifier:
+                            type: string
+                          title:
+                            type: string
+            - type: "null"
+          description: Issue relations (blocking, blocked by, related)
+        dueDate:
+          oneOf:
+            - type: string
+              format: date
+            - type: "null"
+          description: Due date
+        estimate:
+          oneOf:
+            - type: number
+            - type: "null"
+          description: Issue estimate
         createdAt:
           type: string
           format: date-time
@@ -398,6 +1250,28 @@ components:
           type: string
           format: date-time
           description: Last update timestamp
+        completedAt:
+          oneOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          description: Completion timestamp
+        canceledAt:
+          oneOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          description: Cancellation timestamp
+        comments:
+          oneOf:
+            - type: object
+              properties:
+                nodes:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Comment"
+            - type: "null"
+          description: Issue comments
 
     IssuesListResponse:
       type: object
@@ -414,15 +1288,7 @@ components:
                   items:
                     $ref: "#/components/schemas/Issue"
                 pageInfo:
-                  type: object
-                  description: Pagination information
-                  properties:
-                    hasNextPage:
-                      type: boolean
-                      description: Whether there are more items available
-                    endCursor:
-                      type: ["string", "null"]
-                      description: Cursor to fetch next page
+                  $ref: "#/components/schemas/PageInfo"
 
     IssueResponse:
       type: object
@@ -434,7 +1300,476 @@ components:
             issue:
               $ref: "#/components/schemas/Issue"
 
-    # Project Schemas
+    # ==========================================================================
+    # COMMENT SCHEMAS
+    # ==========================================================================
+
+    Comment:
+      type: object
+      x-airbyte-entity-name: comments
+      description: Linear comment object
+      required:
+        - id
+        - body
+      properties:
+        id:
+          type: string
+          description: Unique comment identifier
+        body:
+          type: string
+          description: Comment body content
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            email:
+              type: string
+            displayName:
+              type: string
+          description: Comment author
+        issue:
+          type: object
+          properties:
+            id:
+              type: string
+            identifier:
+              type: string
+            title:
+              type: string
+          description: Associated issue
+
+    CommentsListResponse:
+      type: object
+      description: GraphQL response for comments list
+      properties:
+        data:
+          type: object
+          properties:
+            issue:
+              type: object
+              properties:
+                comments:
+                  type: object
+                  properties:
+                    nodes:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/Comment"
+                    pageInfo:
+                      $ref: "#/components/schemas/PageInfo"
+
+    CommentResponse:
+      type: object
+      description: GraphQL response for single comment
+      properties:
+        data:
+          type: object
+          properties:
+            comment:
+              $ref: "#/components/schemas/Comment"
+
+    # ==========================================================================
+    # CYCLE SCHEMAS
+    # ==========================================================================
+
+    Cycle:
+      type: object
+      x-airbyte-entity-name: cycles
+      description: Linear cycle (sprint) object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          description: Unique cycle identifier
+        name:
+          oneOf:
+            - type: string
+            - type: "null"
+          description: Cycle name
+        number:
+          type: number
+          description: Cycle number
+        description:
+          oneOf:
+            - type: string
+            - type: "null"
+          description: Cycle description
+        startsAt:
+          type: string
+          format: date-time
+          description: Cycle start date
+        endsAt:
+          type: string
+          format: date-time
+          description: Cycle end date
+        completedAt:
+          oneOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          description: Cycle completion date
+        team:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            key:
+              type: string
+          description: Associated team
+        progress:
+          type: number
+          description: Cycle progress (0-1)
+        completedIssueCountHistory:
+          type: array
+          items:
+            type: number
+          description: Historical completed issue counts
+        issueCountHistory:
+          type: array
+          items:
+            type: number
+          description: Historical total issue counts
+        scopeHistory:
+          type: array
+          items:
+            type: number
+          description: Historical scope values
+        issues:
+          type: object
+          properties:
+            nodes:
+              type: array
+              items:
+                $ref: "#/components/schemas/Issue"
+          description: Issues in this cycle
+
+    CyclesListResponse:
+      type: object
+      description: GraphQL response for cycles list
+      properties:
+        data:
+          type: object
+          properties:
+            cycles:
+              type: object
+              properties:
+                nodes:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Cycle"
+                pageInfo:
+                  $ref: "#/components/schemas/PageInfo"
+
+    CycleResponse:
+      type: object
+      description: GraphQL response for single cycle
+      properties:
+        data:
+          type: object
+          properties:
+            cycle:
+              $ref: "#/components/schemas/Cycle"
+
+    ActiveCycleResponse:
+      type: object
+      description: GraphQL response for active cycle
+      properties:
+        data:
+          type: object
+          properties:
+            team:
+              type: object
+              properties:
+                activeCycle:
+                  $ref: "#/components/schemas/Cycle"
+
+    # ==========================================================================
+    # USER SCHEMAS
+    # ==========================================================================
+
+    User:
+      type: object
+      x-airbyte-entity-name: users
+      description: Linear user object
+      required:
+        - id
+        - name
+        - email
+      properties:
+        id:
+          type: string
+          description: Unique user identifier
+        name:
+          type: string
+          description: User name
+        email:
+          type: string
+          description: User email
+        displayName:
+          oneOf:
+            - type: string
+            - type: "null"
+          description: Display name
+        avatarUrl:
+          oneOf:
+            - type: string
+            - type: "null"
+          description: Avatar URL
+        admin:
+          type: boolean
+          description: Whether user is admin
+        active:
+          type: boolean
+          description: Whether user is active
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        assignedIssues:
+          type: object
+          properties:
+            nodes:
+              type: array
+              items:
+                $ref: "#/components/schemas/Issue"
+          description: Issues assigned to this user
+        teamMemberships:
+          type: object
+          properties:
+            nodes:
+              type: array
+              items:
+                type: object
+                properties:
+                  team:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      key:
+                        type: string
+          description: Teams the user belongs to
+
+    UsersListResponse:
+      type: object
+      description: GraphQL response for users list
+      properties:
+        data:
+          type: object
+          properties:
+            users:
+              type: object
+              properties:
+                nodes:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/User"
+                pageInfo:
+                  $ref: "#/components/schemas/PageInfo"
+
+    UserResponse:
+      type: object
+      description: GraphQL response for single user
+      properties:
+        data:
+          type: object
+          properties:
+            user:
+              $ref: "#/components/schemas/User"
+
+    ViewerResponse:
+      type: object
+      description: GraphQL response for current user (viewer)
+      properties:
+        data:
+          type: object
+          properties:
+            viewer:
+              $ref: "#/components/schemas/User"
+
+    # ==========================================================================
+    # LABEL SCHEMAS
+    # ==========================================================================
+
+    Label:
+      type: object
+      x-airbyte-entity-name: labels
+      description: Linear label object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          description: Unique label identifier
+        name:
+          type: string
+          description: Label name
+        description:
+          oneOf:
+            - type: string
+            - type: "null"
+          description: Label description
+        color:
+          type: string
+          description: Label color
+        team:
+          oneOf:
+            - type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+            - type: "null"
+          description: Associated team
+        parent:
+          oneOf:
+            - type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+            - type: "null"
+          description: Parent label
+        children:
+          type: object
+          properties:
+            nodes:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+          description: Child labels
+        issues:
+          type: object
+          properties:
+            nodes:
+              type: array
+              items:
+                $ref: "#/components/schemas/Issue"
+          description: Issues with this label
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+
+    LabelsListResponse:
+      type: object
+      description: GraphQL response for labels list
+      properties:
+        data:
+          type: object
+          properties:
+            issueLabels:
+              type: object
+              properties:
+                nodes:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Label"
+                pageInfo:
+                  $ref: "#/components/schemas/PageInfo"
+
+    LabelResponse:
+      type: object
+      description: GraphQL response for single label
+      properties:
+        data:
+          type: object
+          properties:
+            issueLabel:
+              $ref: "#/components/schemas/Label"
+
+    # ==========================================================================
+    # WORKFLOW STATE SCHEMAS
+    # ==========================================================================
+
+    WorkflowState:
+      type: object
+      x-airbyte-entity-name: workflowStates
+      description: Linear workflow state object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          description: Unique state identifier
+        name:
+          type: string
+          description: State name
+        description:
+          oneOf:
+            - type: string
+            - type: "null"
+          description: State description
+        color:
+          type: string
+          description: State color
+        type:
+          type: string
+          description: State type (triage, backlog, unstarted, started, completed, canceled)
+        position:
+          type: number
+          description: State position in the workflow
+        team:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            key:
+              type: string
+          description: Associated team
+
+    WorkflowStatesListResponse:
+      type: object
+      description: GraphQL response for workflow states list
+      properties:
+        data:
+          type: object
+          properties:
+            workflowStates:
+              type: object
+              properties:
+                nodes:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/WorkflowState"
+                pageInfo:
+                  $ref: "#/components/schemas/PageInfo"
+
+    # ==========================================================================
+    # PROJECT SCHEMAS
+    # ==========================================================================
+    
     Project:
       type: object
       x-airbyte-entity-name: projects
@@ -471,16 +1806,44 @@ components:
               format: date
             - type: "null"
           description: Project target date
+        progress:
+          type: number
+          description: Project progress (0-1)
         lead:
           oneOf:
             - type: object
               properties:
+                id:
+                  type: string
                 name:
                   type: string
                 email:
                   type: string
             - type: "null"
           description: Project lead
+        teams:
+          type: object
+          properties:
+            nodes:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  key:
+                    type: string
+          description: Teams working on this project
+        issues:
+          type: object
+          properties:
+            nodes:
+              type: array
+              items:
+                $ref: "#/components/schemas/Issue"
+          description: Issues in this project
         createdAt:
           type: string
           format: date-time
@@ -505,15 +1868,7 @@ components:
                   items:
                     $ref: "#/components/schemas/Project"
                 pageInfo:
-                  type: object
-                  description: Pagination information
-                  properties:
-                    hasNextPage:
-                      type: boolean
-                      description: Whether there are more items available
-                    endCursor:
-                      type: ["string", "null"]
-                      description: Cursor to fetch next page
+                  $ref: "#/components/schemas/PageInfo"
 
     ProjectResponse:
       type: object
@@ -525,7 +1880,10 @@ components:
             project:
               $ref: "#/components/schemas/Project"
 
-    # Team Schemas
+    # ==========================================================================
+    # TEAM SCHEMAS
+    # ==========================================================================
+    
     Team:
       type: object
       x-airbyte-entity-name: teams
@@ -554,6 +1912,58 @@ components:
             - type: string
             - type: "null"
           description: Team timezone
+        private:
+          type: boolean
+          description: Whether team is private
+        cycleEnabled:
+          type: boolean
+          description: Whether cycles are enabled
+        cycleDuration:
+          oneOf:
+            - type: number
+            - type: "null"
+          description: Cycle duration in weeks
+        cycleStartDay:
+          oneOf:
+            - type: number
+            - type: "null"
+          description: Day of week cycle starts (0=Sunday)
+        members:
+          type: object
+          properties:
+            nodes:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  email:
+                    type: string
+          description: Team members
+        activeCycle:
+          oneOf:
+            - $ref: "#/components/schemas/Cycle"
+            - type: "null"
+          description: Currently active cycle
+        labels:
+          type: object
+          properties:
+            nodes:
+              type: array
+              items:
+                $ref: "#/components/schemas/Label"
+          description: Team labels
+        states:
+          type: object
+          properties:
+            nodes:
+              type: array
+              items:
+                $ref: "#/components/schemas/WorkflowState"
+          description: Team workflow states
         createdAt:
           type: string
           format: date-time
@@ -578,15 +1988,7 @@ components:
                   items:
                     $ref: "#/components/schemas/Team"
                 pageInfo:
-                  type: object
-                  description: Pagination information
-                  properties:
-                    hasNextPage:
-                      type: boolean
-                      description: Whether there are more items available
-                    endCursor:
-                      type: ["string", "null"]
-                      description: Cursor to fetch next page
+                  $ref: "#/components/schemas/PageInfo"
 
     TeamResponse:
       type: object
@@ -597,3 +1999,18 @@ components:
           properties:
             team:
               $ref: "#/components/schemas/Team"
+
+    # ==========================================================================
+    # SHARED SCHEMAS
+    # ==========================================================================
+
+    PageInfo:
+      type: object
+      description: Pagination information
+      properties:
+        hasNextPage:
+          type: boolean
+          description: Whether there are more items available
+        endCursor:
+          type: ["string", "null"]
+          description: Cursor to fetch next page

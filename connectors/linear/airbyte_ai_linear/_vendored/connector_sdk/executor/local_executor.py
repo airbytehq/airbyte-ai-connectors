@@ -707,11 +707,14 @@ class LocalExecutor:
 
         body = {"query": query}
 
-        # Substitute variables from params
+        # Substitute variables from params and clean None values
         if "variables" in graphql_config and graphql_config["variables"]:
-            body["variables"] = self._interpolate_variables(
+            interpolated = self._interpolate_variables(
                 graphql_config["variables"], params
             )
+            # Clean None values to prevent GraphQL APIs from interpreting {eq: null}
+            # as "must equal null" instead of "ignore this filter"
+            body["variables"] = self._clean_none_values(interpolated)
 
         # Add operation name if specified
         if "operationName" in graphql_config:
@@ -818,6 +821,35 @@ class LocalExecutor:
                 return value
 
         return interpolate_value(variables)
+
+    def _clean_none_values(self, obj: Any) -> Any:
+        """Recursively remove None values and empty dicts/lists from nested structures.
+
+        This is critical for GraphQL APIs like Linear that interpret {eq: null} as
+        "must equal null" rather than "ignore this filter". By cleaning out None values
+        and empty nested structures, we ensure only explicitly provided filter criteria
+        are sent to the API.
+
+        Args:
+            obj: The object to clean (dict, list, or primitive)
+
+        Returns:
+            Cleaned object with None values and empty containers removed,
+            or None if the entire object should be removed
+        """
+        if isinstance(obj, dict):
+            cleaned = {}
+            for k, v in obj.items():
+                cleaned_v = self._clean_none_values(v)
+                # Only include if not None and not empty dict/list
+                if cleaned_v is not None and cleaned_v != {} and cleaned_v != []:
+                    cleaned[k] = cleaned_v
+            return cleaned if cleaned else None
+        elif isinstance(obj, list):
+            cleaned = [self._clean_none_values(item) for item in obj]
+            return [item for item in cleaned if item is not None]
+        else:
+            return obj
 
     def _extract_records(
         self,

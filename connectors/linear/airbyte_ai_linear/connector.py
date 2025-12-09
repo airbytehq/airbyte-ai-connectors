@@ -1,5 +1,9 @@
 """
 linear connector.
+
+Expanded version with support for:
+- Server-side filtering for issues
+- Comments, Cycles, Users, Labels, WorkflowStates entities
 """
 
 from __future__ import annotations
@@ -42,20 +46,42 @@ class LinearConnector:
     Type-safe Linear API connector.
 
     Auto-generated from OpenAPI specification with full type safety.
+    Expanded with additional entities: comments, cycles, users, labels, workflowStates.
     """
 
     connector_name = "linear"
-    connector_version = "0.1.0"
+    connector_version = "0.2.0"
     vendored_sdk_version = "0.1.0"  # Version of vendored connector-sdk
 
     # Map of (entity, action) -> has_extractors for envelope wrapping decision
     _EXTRACTOR_MAP = {
+        # Issues
         ("issues", "list"): False,
+        ("issues", "search"): False,  # listFiltered uses search action
         ("issues", "get"): False,
+        # Projects
         ("projects", "list"): False,
         ("projects", "get"): False,
+        # Teams
         ("teams", "list"): False,
         ("teams", "get"): False,
+        # Comments
+        ("comments", "list"): False,
+        ("comments", "get"): False,
+        # Cycles
+        ("cycles", "list"): False,
+        ("cycles", "get"): False,
+        ("activeCycle", "get"): False,
+        # Users
+        ("users", "list"): False,
+        ("users", "get"): False,
+        # Viewer (current user)
+        ("viewer", "get"): False,
+        # Labels
+        ("labels", "list"): False,
+        ("labels", "get"): False,
+        # Workflow States
+        ("workflowStates", "list"): False,
     }
 
     def __init__(
@@ -143,6 +169,12 @@ class LinearConnector:
         self.issues = IssuesQuery(self)
         self.projects = ProjectsQuery(self)
         self.teams = TeamsQuery(self)
+        # New entities
+        self.comments = CommentsQuery(self)
+        self.cycles = CyclesQuery(self)
+        self.users = UsersQuery(self)
+        self.labels = LabelsQuery(self)
+        self.workflowStates = WorkflowStatesQuery(self)
 
     @classmethod
     def get_default_config_path(cls) -> Path:
@@ -268,6 +300,9 @@ class LinearConnector:
             return result.data
 
 
+# =============================================================================
+# ISSUES QUERY
+# =============================================================================
 
 class IssuesQuery:
     """
@@ -304,7 +339,67 @@ class IssuesQuery:
         result = await self._connector.execute("issues", "list", params)
         return result
 
+    async def listFiltered(
+        self,
+        first: int | None = None,
+        after: str | None = None,
+        assigneeId: str | None = None,
+        teamId: str | None = None,
+        stateId: str | None = None,
+        stateName: str | None = None,
+        priority: int | None = None,
+        labelIds: str | None = None,
+        createdAfter: str | None = None,
+        createdBefore: str | None = None,
+        updatedAfter: str | None = None,
+        updatedBefore: str | None = None,
+        cycleId: str | None = None,
+        projectId: str | None = None,
+        **kwargs
+    ) -> Any:
+        """
+        Returns a filtered list of issues with server-side filtering.
 
+        Args:
+            first: Number of items to return (max 250)
+            after: Cursor for pagination
+            assigneeId: Filter by assignee user ID
+            teamId: Filter by team ID
+            stateId: Filter by workflow state ID
+            stateName: Filter by workflow state name (e.g., "In Progress", "Todo")
+            priority: Filter by priority (0=No priority, 1=Urgent, 2=High, 3=Normal, 4=Low)
+            labelIds: Filter by label IDs (comma-separated)
+            createdAfter: Filter issues created after this date (ISO 8601)
+            createdBefore: Filter issues created before this date (ISO 8601)
+            updatedAfter: Filter issues updated after this date (ISO 8601)
+            updatedBefore: Filter issues updated before this date (ISO 8601)
+            cycleId: Filter by cycle/sprint ID
+            projectId: Filter by project ID
+            **kwargs: Additional parameters
+
+        Returns:
+            Filtered issues list response
+        """
+        params = {k: v for k, v in {
+            "first": first,
+            "after": after,
+            "assigneeId": assigneeId,
+            "teamId": teamId,
+            "stateId": stateId,
+            "stateName": stateName,
+            "priority": priority,
+            "labelIds": labelIds,
+            "createdAfter": createdAfter,
+            "createdBefore": createdBefore,
+            "updatedAfter": updatedAfter,
+            "updatedBefore": updatedBefore,
+            "cycleId": cycleId,
+            "projectId": projectId,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("issues", "search", params)
+        return result
 
     async def get(
         self,
@@ -330,6 +425,351 @@ class IssuesQuery:
         return result
 
 
+# =============================================================================
+# COMMENTS QUERY
+# =============================================================================
+
+class CommentsQuery:
+    """
+    Query class for Comments entity operations.
+    """
+
+    def __init__(self, connector: LinearConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        issueId: str,
+        first: int | None = None,
+        after: str | None = None,
+        **kwargs
+    ) -> Any:
+        """
+        Returns comments for a specific issue.
+
+        Args:
+            issueId: The issue ID to get comments for
+            first: Number of comments to return
+            after: Cursor for pagination
+            **kwargs: Additional parameters
+
+        Returns:
+            Comments list response
+        """
+        params = {k: v for k, v in {
+            "issueId": issueId,
+            "first": first,
+            "after": after,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("comments", "list", params)
+        return result
+
+    async def get(
+        self,
+        id: str,
+        **kwargs
+    ) -> Any:
+        """
+        Get a single comment by ID.
+
+        Args:
+            id: Comment ID
+            **kwargs: Additional parameters
+
+        Returns:
+            Comment response
+        """
+        params = {k: v for k, v in {
+            "id": id,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("comments", "get", params)
+        return result
+
+
+# =============================================================================
+# CYCLES QUERY
+# =============================================================================
+
+class CyclesQuery:
+    """
+    Query class for Cycles (sprints) entity operations.
+    """
+
+    def __init__(self, connector: LinearConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        teamId: str | None = None,
+        first: int | None = None,
+        after: str | None = None,
+        **kwargs
+    ) -> Any:
+        """
+        Returns a list of cycles (sprints).
+
+        Args:
+            teamId: Filter by team ID
+            first: Number of cycles to return
+            after: Cursor for pagination
+            **kwargs: Additional parameters
+
+        Returns:
+            Cycles list response
+        """
+        params = {k: v for k, v in {
+            "teamId": teamId,
+            "first": first,
+            "after": after,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("cycles", "list", params)
+        return result
+
+    async def get(
+        self,
+        id: str,
+        **kwargs
+    ) -> Any:
+        """
+        Get a single cycle by ID with its issues.
+
+        Args:
+            id: Cycle ID
+            **kwargs: Additional parameters
+
+        Returns:
+            Cycle response
+        """
+        params = {k: v for k, v in {
+            "id": id,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("cycles", "get", params)
+        return result
+
+    async def getActive(
+        self,
+        teamId: str,
+        **kwargs
+    ) -> Any:
+        """
+        Get the currently active cycle for a team.
+
+        Args:
+            teamId: Team ID
+            **kwargs: Additional parameters
+
+        Returns:
+            Active cycle response
+        """
+        params = {k: v for k, v in {
+            "teamId": teamId,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("activeCycle", "get", params)
+        return result
+
+
+# =============================================================================
+# USERS QUERY
+# =============================================================================
+
+class UsersQuery:
+    """
+    Query class for Users entity operations.
+    """
+
+    def __init__(self, connector: LinearConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        first: int | None = None,
+        after: str | None = None,
+        **kwargs
+    ) -> Any:
+        """
+        Returns a list of users in the organization.
+
+        Args:
+            first: Number of users to return
+            after: Cursor for pagination
+            **kwargs: Additional parameters
+
+        Returns:
+            Users list response
+        """
+        params = {k: v for k, v in {
+            "first": first,
+            "after": after,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("users", "list", params)
+        return result
+
+    async def get(
+        self,
+        id: str,
+        **kwargs
+    ) -> Any:
+        """
+        Get a single user by ID with their assigned issues.
+
+        Args:
+            id: User ID
+            **kwargs: Additional parameters
+
+        Returns:
+            User response
+        """
+        params = {k: v for k, v in {
+            "id": id,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("users", "get", params)
+        return result
+
+    async def me(self, **kwargs) -> Any:
+        """
+        Get the currently authenticated user (viewer).
+
+        Args:
+            **kwargs: Additional parameters
+
+        Returns:
+            Viewer response with assigned issues and team memberships
+        """
+        params = {k: v for k, v in kwargs.items() if v is not None}
+
+        result = await self._connector.execute("viewer", "get", params)
+        return result
+
+
+# =============================================================================
+# LABELS QUERY
+# =============================================================================
+
+class LabelsQuery:
+    """
+    Query class for Labels entity operations.
+    """
+
+    def __init__(self, connector: LinearConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        teamId: str | None = None,
+        first: int | None = None,
+        after: str | None = None,
+        **kwargs
+    ) -> Any:
+        """
+        Returns a list of labels.
+
+        Args:
+            teamId: Filter by team ID
+            first: Number of labels to return
+            after: Cursor for pagination
+            **kwargs: Additional parameters
+
+        Returns:
+            Labels list response
+        """
+        params = {k: v for k, v in {
+            "teamId": teamId,
+            "first": first,
+            "after": after,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("labels", "list", params)
+        return result
+
+    async def get(
+        self,
+        id: str,
+        **kwargs
+    ) -> Any:
+        """
+        Get a single label by ID with its associated issues.
+
+        Args:
+            id: Label ID
+            **kwargs: Additional parameters
+
+        Returns:
+            Label response
+        """
+        params = {k: v for k, v in {
+            "id": id,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("labels", "get", params)
+        return result
+
+
+# =============================================================================
+# WORKFLOW STATES QUERY
+# =============================================================================
+
+class WorkflowStatesQuery:
+    """
+    Query class for Workflow States entity operations.
+    """
+
+    def __init__(self, connector: LinearConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        teamId: str | None = None,
+        first: int | None = None,
+        after: str | None = None,
+        **kwargs
+    ) -> Any:
+        """
+        Returns a list of workflow states (Todo, In Progress, Done, etc.).
+
+        Args:
+            teamId: Filter by team ID
+            first: Number of states to return
+            after: Cursor for pagination
+            **kwargs: Additional parameters
+
+        Returns:
+            Workflow states list response
+        """
+        params = {k: v for k, v in {
+            "teamId": teamId,
+            "first": first,
+            "after": after,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("workflowStates", "list", params)
+        return result
+
+
+# =============================================================================
+# PROJECTS QUERY
+# =============================================================================
 
 class ProjectsQuery:
     """
@@ -367,7 +807,6 @@ class ProjectsQuery:
         return result
 
 
-
     async def get(
         self,
         id: str | None = None,
@@ -392,6 +831,9 @@ class ProjectsQuery:
         return result
 
 
+# =============================================================================
+# TEAMS QUERY
+# =============================================================================
 
 class TeamsQuery:
     """
@@ -429,7 +871,6 @@ class TeamsQuery:
         return result
 
 
-
     async def get(
         self,
         id: str | None = None,
@@ -452,5 +893,3 @@ class TeamsQuery:
 
         result = await self._connector.execute("teams", "get", params)
         return result
-
-
