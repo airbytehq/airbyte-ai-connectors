@@ -6,9 +6,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from connector_mcp.config import load_connector_config
-from connector_mcp.connector_manager import ConnectorManager
-from connector_mcp.secret_manager import SecretsManager
+from airbyte_agent_mcp.config import load_connector_config
+from airbyte_agent_mcp.connector_manager import ConnectorManager
+from airbyte_agent_mcp.secret_manager import SecretsManager
 
 
 @pytest.fixture

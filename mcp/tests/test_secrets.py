@@ -5,7 +5,7 @@ import tempfile
 
 import pytest
 
-from connector_mcp.secret_manager import (
+from airbyte_agent_mcp.secret_manager import (
     DotEnvSecretsBackend,
     SecretsManager,
 )

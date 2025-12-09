@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from connector_mcp.config import load_connector_config, validate_connectors
-from connector_mcp.models import Config, ConnectorConfig, ConnectorType
+from airbyte_agent_mcp.config import load_connector_config, validate_connectors
+from airbyte_agent_mcp.models import Config, ConnectorConfig, ConnectorType
 
 
 def test_load_config_file_not_found():

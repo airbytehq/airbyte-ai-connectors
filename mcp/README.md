@@ -1,4 +1,4 @@
-# Connector MCP Server
+# Airbyte Agent MCP Server
 
 MCP server that exposes the Airbyte Connector SDK as Model Context Protocol tools.
 
@@ -35,13 +35,13 @@ STRIPE_API_KEY=sk_test_your_stripe_api_key_here
 ## Running
 
 ```bash
-uv run connector_mcp
+uv run airbyte_agent_mcp
 ```
 
 The server also takes in args for specific paths to the configured_connectors.yaml file and the env file. With custom paths:
 
 ```bash
-python -m connector_mcp path/to/configured_connectors.yaml path/to/.env
+python -m airbyte_agent_mcp path/to/configured_connectors.yaml path/to/.env
 ```
 
 The default paths are `./configured_connectors.yaml` and `./.env`
@@ -52,14 +52,14 @@ Add to `~/.claude.json`:
 
 ```json
 "mcpServers": {
-  "connector-mcp": {
+  "airbyte-agent-mcp": {
     "type": "stdio",
     "command": "uv",
     "args": [
       "--directory",
       "/path/to/sonar/connector-mcp",
       "run",
-      "connector_mcp"
+      "airbyte_agent_mcp"
     ],
     "env": {}
   }
