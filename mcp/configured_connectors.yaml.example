@@ -1,0 +1,22 @@
+# Example connector configuration
+# Copy to connectors.yaml and customize
+
+# Connector definitions
+# Supports two types:
+# - local: Connectors with a local path to connector.yaml
+# - hosted: Connectors hosted in the Airbyte registry
+connectors:
+  # LOCAL connector example (custom API)
+  - id: my_api
+    type: local
+    path: ./connectors/my-api/connector.yaml
+    description: "My custom API connector"
+    secrets:
+      token: MY_API_KEY
+
+  # HOSTED connector example (from registry)
+  - id: shopify
+    type: hosted
+    description: "Shopify connector from registry"
+    secrets:
+      api_key: SHOPIFY_API_KEY
