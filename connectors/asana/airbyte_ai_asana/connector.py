@@ -13,12 +13,22 @@ except ImportError:
 from pathlib import Path
 
 from .types import (
+    ProjectTasksListParams,
     ProjectsGetParams,
     ProjectsListParams,
+    TaskProjectsListParams,
     TasksGetParams,
     TasksListParams,
+    TeamProjectsListParams,
+    TeamUsersListParams,
+    TeamsGetParams,
+    UserTeamsListParams,
     UsersGetParams,
     UsersListParams,
+    WorkspaceProjectsListParams,
+    WorkspaceTaskSearchListParams,
+    WorkspaceTeamsListParams,
+    WorkspaceUsersListParams,
     WorkspacesGetParams,
     WorkspacesListParams,
 )
@@ -30,14 +40,24 @@ if TYPE_CHECKING:
 from .models import (
     AsanaExecuteResult,
     AsanaExecuteResultWithMeta,
-    ProjectResponse,
-    ProjectsList,
-    TaskResponse,
-    TasksList,
-    UserResponse,
-    UsersList,
-    WorkspaceResponse,
-    WorkspacesList,
+    TasksListResult,
+    ProjectTasksListResult,
+    TasksGetResult,
+    WorkspaceTaskSearchListResult,
+    ProjectsListResult,
+    ProjectsGetResult,
+    TaskProjectsListResult,
+    TeamProjectsListResult,
+    WorkspaceProjectsListResult,
+    WorkspacesListResult,
+    WorkspacesGetResult,
+    UsersListResult,
+    UsersGetResult,
+    WorkspaceUsersListResult,
+    TeamUsersListResult,
+    TeamsGetResult,
+    WorkspaceTeamsListResult,
+    UserTeamsListResult,
 )
 
 
@@ -54,14 +74,24 @@ class AsanaConnector:
 
     # Map of (entity, action) -> has_extractors for envelope wrapping decision
     _EXTRACTOR_MAP = {
-        ("tasks", "list"): False,
-        ("tasks", "get"): False,
-        ("projects", "list"): False,
-        ("projects", "get"): False,
-        ("workspaces", "list"): False,
-        ("workspaces", "get"): False,
-        ("users", "list"): False,
-        ("users", "get"): False,
+        ("tasks", "list"): True,
+        ("project_tasks", "list"): True,
+        ("tasks", "get"): True,
+        ("workspace_task_search", "list"): True,
+        ("projects", "list"): True,
+        ("projects", "get"): True,
+        ("task_projects", "list"): True,
+        ("team_projects", "list"): True,
+        ("workspace_projects", "list"): True,
+        ("workspaces", "list"): True,
+        ("workspaces", "get"): True,
+        ("users", "list"): True,
+        ("users", "get"): True,
+        ("workspace_users", "list"): True,
+        ("team_users", "list"): True,
+        ("teams", "get"): True,
+        ("workspace_teams", "list"): True,
+        ("user_teams", "list"): True,
     }
 
     def __init__(
@@ -92,7 +122,7 @@ class AsanaConnector:
                 Example: lambda tokens: save_to_database(tokens)
         Examples:
             # Local mode (direct API calls)
-            connector = AsanaConnector(auth_config=AsanaAuthConfig(token="..."))
+            connector = AsanaConnector(auth_config=AsanaAuthConfig(access_token="...", refresh_token="...", client_id="...", client_secret="..."))
             # Hosted mode (executed on Airbyte cloud)
             connector = AsanaConnector(
                 connector_id="connector-456",
@@ -147,9 +177,19 @@ class AsanaConnector:
 
         # Initialize entity query objects
         self.tasks = TasksQuery(self)
+        self.project_tasks = ProjectTasksQuery(self)
+        self.workspace_task_search = WorkspaceTaskSearchQuery(self)
         self.projects = ProjectsQuery(self)
+        self.task_projects = TaskProjectsQuery(self)
+        self.team_projects = TeamProjectsQuery(self)
+        self.workspace_projects = WorkspaceProjectsQuery(self)
         self.workspaces = WorkspacesQuery(self)
         self.users = UsersQuery(self)
+        self.workspace_users = WorkspaceUsersQuery(self)
+        self.team_users = TeamUsersQuery(self)
+        self.teams = TeamsQuery(self)
+        self.workspace_teams = WorkspaceTeamsQuery(self)
+        self.user_teams = UserTeamsQuery(self)
 
     @classmethod
     def get_default_config_path(cls) -> Path:
@@ -164,7 +204,15 @@ class AsanaConnector:
         entity: Literal["tasks"],
         action: Literal["list"],
         params: "TasksListParams"
-    ) -> "TasksList": ...
+    ) -> "TasksListResult": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["project_tasks"],
+        action: Literal["list"],
+        params: "ProjectTasksListParams"
+    ) -> "ProjectTasksListResult": ...
 
     @overload
     async def execute(
@@ -172,7 +220,15 @@ class AsanaConnector:
         entity: Literal["tasks"],
         action: Literal["get"],
         params: "TasksGetParams"
-    ) -> "TaskResponse": ...
+    ) -> "TasksGetResult": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["workspace_task_search"],
+        action: Literal["list"],
+        params: "WorkspaceTaskSearchListParams"
+    ) -> "WorkspaceTaskSearchListResult": ...
 
     @overload
     async def execute(
@@ -180,7 +236,7 @@ class AsanaConnector:
         entity: Literal["projects"],
         action: Literal["list"],
         params: "ProjectsListParams"
-    ) -> "ProjectsList": ...
+    ) -> "ProjectsListResult": ...
 
     @overload
     async def execute(
@@ -188,7 +244,31 @@ class AsanaConnector:
         entity: Literal["projects"],
         action: Literal["get"],
         params: "ProjectsGetParams"
-    ) -> "ProjectResponse": ...
+    ) -> "ProjectsGetResult": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["task_projects"],
+        action: Literal["list"],
+        params: "TaskProjectsListParams"
+    ) -> "TaskProjectsListResult": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["team_projects"],
+        action: Literal["list"],
+        params: "TeamProjectsListParams"
+    ) -> "TeamProjectsListResult": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["workspace_projects"],
+        action: Literal["list"],
+        params: "WorkspaceProjectsListParams"
+    ) -> "WorkspaceProjectsListResult": ...
 
     @overload
     async def execute(
@@ -196,7 +276,7 @@ class AsanaConnector:
         entity: Literal["workspaces"],
         action: Literal["list"],
         params: "WorkspacesListParams"
-    ) -> "WorkspacesList": ...
+    ) -> "WorkspacesListResult": ...
 
     @overload
     async def execute(
@@ -204,7 +284,7 @@ class AsanaConnector:
         entity: Literal["workspaces"],
         action: Literal["get"],
         params: "WorkspacesGetParams"
-    ) -> "WorkspaceResponse": ...
+    ) -> "WorkspacesGetResult": ...
 
     @overload
     async def execute(
@@ -212,7 +292,7 @@ class AsanaConnector:
         entity: Literal["users"],
         action: Literal["list"],
         params: "UsersListParams"
-    ) -> "UsersList": ...
+    ) -> "UsersListResult": ...
 
     @overload
     async def execute(
@@ -220,7 +300,47 @@ class AsanaConnector:
         entity: Literal["users"],
         action: Literal["get"],
         params: "UsersGetParams"
-    ) -> "UserResponse": ...
+    ) -> "UsersGetResult": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["workspace_users"],
+        action: Literal["list"],
+        params: "WorkspaceUsersListParams"
+    ) -> "WorkspaceUsersListResult": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["team_users"],
+        action: Literal["list"],
+        params: "TeamUsersListParams"
+    ) -> "TeamUsersListResult": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["teams"],
+        action: Literal["get"],
+        params: "TeamsGetParams"
+    ) -> "TeamsGetResult": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["workspace_teams"],
+        action: Literal["list"],
+        params: "WorkspaceTeamsListParams"
+    ) -> "WorkspaceTeamsListResult": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["user_teams"],
+        action: Literal["list"],
+        params: "UserTeamsListParams"
+    ) -> "UserTeamsListResult": ...
 
 
     @overload
@@ -303,32 +423,50 @@ class TasksQuery:
 
     async def list(
         self,
-        project_gid: str,
         limit: int | None = None,
         offset: str | None = None,
+        project: str | None = None,
+        workspace: str | None = None,
+        section: str | None = None,
+        assignee: str | None = None,
+        completed_since: str | None = None,
+        modified_since: str | None = None,
         **kwargs
-    ) -> TasksList:
+    ) -> TasksListResult:
         """
-        Returns all tasks in a project
+        Returns a paginated list of tasks
 
         Args:
-            project_gid: Project GID to list tasks from
             limit: Number of items to return per page
             offset: Pagination offset token
+            project: The project to filter tasks on
+            workspace: The workspace to filter tasks on
+            section: The workspace to filter tasks on
+            assignee: The assignee to filter tasks on
+            completed_since: Only return tasks that have been completed since this time
+            modified_since: Only return tasks that have been completed since this time
             **kwargs: Additional parameters
 
         Returns:
-            TasksList
+            TasksListResult
         """
         params = {k: v for k, v in {
-            "project_gid": project_gid,
             "limit": limit,
             "offset": offset,
+            "project": project,
+            "workspace": workspace,
+            "section": section,
+            "assignee": assignee,
+            "completed_since": completed_since,
+            "modified_since": modified_since,
             **kwargs
         }.items() if v is not None}
 
         result = await self._connector.execute("tasks", "list", params)
-        return result
+        # Cast generic envelope to concrete typed result
+        return TasksListResult(
+            data=result.data,
+            meta=result.meta        )
 
 
 
@@ -336,7 +474,7 @@ class TasksQuery:
         self,
         task_gid: str,
         **kwargs
-    ) -> TaskResponse:
+    ) -> TasksGetResult:
         """
         Get a single task by its ID
 
@@ -345,7 +483,7 @@ class TasksQuery:
             **kwargs: Additional parameters
 
         Returns:
-            TaskResponse
+            TasksGetResult
         """
         params = {k: v for k, v in {
             "task_gid": task_gid,
@@ -353,7 +491,146 @@ class TasksQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("tasks", "get", params)
-        return result
+        # Cast generic envelope to concrete typed result
+        return TasksGetResult(
+            data=result.data        )
+
+
+
+class ProjectTasksQuery:
+    """
+    Query class for ProjectTasks entity operations.
+    """
+
+    def __init__(self, connector: AsanaConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        project_gid: str,
+        limit: int | None = None,
+        offset: str | None = None,
+        completed_since: str | None = None,
+        **kwargs
+    ) -> ProjectTasksListResult:
+        """
+        Returns all tasks in a project
+
+        Args:
+            project_gid: Project GID to list tasks from
+            limit: Number of items to return per page
+            offset: Pagination offset token
+            completed_since: Only return tasks that have been completed since this time
+            **kwargs: Additional parameters
+
+        Returns:
+            ProjectTasksListResult
+        """
+        params = {k: v for k, v in {
+            "project_gid": project_gid,
+            "limit": limit,
+            "offset": offset,
+            "completed_since": completed_since,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("project_tasks", "list", params)
+        # Cast generic envelope to concrete typed result
+        return ProjectTasksListResult(
+            data=result.data,
+            meta=result.meta        )
+
+
+
+class WorkspaceTaskSearchQuery:
+    """
+    Query class for WorkspaceTaskSearch entity operations.
+    """
+
+    def __init__(self, connector: AsanaConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        workspace_gid: str,
+        limit: int | None = None,
+        offset: str | None = None,
+        text: str | None = None,
+        completed: bool | None = None,
+        assignee_any: str | None = None,
+        projects_any: str | None = None,
+        sections_any: str | None = None,
+        teams_any: str | None = None,
+        followers_any: str | None = None,
+        created_at_after: str | None = None,
+        created_at_before: str | None = None,
+        modified_at_after: str | None = None,
+        modified_at_before: str | None = None,
+        due_on_after: str | None = None,
+        due_on_before: str | None = None,
+        resource_subtype: str | None = None,
+        sort_by: str | None = None,
+        sort_ascending: bool | None = None,
+        **kwargs
+    ) -> WorkspaceTaskSearchListResult:
+        """
+        Returns tasks that match the specified search criteria. Note - This endpoint requires a premium Asana account.
+
+        Args:
+            workspace_gid: Workspace GID to search tasks in
+            limit: Number of items to return per page
+            offset: Pagination offset token
+            text: Search text to filter tasks
+            completed: Filter by completion status
+            assignee_any: Comma-separated list of assignee GIDs
+            projects_any: Comma-separated list of project GIDs
+            sections_any: Comma-separated list of section GIDs
+            teams_any: Comma-separated list of team GIDs
+            followers_any: Comma-separated list of follower GIDs
+            created_at_after: Filter tasks created after this date (ISO 8601 format)
+            created_at_before: Filter tasks created before this date (ISO 8601 format)
+            modified_at_after: Filter tasks modified after this date (ISO 8601 format)
+            modified_at_before: Filter tasks modified before this date (ISO 8601 format)
+            due_on_after: Filter tasks due after this date (ISO 8601 date format)
+            due_on_before: Filter tasks due before this date (ISO 8601 date format)
+            resource_subtype: Filter by task resource subtype (e.g., default_task, milestone)
+            sort_by: Field to sort by (e.g., created_at, modified_at, due_date)
+            sort_ascending: Sort order (true for ascending, false for descending)
+            **kwargs: Additional parameters
+
+        Returns:
+            WorkspaceTaskSearchListResult
+        """
+        params = {k: v for k, v in {
+            "workspace_gid": workspace_gid,
+            "limit": limit,
+            "offset": offset,
+            "text": text,
+            "completed": completed,
+            "assignee.any": assignee_any,
+            "projects.any": projects_any,
+            "sections.any": sections_any,
+            "teams.any": teams_any,
+            "followers.any": followers_any,
+            "created_at.after": created_at_after,
+            "created_at.before": created_at_before,
+            "modified_at.after": modified_at_after,
+            "modified_at.before": modified_at_before,
+            "due_on.after": due_on_after,
+            "due_on.before": due_on_before,
+            "resource_subtype": resource_subtype,
+            "sort_by": sort_by,
+            "sort_ascending": sort_ascending,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("workspace_task_search", "list", params)
+        # Cast generic envelope to concrete typed result
+        return WorkspaceTaskSearchListResult(
+            data=result.data,
+            meta=result.meta        )
 
 
 
@@ -371,8 +648,10 @@ class ProjectsQuery:
         limit: int | None = None,
         offset: str | None = None,
         workspace: str | None = None,
+        team: str | None = None,
+        archived: bool | None = None,
         **kwargs
-    ) -> ProjectsList:
+    ) -> ProjectsListResult:
         """
         Returns a paginated list of projects
 
@@ -380,20 +659,27 @@ class ProjectsQuery:
             limit: Number of items to return per page
             offset: Pagination offset token
             workspace: The workspace to filter projects on
+            team: The team to filter projects on
+            archived: Filter by archived status
             **kwargs: Additional parameters
 
         Returns:
-            ProjectsList
+            ProjectsListResult
         """
         params = {k: v for k, v in {
             "limit": limit,
             "offset": offset,
             "workspace": workspace,
+            "team": team,
+            "archived": archived,
             **kwargs
         }.items() if v is not None}
 
         result = await self._connector.execute("projects", "list", params)
-        return result
+        # Cast generic envelope to concrete typed result
+        return ProjectsListResult(
+            data=result.data,
+            meta=result.meta        )
 
 
 
@@ -401,7 +687,7 @@ class ProjectsQuery:
         self,
         project_gid: str,
         **kwargs
-    ) -> ProjectResponse:
+    ) -> ProjectsGetResult:
         """
         Get a single project by its ID
 
@@ -410,7 +696,7 @@ class ProjectsQuery:
             **kwargs: Additional parameters
 
         Returns:
-            ProjectResponse
+            ProjectsGetResult
         """
         params = {k: v for k, v in {
             "project_gid": project_gid,
@@ -418,7 +704,144 @@ class ProjectsQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("projects", "get", params)
-        return result
+        # Cast generic envelope to concrete typed result
+        return ProjectsGetResult(
+            data=result.data        )
+
+
+
+class TaskProjectsQuery:
+    """
+    Query class for TaskProjects entity operations.
+    """
+
+    def __init__(self, connector: AsanaConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        task_gid: str,
+        limit: int | None = None,
+        offset: str | None = None,
+        **kwargs
+    ) -> TaskProjectsListResult:
+        """
+        Returns all projects a task is in
+
+        Args:
+            task_gid: Task GID to list projects from
+            limit: Number of items to return per page
+            offset: Pagination offset token
+            **kwargs: Additional parameters
+
+        Returns:
+            TaskProjectsListResult
+        """
+        params = {k: v for k, v in {
+            "task_gid": task_gid,
+            "limit": limit,
+            "offset": offset,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("task_projects", "list", params)
+        # Cast generic envelope to concrete typed result
+        return TaskProjectsListResult(
+            data=result.data,
+            meta=result.meta        )
+
+
+
+class TeamProjectsQuery:
+    """
+    Query class for TeamProjects entity operations.
+    """
+
+    def __init__(self, connector: AsanaConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        team_gid: str,
+        limit: int | None = None,
+        offset: str | None = None,
+        archived: bool | None = None,
+        **kwargs
+    ) -> TeamProjectsListResult:
+        """
+        Returns all projects for a team
+
+        Args:
+            team_gid: Team GID to list projects from
+            limit: Number of items to return per page
+            offset: Pagination offset token
+            archived: Filter by archived status
+            **kwargs: Additional parameters
+
+        Returns:
+            TeamProjectsListResult
+        """
+        params = {k: v for k, v in {
+            "team_gid": team_gid,
+            "limit": limit,
+            "offset": offset,
+            "archived": archived,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("team_projects", "list", params)
+        # Cast generic envelope to concrete typed result
+        return TeamProjectsListResult(
+            data=result.data,
+            meta=result.meta        )
+
+
+
+class WorkspaceProjectsQuery:
+    """
+    Query class for WorkspaceProjects entity operations.
+    """
+
+    def __init__(self, connector: AsanaConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        workspace_gid: str,
+        limit: int | None = None,
+        offset: str | None = None,
+        archived: bool | None = None,
+        **kwargs
+    ) -> WorkspaceProjectsListResult:
+        """
+        Returns all projects in a workspace
+
+        Args:
+            workspace_gid: Workspace GID to list projects from
+            limit: Number of items to return per page
+            offset: Pagination offset token
+            archived: Filter by archived status
+            **kwargs: Additional parameters
+
+        Returns:
+            WorkspaceProjectsListResult
+        """
+        params = {k: v for k, v in {
+            "workspace_gid": workspace_gid,
+            "limit": limit,
+            "offset": offset,
+            "archived": archived,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("workspace_projects", "list", params)
+        # Cast generic envelope to concrete typed result
+        return WorkspaceProjectsListResult(
+            data=result.data,
+            meta=result.meta        )
 
 
 
@@ -436,7 +859,7 @@ class WorkspacesQuery:
         limit: int | None = None,
         offset: str | None = None,
         **kwargs
-    ) -> WorkspacesList:
+    ) -> WorkspacesListResult:
         """
         Returns a paginated list of workspaces
 
@@ -446,7 +869,7 @@ class WorkspacesQuery:
             **kwargs: Additional parameters
 
         Returns:
-            WorkspacesList
+            WorkspacesListResult
         """
         params = {k: v for k, v in {
             "limit": limit,
@@ -455,7 +878,10 @@ class WorkspacesQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("workspaces", "list", params)
-        return result
+        # Cast generic envelope to concrete typed result
+        return WorkspacesListResult(
+            data=result.data,
+            meta=result.meta        )
 
 
 
@@ -463,7 +889,7 @@ class WorkspacesQuery:
         self,
         workspace_gid: str,
         **kwargs
-    ) -> WorkspaceResponse:
+    ) -> WorkspacesGetResult:
         """
         Get a single workspace by its ID
 
@@ -472,7 +898,7 @@ class WorkspacesQuery:
             **kwargs: Additional parameters
 
         Returns:
-            WorkspaceResponse
+            WorkspacesGetResult
         """
         params = {k: v for k, v in {
             "workspace_gid": workspace_gid,
@@ -480,7 +906,9 @@ class WorkspacesQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("workspaces", "get", params)
-        return result
+        # Cast generic envelope to concrete typed result
+        return WorkspacesGetResult(
+            data=result.data        )
 
 
 
@@ -498,8 +926,9 @@ class UsersQuery:
         limit: int | None = None,
         offset: str | None = None,
         workspace: str | None = None,
+        team: str | None = None,
         **kwargs
-    ) -> UsersList:
+    ) -> UsersListResult:
         """
         Returns a paginated list of users
 
@@ -507,20 +936,25 @@ class UsersQuery:
             limit: Number of items to return per page
             offset: Pagination offset token
             workspace: The workspace to filter users on
+            team: The team to filter users on
             **kwargs: Additional parameters
 
         Returns:
-            UsersList
+            UsersListResult
         """
         params = {k: v for k, v in {
             "limit": limit,
             "offset": offset,
             "workspace": workspace,
+            "team": team,
             **kwargs
         }.items() if v is not None}
 
         result = await self._connector.execute("users", "list", params)
-        return result
+        # Cast generic envelope to concrete typed result
+        return UsersListResult(
+            data=result.data,
+            meta=result.meta        )
 
 
 
@@ -528,7 +962,7 @@ class UsersQuery:
         self,
         user_gid: str,
         **kwargs
-    ) -> UserResponse:
+    ) -> UsersGetResult:
         """
         Get a single user by their ID
 
@@ -537,7 +971,7 @@ class UsersQuery:
             **kwargs: Additional parameters
 
         Returns:
-            UserResponse
+            UsersGetResult
         """
         params = {k: v for k, v in {
             "user_gid": user_gid,
@@ -545,6 +979,219 @@ class UsersQuery:
         }.items() if v is not None}
 
         result = await self._connector.execute("users", "get", params)
-        return result
+        # Cast generic envelope to concrete typed result
+        return UsersGetResult(
+            data=result.data        )
+
+
+
+class WorkspaceUsersQuery:
+    """
+    Query class for WorkspaceUsers entity operations.
+    """
+
+    def __init__(self, connector: AsanaConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        workspace_gid: str,
+        limit: int | None = None,
+        offset: str | None = None,
+        **kwargs
+    ) -> WorkspaceUsersListResult:
+        """
+        Returns all users in a workspace
+
+        Args:
+            workspace_gid: Workspace GID to list users from
+            limit: Number of items to return per page
+            offset: Pagination offset token
+            **kwargs: Additional parameters
+
+        Returns:
+            WorkspaceUsersListResult
+        """
+        params = {k: v for k, v in {
+            "workspace_gid": workspace_gid,
+            "limit": limit,
+            "offset": offset,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("workspace_users", "list", params)
+        # Cast generic envelope to concrete typed result
+        return WorkspaceUsersListResult(
+            data=result.data,
+            meta=result.meta        )
+
+
+
+class TeamUsersQuery:
+    """
+    Query class for TeamUsers entity operations.
+    """
+
+    def __init__(self, connector: AsanaConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        team_gid: str,
+        limit: int | None = None,
+        offset: str | None = None,
+        **kwargs
+    ) -> TeamUsersListResult:
+        """
+        Returns all users in a team
+
+        Args:
+            team_gid: Team GID to list users from
+            limit: Number of items to return per page
+            offset: Pagination offset token
+            **kwargs: Additional parameters
+
+        Returns:
+            TeamUsersListResult
+        """
+        params = {k: v for k, v in {
+            "team_gid": team_gid,
+            "limit": limit,
+            "offset": offset,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("team_users", "list", params)
+        # Cast generic envelope to concrete typed result
+        return TeamUsersListResult(
+            data=result.data,
+            meta=result.meta        )
+
+
+
+class TeamsQuery:
+    """
+    Query class for Teams entity operations.
+    """
+
+    def __init__(self, connector: AsanaConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def get(
+        self,
+        team_gid: str,
+        **kwargs
+    ) -> TeamsGetResult:
+        """
+        Get a single team by its ID
+
+        Args:
+            team_gid: Team GID
+            **kwargs: Additional parameters
+
+        Returns:
+            TeamsGetResult
+        """
+        params = {k: v for k, v in {
+            "team_gid": team_gid,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("teams", "get", params)
+        # Cast generic envelope to concrete typed result
+        return TeamsGetResult(
+            data=result.data        )
+
+
+
+class WorkspaceTeamsQuery:
+    """
+    Query class for WorkspaceTeams entity operations.
+    """
+
+    def __init__(self, connector: AsanaConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        workspace_gid: str,
+        limit: int | None = None,
+        offset: str | None = None,
+        **kwargs
+    ) -> WorkspaceTeamsListResult:
+        """
+        Returns all teams in a workspace
+
+        Args:
+            workspace_gid: Workspace GID to list teams from
+            limit: Number of items to return per page
+            offset: Pagination offset token
+            **kwargs: Additional parameters
+
+        Returns:
+            WorkspaceTeamsListResult
+        """
+        params = {k: v for k, v in {
+            "workspace_gid": workspace_gid,
+            "limit": limit,
+            "offset": offset,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("workspace_teams", "list", params)
+        # Cast generic envelope to concrete typed result
+        return WorkspaceTeamsListResult(
+            data=result.data,
+            meta=result.meta        )
+
+
+
+class UserTeamsQuery:
+    """
+    Query class for UserTeams entity operations.
+    """
+
+    def __init__(self, connector: AsanaConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        user_gid: str,
+        organization: str,
+        limit: int | None = None,
+        offset: str | None = None,
+        **kwargs
+    ) -> UserTeamsListResult:
+        """
+        Returns all teams a user is a member of
+
+        Args:
+            user_gid: User GID to list teams from
+            organization: The workspace or organization to filter teams on
+            limit: Number of items to return per page
+            offset: Pagination offset token
+            **kwargs: Additional parameters
+
+        Returns:
+            UserTeamsListResult
+        """
+        params = {k: v for k, v in {
+            "user_gid": user_gid,
+            "organization": organization,
+            "limit": limit,
+            "offset": offset,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("user_teams", "list", params)
+        # Cast generic envelope to concrete typed result
+        return UserTeamsListResult(
+            data=result.data,
+            meta=result.meta        )
 
 

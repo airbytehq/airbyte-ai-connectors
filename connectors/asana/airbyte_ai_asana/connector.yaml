@@ -31,17 +31,94 @@ servers:
     description: Asana API server
 
 security:
-  - bearerAuth: []
+  - oauth2: []
 
 paths:
   # Tasks endpoints
+  "/tasks":
+    get:
+      summary: List tasks
+      description: Returns a paginated list of tasks
+      operationId: listTasks
+      x-airbyte-entity: tasks
+      x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
+      parameters:
+        - name: limit
+          in: query
+          description: Number of items to return per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Pagination offset token
+          schema:
+            type: string
+            example: "eyJ0eXAiOJiKV1iQLCJhbGciOiJIUzI1NiJ9"
+        - name: project
+          in: query
+          description: The project to filter tasks on
+          schema:
+            type: string
+            example: "987654321"
+        - name: workspace
+          in: query
+          description: The workspace to filter tasks on
+          schema:
+            type: string
+            example: "987654321"
+        - name: section
+          in: query
+          description: The workspace to filter tasks on
+          schema:
+            type: string
+            example: "987654321"
+        - name: assignee
+          in: query
+          description: The assignee to filter tasks on
+          schema:
+            type: string
+            example: "123456789"
+        - name: completed_since
+          in: query
+          description: Only return tasks that have been completed since this time
+          schema:
+            type: string
+            format: date-time
+            example: "2023-01-01T00:00:00Z"
+        - name: modified_since
+          in: query
+          description: Only return tasks that have been completed since this time
+          schema:
+            type: string
+            format: date-time
+            example: "2023-01-01T00:00:00Z"
+
+      responses:
+        "200":
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TasksList"
+        "401":
+          description: Unauthorized
+
   "/projects/{project_gid}/tasks":
     get:
       summary: List tasks from a project
       description: Returns all tasks in a project
-      operationId: listTasks
-      x-airbyte-entity: tasks
+      operationId: listProjectTasks
+      x-airbyte-entity: project_tasks
       x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
       parameters:
         - name: project_gid
           in: path
@@ -62,6 +139,13 @@ paths:
           description: Pagination offset token
           schema:
             type: string
+        - name: completed_since
+          in: query
+          description: Only return tasks that have been completed since this time
+          schema:
+            type: string
+            format: date-time
+            example: "2023-01-01T00:00:00Z"
       responses:
         "200":
           description: List of tasks
@@ -79,6 +163,7 @@ paths:
       operationId: getTask
       x-airbyte-entity: tasks
       x-airbyte-action: get
+      x-airbyte-record-extractor: $.data
       parameters:
         - name: task_gid
           in: path
@@ -98,6 +183,134 @@ paths:
         "401":
           description: Unauthorized
 
+  "/workspaces/{workspace_gid}/tasks/search":
+    get:
+      summary: Search tasks in a workspace
+      description: Returns tasks that match the specified search criteria. Note - This endpoint requires a premium Asana account.
+      operationId: searchWorkspaceTasks
+      x-airbyte-entity: workspace_task_search
+      x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
+      parameters:
+        - name: workspace_gid
+          in: path
+          required: true
+          description: Workspace GID to search tasks in
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of items to return per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Pagination offset token
+          schema:
+            type: string
+        - name: text
+          in: query
+          description: Search text to filter tasks
+          schema:
+            type: string
+        - name: completed
+          in: query
+          description: Filter by completion status
+          schema:
+            type: boolean
+        - name: assignee.any
+          in: query
+          description: Comma-separated list of assignee GIDs
+          schema:
+            type: string
+        - name: projects.any
+          in: query
+          description: Comma-separated list of project GIDs
+          schema:
+            type: string
+        - name: sections.any
+          in: query
+          description: Comma-separated list of section GIDs
+          schema:
+            type: string
+        - name: teams.any
+          in: query
+          description: Comma-separated list of team GIDs
+          schema:
+            type: string
+        - name: followers.any
+          in: query
+          description: Comma-separated list of follower GIDs
+          schema:
+            type: string
+        - name: created_at.after
+          in: query
+          description: Filter tasks created after this date (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+        - name: created_at.before
+          in: query
+          description: Filter tasks created before this date (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+        - name: modified_at.after
+          in: query
+          description: Filter tasks modified after this date (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+        - name: modified_at.before
+          in: query
+          description: Filter tasks modified before this date (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+        - name: due_on.after
+          in: query
+          description: Filter tasks due after this date (ISO 8601 date format)
+          schema:
+            type: string
+            format: date
+        - name: due_on.before
+          in: query
+          description: Filter tasks due before this date (ISO 8601 date format)
+          schema:
+            type: string
+            format: date
+        - name: resource_subtype
+          in: query
+          description: Filter by task resource subtype (e.g., default_task, milestone)
+          schema:
+            type: string
+        - name: sort_by
+          in: query
+          description: Field to sort by (e.g., created_at, modified_at, due_date)
+          schema:
+            type: string
+        - name: sort_ascending
+          in: query
+          description: Sort order (true for ascending, false for descending)
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of tasks matching search criteria
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TasksList"
+        "401":
+          description: Unauthorized
+        "402":
+          description: Payment required (premium feature)
+
   # Projects endpoints
   "/projects":
     get:
@@ -106,6 +319,9 @@ paths:
       operationId: listProjects
       x-airbyte-entity: projects
       x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
       parameters:
         - name: limit
           in: query
@@ -125,6 +341,17 @@ paths:
           description: The workspace to filter projects on
           schema:
             type: string
+        - name: team
+          in: query
+          description: The team to filter projects on
+          schema:
+            type: string
+        - name: archived
+          in: query
+          description: Filter by archived status
+          schema:
+            type: boolean
+
       responses:
         "200":
           description: List of projects
@@ -142,6 +369,7 @@ paths:
       operationId: getProject
       x-airbyte-entity: projects
       x-airbyte-action: get
+      x-airbyte-record-extractor: "$.data"
       parameters:
         - name: project_gid
           in: path
@@ -149,6 +377,7 @@ paths:
           description: Project GID
           schema:
             type: string
+
       responses:
         "200":
           description: Project object
@@ -161,6 +390,139 @@ paths:
         "401":
           description: Unauthorized
 
+  "/tasks/{task_gid}/projects":
+    get:
+      summary: List projects for a task
+      description: Returns all projects a task is in
+      operationId: listTaskProjects
+      x-airbyte-entity: task_projects
+      x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
+      parameters:
+        - name: task_gid
+          in: path
+          required: true
+          description: Task GID to list projects from
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of items to return per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Pagination offset token
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectsList"
+        "401":
+          description: Unauthorized
+
+  "/teams/{team_gid}/projects":
+    get:
+      summary: List projects for a team
+      description: Returns all projects for a team
+      operationId: listTeamProjects
+      x-airbyte-entity: team_projects
+      x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
+      parameters:
+        - name: team_gid
+          in: path
+          required: true
+          description: Team GID to list projects from
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of items to return per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Pagination offset token
+          schema:
+            type: string
+
+        - name: archived
+          in: query
+          description: Filter by archived status
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectsList"
+        "401":
+          description: Unauthorized
+
+  "/workspaces/{workspace_gid}/projects":
+    get:
+      summary: List projects for a workspace
+      description: Returns all projects in a workspace
+      operationId: listWorkspaceProjects
+      x-airbyte-entity: workspace_projects
+      x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
+      parameters:
+        - name: workspace_gid
+          in: path
+          required: true
+          description: Workspace GID to list projects from
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of items to return per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Pagination offset token
+          schema:
+            type: string
+
+        - name: archived
+          in: query
+          description: Filter by archived status
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectsList"
+        "401":
+          description: Unauthorized
+
   # Workspaces endpoints
   "/workspaces":
     get:
@@ -169,6 +531,9 @@ paths:
       operationId: listWorkspaces
       x-airbyte-entity: workspaces
       x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
       parameters:
         - name: limit
           in: query
@@ -183,6 +548,7 @@ paths:
           description: Pagination offset token
           schema:
             type: string
+
       responses:
         "200":
           description: List of workspaces
@@ -200,6 +566,7 @@ paths:
       operationId: getWorkspace
       x-airbyte-entity: workspaces
       x-airbyte-action: get
+      x-airbyte-record-extractor: "$.data"
       parameters:
         - name: workspace_gid
           in: path
@@ -207,6 +574,7 @@ paths:
           description: Workspace GID
           schema:
             type: string
+
       responses:
         "200":
           description: Workspace object
@@ -227,6 +595,9 @@ paths:
       operationId: listUsers
       x-airbyte-entity: users
       x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
       parameters:
         - name: limit
           in: query
@@ -246,6 +617,11 @@ paths:
           description: The workspace to filter users on
           schema:
             type: string
+        - name: team
+          in: query
+          description: The team to filter users on
+          schema:
+            type: string
       responses:
         "200":
           description: List of users
@@ -263,6 +639,7 @@ paths:
       operationId: getUser
       x-airbyte-entity: users
       x-airbyte-action: get
+      x-airbyte-record-extractor: "$.data"
       parameters:
         - name: user_gid
           in: path
@@ -282,16 +659,256 @@ paths:
         "401":
           description: Unauthorized
 
+  "/workspaces/{workspace_gid}/users":
+    get:
+      summary: List users for a workspace
+      description: Returns all users in a workspace
+      operationId: listWorkspaceUsers
+      x-airbyte-entity: workspace_users
+      x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
+      parameters:
+        - name: workspace_gid
+          in: path
+          required: true
+          description: Workspace GID to list users from
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of items to return per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Pagination offset token
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersList"
+        "401":
+          description: Unauthorized
+
+  "/teams/{team_gid}/users":
+    get:
+      summary: List users for a team
+      description: Returns all users in a team
+      operationId: listTeamUsers
+      x-airbyte-entity: team_users
+      x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
+      parameters:
+        - name: team_gid
+          in: path
+          required: true
+          description: Team GID to list users from
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of items to return per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Pagination offset token
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersList"
+        "401":
+          description: Unauthorized
+
+  # Teams endpoints
+  "/teams/{team_gid}":
+    get:
+      summary: Get a team
+      description: Get a single team by its ID
+      operationId: getTeam
+      x-airbyte-entity: teams
+      x-airbyte-action: get
+      x-airbyte-record-extractor: "$.data"
+      parameters:
+        - name: team_gid
+          in: path
+          required: true
+          description: Team GID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Team object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamResponse"
+        "404":
+          description: Team not found
+        "401":
+          description: Unauthorized
+
+  "/workspaces/{workspace_gid}/teams":
+    get:
+      summary: List teams for a workspace
+      description: Returns all teams in a workspace
+      operationId: listWorkspaceTeams
+      x-airbyte-entity: workspace_teams
+      x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
+      parameters:
+        - name: workspace_gid
+          in: path
+          required: true
+          description: Workspace GID to list teams from
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of items to return per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Pagination offset token
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of teams
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamsList"
+        "401":
+          description: Unauthorized
+
+  "/users/{user_gid}/teams":
+    get:
+      summary: List teams for a user
+      description: Returns all teams a user is a member of
+      operationId: listUserTeams
+      x-airbyte-entity: user_teams
+      x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
+      parameters:
+        - name: user_gid
+          in: path
+          required: true
+          description: User GID to list teams from
+          schema:
+            type: string
+        - name: organization
+          in: query
+          required: true
+          description: The workspace or organization to filter teams on
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of items to return per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Pagination offset token
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of teams
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamsList"
+        "401":
+          description: Unauthorized
+
 components:
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      description: API Key authentication using Bearer token
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 authentication for Asana API
+      flows:
+        authorizationCode:
+          authorizationUrl: https://app.asana.com/-/oauth_authorize
+          tokenUrl: https://app.asana.com/-/oauth_token
+          refreshUrl: https://app.asana.com/-/oauth_token
+          scopes:
+            default: Default access to user's Asana data
+            # tasks:read: Read access to tasks
+            # tasks:write: Write access to tasks
+            # tasks:delete: Delete tasks
+            # projects:read: Read access to projects
+            # projects:write: Write access to projects
+            # users:read: Read access to users
+            # workspaces:read: Read access to workspaces
+      x-airbyte-auth-config:
+        title: "Asana OAuth 2.0"
+        type: object
+        required:
+          - access_token
+          - refresh_token
+          - client_id
+          - client_secret
+        properties:
+          access_token:
+            type: string
+            title: "Access Token"
+            description: "OAuth access token for API requests"
+            airbyte_secret: true
+          refresh_token:
+            type: string
+            title: "Refresh Token"
+            description: "OAuth refresh token for automatic token renewal"
+            airbyte_secret: true
+          client_id:
+            type: string
+            title: "Client ID"
+            description: "Connected App Consumer Key"
+          client_secret:
+            type: string
+            title: "Client Secret"
+            description: "Connected App Consumer Secret"
+            airbyte_secret: true
+        auth_mapping:
+          access_token: "${access_token}"
+          refresh_token: "${refresh_token}"
+          client_id: "${client_id}"
+          client_secret: "${client_secret}"
 
   schemas:
     # Task schemas
-    Task:
+    TaskCompact:
       type: object
       x-airbyte-entity-name: tasks
       description: Compact task object
@@ -305,6 +922,142 @@ components:
         name:
           type: string
           description: Task name
+        resource_subtype:
+          type: string
+          description: Task subtype
+        created_by:
+          type: object
+          description: User who created the task
+          properties:
+            gid:
+              type: string
+            resource_type:
+              type: string
+
+    Task:
+      type: object
+      description: Full task object
+      properties:
+        gid:
+          type: string
+          actual_time_minutes:
+            type: ["integer", "null"]
+          assignee:
+            type: object
+            properties:
+              gid:
+                type: string
+              name:
+                type: string
+              resource_type:
+                type: string
+          assignee_status:
+            type: string
+          assignee_section:
+            type: object
+            properties:
+              gid:
+                type: string
+              name:
+                type: string
+              resource_type:
+                type: string
+          completed:
+            type: boolean
+          completed_at:
+            type: ["string", "null"]
+          created_at:
+            type: string
+          due_at:
+            type: ["string", "null"]
+          due_on:
+            type: ["string", "null"]
+          followers:
+            type: array
+            items:
+              type: object
+              properties:
+                gid:
+                  type: string
+                name:
+                  type: string
+                resource_type:
+                  type: string
+          hearted:
+            type: boolean
+          hearts:
+            type: array
+          liked:
+            type: boolean
+          likes:
+            type: array
+          memberships:
+            type: array
+            items:
+              type: object
+              properties:
+                project:
+                  type: object
+                  properties:
+                    gid:
+                      type: string
+                    name:
+                      type: string
+                    resource_type:
+                      type: string
+                section:
+                  type: object
+                  properties:
+                    gid:
+                      type: string
+                    name:
+                      type: string
+                    resource_type:
+                      type: string
+          modified_at:
+            type: string
+          name:
+            type: string
+          notes:
+            type: string
+          num_hearts:
+            type: integer
+          num_likes:
+            type: integer
+          parent:
+            type: ["object", "null"]
+          permalink_url:
+            type: string
+          projects:
+            type: array
+            items:
+              type: object
+              properties:
+                gid:
+                  type: string
+                name:
+                  type: string
+                resource_type:
+                  type: string
+          resource_type:
+            type: string
+          start_at:
+            type: ["string", "null"]
+          start_on:
+            type: ["string", "null"]
+          tags:
+            type: array
+          resource_subtype:
+            type: string
+          workspace:
+            type: object
+            properties:
+              gid:
+                type: string
+              name:
+                type: string
+              resource_type:
+                type: string
 
     TaskResponse:
       type: object
@@ -315,12 +1068,12 @@ components:
 
     TasksList:
       type: object
-      description: Paginated list of tasks
+      description: Paginated list of tasks containing compact task objects
       properties:
         data:
           type: array
           items:
-            $ref: "#/components/schemas/Task"
+            $ref: "#/components/schemas/TaskCompact"
         next_page:
           type: ["object", "null"]
           properties:
@@ -332,7 +1085,7 @@ components:
               type: string
 
     # Project schemas
-    Project:
+    ProjectCompact:
       type: object
       x-airbyte-entity-name: projects
       description: Compact project object
@@ -347,6 +1100,148 @@ components:
           type: string
           description: Project name
 
+    Project:
+      type: object
+      description: Full project object
+      properties:
+        gid:
+          type: string
+        archived:
+          type: boolean
+        color:
+          type: ["string", "null"]
+        completed:
+          type: boolean
+        completed_at:
+          type: ["string", "null"]
+        created_at:
+          type: string
+        current_status:
+          type: ["object", "null"]
+          properties:
+            gid:
+              type: string
+            author:
+              type: object
+              properties:
+                gid:
+                  type: string
+                name:
+                  type: string
+                resource_type:
+                  type: string
+            color:
+              type: string
+            created_at:
+              type: string
+            created_by:
+              type: object
+              properties:
+                gid:
+                  type: string
+                name:
+                  type: string
+                resource_type:
+                  type: string
+            modified_at:
+              type: string
+            resource_type:
+              type: string
+            text:
+              type: string
+            title:
+              type: string
+        current_status_update:
+          type: ["object", "null"]
+          properties:
+            gid:
+              type: string
+            resource_type:
+              type: string
+            resource_subtype:
+              type: string
+            title:
+              type: string
+        custom_fields:
+          type: array
+        default_access_level:
+          type: string
+        default_view:
+          type: string
+        due_on:
+          type: ["string", "null"]
+        due_date:
+          type: ["string", "null"]
+        followers:
+          type: array
+          items:
+            type: object
+            properties:
+              gid:
+                type: string
+              name:
+                type: string
+              resource_type:
+                type: string
+        members:
+          type: array
+          items:
+            type: object
+            properties:
+              gid:
+                type: string
+              name:
+                type: string
+              resource_type:
+                type: string
+        minimum_access_level_for_customization:
+          type: string
+        minimum_access_level_for_sharing:
+          type: string
+        modified_at:
+          type: string
+        name:
+          type: string
+        notes:
+          type: string
+        owner:
+          type: object
+          properties:
+            gid:
+              type: string
+            name:
+              type: string
+            resource_type:
+              type: string
+        permalink_url:
+          type: string
+        privacy_setting:
+          type: string
+        public:
+          type: boolean
+        resource_type:
+          type: string
+        start_on:
+          type: ["string", "null"]
+        team:
+          type: object
+          properties:
+            gid:
+              type: string
+            name:
+              type: string
+            resource_type:
+              type: string
+        workspace:
+          type: object
+          properties:
+            gid:
+              type: string
+            name:
+              type: string
+            resource_type:
+              type: string
+
     ProjectResponse:
       type: object
       description: Project response wrapper
@@ -356,12 +1251,12 @@ components:
 
     ProjectsList:
       type: object
-      description: Paginated list of projects
+      description: Paginated list of projects containing compact project objects
       properties:
         data:
           type: array
           items:
-            $ref: "#/components/schemas/Project"
+            $ref: "#/components/schemas/ProjectCompact"
         next_page:
           type: ["object", "null"]
           properties:
@@ -373,7 +1268,7 @@ components:
               type: string
 
     # Workspace schemas
-    Workspace:
+    WorkspaceCompact:
       type: object
       x-airbyte-entity-name: workspaces
       description: Compact workspace object
@@ -388,6 +1283,23 @@ components:
           type: string
           description: Workspace name
 
+    Workspace:
+      type: object
+      description: Full workspace object
+      properties:
+        gid:
+          type: string
+        resource_type:
+          type: string
+        name:
+          type: string
+        email_domains:
+          type: array
+          items:
+            type: string
+        is_organization:
+          type: boolean
+
     WorkspaceResponse:
       type: object
       description: Workspace response wrapper
@@ -397,12 +1309,12 @@ components:
 
     WorkspacesList:
       type: object
-      description: Paginated list of workspaces
+      description: Paginated list of workspaces containing compact workspace objects
       properties:
         data:
           type: array
           items:
-            $ref: "#/components/schemas/Workspace"
+            $ref: "#/components/schemas/WorkspaceCompact"
         next_page:
           type: ["object", "null"]
           properties:
@@ -414,7 +1326,7 @@ components:
               type: string
 
     # User schemas
-    User:
+    UserCompact:
       type: object
       x-airbyte-entity-name: users
       description: Compact user object
@@ -429,6 +1341,32 @@ components:
           type: string
           description: User name
 
+    User:
+      type: object
+      description: Full user object
+      properties:
+        gid:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        photo:
+          type: ["object", "null"]
+        resource_type:
+          type: string
+        workspaces:
+          type: array
+          items:
+            type: object
+            properties:
+              gid:
+                type: string
+              name:
+                type: string
+              resource_type:
+                type: string
+
     UserResponse:
       type: object
       description: User response wrapper
@@ -438,12 +1376,75 @@ components:
 
     UsersList:
       type: object
-      description: Paginated list of users
+      description: Paginated list of users containing compact user objects
       properties:
         data:
           type: array
           items:
-            $ref: "#/components/schemas/User"
+            $ref: "#/components/schemas/UserCompact"
+        next_page:
+          type: ["object", "null"]
+          properties:
+            offset:
+              type: string
+            path:
+              type: string
+            uri:
+              type: string
+
+    # Team schemas
+    TeamCompact:
+      type: object
+      x-airbyte-entity-name: teams
+      description: Compact team object
+      properties:
+        gid:
+          type: string
+          description: Globally unique identifier
+        resource_type:
+          type: string
+          description: Resource type (team)
+        name:
+          type: string
+          description: Team name
+
+    Team:
+      type: object
+      description: Full team object
+      properties:
+        gid:
+          type: string
+        name:
+          type: string
+        organization:
+          type: object
+          properties:
+            gid:
+              type: string
+            name:
+              type: string
+            resource_type:
+              type: string
+        permalink_url:
+          type: string
+        resource_type:
+          type: string
+
+    TeamResponse:
+      type: object
+      description: Team response wrapper
+      properties:
+        data:
+          $ref: "#/components/schemas/Team"
+
+    TeamsList:
+      type: object
+      description: Paginated list of teams containing compact team objects
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeamCompact"
         next_page:
           type: ["object", "null"]
           properties:
