@@ -78,10 +78,14 @@ components:
             - "null"
           description: The type of this ticket (problem, incident, question, task)
         subject:
-          type: string
+          type:
+            - string
+            - "null"
           description: The value of the subject field for this ticket
         raw_subject:
-          type: string
+          type:
+            - string
+            - "null"
           description: The dynamic content placeholder or the subject value
         description:
           type: string
@@ -1477,6 +1481,19 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Ticket"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
 
   /tickets/{ticket_id}.json:
     get:
@@ -1551,6 +1568,19 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/User"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
 
   /users/{user_id}.json:
     get:
@@ -1614,6 +1644,19 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Organization"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
 
   /organizations/{organization_id}.json:
     get:
@@ -1683,6 +1726,19 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Group"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
 
   /groups/{group_id}.json:
     get:
@@ -1764,6 +1820,20 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/TicketComment"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
+
 
   # ==================== ATTACHMENTS ====================
   /attachments/{attachment_id}.json:
@@ -1856,6 +1926,19 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/TicketAudit"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
 
   /tickets/{ticket_id}/audits.json:
     get:
@@ -1896,6 +1979,20 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/TicketAudit"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
+
 
   # ==================== TICKET METRICS ====================
   /ticket_metrics.json:
@@ -1931,6 +2028,20 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/TicketMetric"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
+
 
   # ==================== TICKET FIELDS ====================
   /ticket_fields.json:
@@ -1971,6 +2082,19 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/TicketField"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
 
   /ticket_fields/{ticket_field_id}.json:
     get:
@@ -2034,6 +2158,19 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Brand"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
 
   /brands/{brand_id}.json:
     get:
@@ -2125,6 +2262,19 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/View"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
 
   /views/{view_id}.json:
     get:
@@ -2226,6 +2376,19 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Macro"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
 
   /macros/{macro_id}.json:
     get:
@@ -2305,6 +2468,19 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Trigger"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
 
   /triggers/{trigger_id}.json:
     get:
@@ -2379,6 +2555,19 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Automation"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
 
   /automations/{automation_id}.json:
     get:
@@ -2442,6 +2631,20 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Tag"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
+
 
   # ==================== SATISFACTION RATINGS ====================
   /satisfaction_ratings.json:
@@ -2493,6 +2696,19 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/SatisfactionRating"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
 
   /satisfaction_ratings/{satisfaction_rating_id}.json:
     get:
@@ -2556,6 +2772,20 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/GroupMembership"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
+
 
   # ==================== ORGANIZATION MEMBERSHIPS ====================
   /organization_memberships.json:
@@ -2591,6 +2821,20 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/OrganizationMembership"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
+
 
   # ==================== SLA POLICIES ====================
   /slas/policies.json:
@@ -2626,6 +2870,19 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/SLAPolicy"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
 
   /slas/policies/{sla_policy_id}.json:
     get:
@@ -2699,6 +2956,19 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/TicketForm"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
 
   /ticket_forms/{ticket_form_id}.json:
     get:
@@ -2775,6 +3045,19 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Article"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
 
   /help_center/articles/{id}.json:
     get:
@@ -2844,6 +3127,19 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/ArticleAttachment"
+                  next_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the next page of results
+                  previous_page:
+                    type:
+                      - string
+                      - "null"
+                    description: URL to the previous page of results
+                  count:
+                    type: integer
+                    description: Total count of records
 
   /help_center/articles/{article_id}/attachments/{attachment_id}:
     get:

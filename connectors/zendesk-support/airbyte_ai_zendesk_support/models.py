@@ -37,8 +37,8 @@ class Ticket(BaseModel):
     url: Union[str, Any] = Field(default=None)
     external_id: Union[str | None, Any] = Field(default=None)
     type: Union[str | None, Any] = Field(default=None)
-    subject: Union[str, Any] = Field(default=None)
-    raw_subject: Union[str, Any] = Field(default=None)
+    subject: Union[str | None, Any] = Field(default=None)
+    raw_subject: Union[str | None, Any] = Field(default=None)
     description: Union[str, Any] = Field(default=None)
     priority: Union[str | None, Any] = Field(default=None)
     status: Union[str, Any] = Field(default=None)
@@ -470,169 +470,169 @@ class TicketsListResultMeta(BaseModel):
     """Metadata for tickets.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class UsersListResultMeta(BaseModel):
     """Metadata for users.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class OrganizationsListResultMeta(BaseModel):
     """Metadata for organizations.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class GroupsListResultMeta(BaseModel):
     """Metadata for groups.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class TicketCommentsListResultMeta(BaseModel):
     """Metadata for ticket_comments.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class TicketAuditsListResultMeta(BaseModel):
     """Metadata for ticket_audits.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class TicketMetricsListResultMeta(BaseModel):
     """Metadata for ticket_metrics.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class TicketFieldsListResultMeta(BaseModel):
     """Metadata for ticket_fields.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class BrandsListResultMeta(BaseModel):
     """Metadata for brands.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class ViewsListResultMeta(BaseModel):
     """Metadata for views.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class MacrosListResultMeta(BaseModel):
     """Metadata for macros.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class TriggersListResultMeta(BaseModel):
     """Metadata for triggers.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class AutomationsListResultMeta(BaseModel):
     """Metadata for automations.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class TagsListResultMeta(BaseModel):
     """Metadata for tags.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class SatisfactionRatingsListResultMeta(BaseModel):
     """Metadata for satisfaction_ratings.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class GroupMembershipsListResultMeta(BaseModel):
     """Metadata for group_memberships.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class OrganizationMembershipsListResultMeta(BaseModel):
     """Metadata for organization_memberships.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class SlaPoliciesListResultMeta(BaseModel):
     """Metadata for sla_policies.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class TicketFormsListResultMeta(BaseModel):
     """Metadata for ticket_forms.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class ArticlesListResultMeta(BaseModel):
     """Metadata for articles.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 class ArticleAttachmentsListResultMeta(BaseModel):
     """Metadata for article_attachments.list operation"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    next_page: Union[Any, Any] = Field(default=None)
-    previous_page: Union[Any, Any] = Field(default=None)
-    count: Union[Any, Any] = Field(default=None)
+    next_page: Union[str | None, Any] = Field(default=None)
+    previous_page: Union[str | None, Any] = Field(default=None)
+    count: Union[int, Any] = Field(default=None)
 
 # ===== RESPONSE ENVELOPE MODELS =====
 
