@@ -32,18 +32,6 @@ from .models import (
     LinearExecuteResultWithMeta
 )
 from .types import (
-    IssuesListResponseDataIssuesPageinfo,
-    IssuesListResponseDataIssues,
-    IssuesListResponseData,
-    IssueResponseData,
-    ProjectsListResponseDataProjectsPageinfo,
-    ProjectsListResponseDataProjects,
-    ProjectsListResponseData,
-    ProjectResponseData,
-    TeamsListResponseDataTeamsPageinfo,
-    TeamsListResponseDataTeams,
-    TeamsListResponseData,
-    TeamResponseData,
     IssuesListParams,
     IssuesGetParams,
     ProjectsListParams,
@@ -52,4 +40,4 @@ from .types import (
     TeamsGetParams
 )
 
-__all__ = ["LinearConnector", "LinearAuthConfig", "Issue", "IssuesListResponseDataIssuesPageinfo", "IssuesListResponseDataIssues", "IssuesListResponseData", "IssuesListResponse", "IssueResponseData", "IssueResponse", "Project", "ProjectsListResponseDataProjectsPageinfo", "ProjectsListResponseDataProjects", "ProjectsListResponseData", "ProjectsListResponse", "ProjectResponseData", "ProjectResponse", "Team", "TeamsListResponseDataTeamsPageinfo", "TeamsListResponseDataTeams", "TeamsListResponseData", "TeamsListResponse", "TeamResponseData", "TeamResponse", "LinearExecuteResult", "LinearExecuteResultWithMeta", "IssuesListResponseDataIssuesPageinfo", "IssuesListResponseDataIssues", "IssuesListResponseData", "IssueResponseData", "ProjectsListResponseDataProjectsPageinfo", "ProjectsListResponseDataProjects", "ProjectsListResponseData", "ProjectResponseData", "TeamsListResponseDataTeamsPageinfo", "TeamsListResponseDataTeams", "TeamsListResponseData", "TeamResponseData", "IssuesListParams", "IssuesGetParams", "ProjectsListParams", "ProjectsGetParams", "TeamsListParams", "TeamsGetParams"]
+__all__ = ["LinearConnector", "LinearAuthConfig", "Issue", "IssuesListResponseDataIssuesPageinfo", "IssuesListResponseDataIssues", "IssuesListResponseData", "IssuesListResponse", "IssueResponseData", "IssueResponse", "Project", "ProjectsListResponseDataProjectsPageinfo", "ProjectsListResponseDataProjects", "ProjectsListResponseData", "ProjectsListResponse", "ProjectResponseData", "ProjectResponse", "Team", "TeamsListResponseDataTeamsPageinfo", "TeamsListResponseDataTeams", "TeamsListResponseData", "TeamsListResponse", "TeamResponseData", "TeamResponse", "LinearExecuteResult", "LinearExecuteResultWithMeta", "IssuesListParams", "IssuesGetParams", "ProjectsListParams", "ProjectsGetParams", "TeamsListParams", "TeamsGetParams"]
