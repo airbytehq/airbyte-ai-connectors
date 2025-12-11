@@ -1,9 +1,14 @@
 # AI Connectors
+
+[![License](https://img.shields.io/badge/License-Elastic_2.0-blue.svg)](LICENSE)
+[![Slack](https://img.shields.io/badge/Slack-Join_Community-4A154B?logo=slack&logoColor=white)](https://slack.airbyte.com/)
+[![Publish Connectors](https://github.com/airbytehq/airbyte-ai-connectors/actions/workflows/publish.yml/badge.svg)](https://github.com/airbytehq/airbyte-ai-connectors/actions/workflows/publish.yml)
+
 ### A unified interface for AI agents to fetch your data.
-Airbyte AI Connectors are auto‑generated Python connector packages that let AI agents call third‑party APIs through strongly typed, well‑documented tools. Each connector is a standalone Python package that you can use directly in your app, plug into an agent framework, or expose through MCP (coming soon) and APIs(coming soon).
+Airbyte AI Connectors are packages that let AI agents call third‑party APIs through strongly typed, well‑documented tools. Each connector is a standalone Python package that you can use directly in your app, plug into an agent framework, or expose through MCP (coming soon) and APIs(coming soon).
 
 ## What this repo contains
-* Auto‑generated Python SDKs for specific SaaS APIs (for example Gong, Stripe, GitHub). 
+* Python SDKs for specific SaaS APIs (for example Gong, Stripe, GitHub). 
 * A consistent connector layout so you can understand and extend any connector quickly. 
 * Ready‑to-use clients that validate auth, handle schemas, and expose typed methods for each operation.
 
