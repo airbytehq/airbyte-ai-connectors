@@ -26,6 +26,10 @@ jobs:
     needs: detect-changes
     if: needs.detect-changes.outputs.connectors != '[]'
     runs-on: ubuntu-latest
+    environment: PyPI
+    permissions:
+      id-token: write
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -36,13 +40,43 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install build tools
-        run: pip install build twine pytest pytest-asyncio httpx pydantic pyyaml python-dotenv
+        run: pip install build pytest pytest-asyncio httpx pydantic pyyaml python-dotenv
       - name: Install connector dependencies
         run: pip install connectors/${{ matrix.connector }}/
       - name: Build package
         run: python -m build connectors/${{ matrix.connector }}/
       - name: Publish to PyPI
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        run: twine upload connectors/${{ matrix.connector }}/dist/* --skip-existing
+        id: publish
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: connectors/${{ matrix.connector }}/dist/
+          skip-existing: true
+        continue-on-error: true
+      - name: Handle publish failure
+        if: steps.publish.outcome == 'failure'
+        run: |
+          CONNECTOR="${{ matrix.connector }}"
+          PACKAGE_NAME="airbyte_ai_$(echo "$CONNECTOR" | tr '-' '_')"
+          
+          # Two URL options for adding trusted publisher on PyPI
+          PROJECT_URL="https://pypi.org/manage/project/${PACKAGE_NAME}/settings/publishing/?project_name=${PACKAGE_NAME}&owner=airbytehq&repository=airbyte-ai-connectors&workflow_filename=publish.yml&environment=PyPI&provider=github"
+          PENDING_URL="https://pypi.org/manage/account/publishing/?project_name=${PACKAGE_NAME}&owner=airbytehq&repository=airbyte-ai-connectors&workflow_filename=publish.yml&environment=PyPI&provider=github"
+
+          echo "::error::Failed to publish $PACKAGE_NAME to PyPI using trusted publishing."
+          echo ""
+          echo "To enable trusted publishing for this package:"
+          echo ""
+          echo "If the project ALREADY EXISTS on PyPI (pre-fills the form):"
+          echo "  $PROJECT_URL"
+          echo ""
+          echo "If the project is NEW (use 'Add a new pending publisher'):"
+          echo "  $PENDING_URL"
+          echo ""
+          echo "Form values:"
+          echo "  PyPI Project Name: ${PACKAGE_NAME}"
+          echo "  Owner:             airbytehq"
+          echo "  Repository:        airbyte-ai-connectors"
+          echo "  Workflow name:     publish.yml"
+          echo "  Environment:       PyPI"
+
+          exit 1
