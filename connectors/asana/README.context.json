@@ -2,10 +2,10 @@
   "connector_name": "asana",
   "class_name": "AsanaConnector",
   "package_name": "airbyte_ai_asana",
-  "package_version": "0.19.4",
+  "package_version": "0.19.5",
   "yaml_version": "0.1.0",
   "api_reference_url": "https://developers.asana.com/reference/rest-api-reference",
-  "commit_sha": "bdd5df6d00c95fe27bf5a01652296763fbc05614",
+  "commit_sha": "11427ac330c199db4b55578f96eb18ab6474610e",
   "auth_example": "AsanaAuthConfig(access_token=\"...\", refresh_token=\"...\", client_id=\"...\", client_secret=\"...\")",
   "auth_import": "\nfrom airbyte_ai_asana.models import AsanaAuthConfig",
   "first_operation": {
