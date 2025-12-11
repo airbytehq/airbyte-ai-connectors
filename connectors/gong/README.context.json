@@ -2,10 +2,11 @@
   "connector_name": "gong",
   "class_name": "GongConnector",
   "package_name": "airbyte_ai_gong",
-  "package_version": "0.19.2",
+  "package_version": "0.19.3",
   "yaml_version": "0.1.0",
-  "sdk_version": "0.1.0",
-  "actions_text": "\n### Users Actions\n- `list_users()` - Returns a list of all users in the Gong account\n- `get_user()` - Get a single user by ID\n\n### Calls Actions\n- `list_calls()` - Retrieve calls data by date range\n- `get_call()` - Get specific call data by ID\n\n### Calls_Extensive Actions\n- `list_calls_extensive()` - Retrieve detailed call data including participants, interaction stats, and content\n\n### Call_Audio Actions\n- `download_call_audio()` - Downloads the audio media file for a call. Temporarily, the request body must be configured with:\n{\"filter\": {\"callIds\": [CALL_ID]}, \"contentSelector\": {\"exposedFields\": {\"media\": true}}}\n\n\n### Call_Video Actions\n- `download_call_video()` - Downloads the video media file for a call. Temporarily, the request body must be configured with:\n{\"filter\": {\"callIds\": [CALL_ID]}, \"contentSelector\": {\"exposedFields\": {\"media\": true}}}\n\n\n### Workspaces Actions\n- `list_workspaces()` - List all company workspaces\n\n### Call_Transcripts Actions\n- `get_call_transcripts()` - Returns transcripts for calls in a specified date range or specific call IDs\n\n### Stats_Activity_Aggregate Actions\n- `get_activity_aggregate()` - Provides aggregated user activity metrics across a specified period\n\n### Stats_Activity_Day_By_Day Actions\n- `get_activity_day_by_day()` - Delivers daily user activity metrics across a specified date range\n\n### Stats_Interaction Actions\n- `get_interaction_stats()` - Returns interaction stats for users based on calls that have Whisper turned on\n\n### Settings_Scorecards Actions\n- `list_scorecards()` - Retrieve all scorecard configurations in the company\n\n### Settings_Trackers Actions\n- `list_trackers()` - Retrieve all keyword tracker configurations in the company\n\n### Library_Folders Actions\n- `list_library_folders()` - Retrieve the folder structure of the call library\n\n### Library_Folder_Content Actions\n- `list_folder_content()` - Retrieve calls in a specific library folder\n\n### Coaching Actions\n- `list_coaching_metrics()` - Retrieve coaching metrics for a manager and their direct reports\n\n### Stats_Activity_Scorecards Actions\n- `list_answered_scorecards()` - Retrieve answered scorecards for applicable reviewed users or scorecards for a date range",
+  "api_reference_url": "https://gong.app.gong.io/settings/api/documentation",
+  "commit_sha": "f2497f7128da08585d1470953e773671d33f348f",
   "auth_example": "GongAuthConfig(access_key=\"...\", access_key_secret=\"...\")",
-  "auth_import": "\nfrom airbyte_ai_gong.models import GongAuthConfig"
+  "auth_import": "\nfrom airbyte_ai_gong.models import GongAuthConfig",
+  "sdk_version": "0.1.0"
 }
