@@ -100,9 +100,7 @@ Get a single issue by ID via GraphQL
 **Python SDK**
 
 ```python
-linear.issues.get(
-    id="<str>"
-)
+linear.issues.get(    id="<str>")
 ```
 
 **API**
@@ -192,9 +190,7 @@ Get a single project by ID via GraphQL
 **Python SDK**
 
 ```python
-linear.projects.get(
-    id="<str>"
-)
+linear.projects.get(    id="<str>")
 ```
 
 **API**
@@ -284,9 +280,7 @@ Get a single team by ID via GraphQL
 **Python SDK**
 
 ```python
-linear.teams.get(
-    id="<str>"
-)
+linear.teams.get(    id="<str>")
 ```
 
 **API**

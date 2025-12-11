@@ -14,11 +14,7 @@ uv pip install airbyte-ai-linear
 from airbyte_ai_linear import LinearConnector
 from airbyte_ai_linear.models import LinearAuthConfig
 
-# Create connector
-connector = LinearConnector(auth_config=LinearAuthConfig(api_key="..."))
-
-# Use typed methods with full IDE autocomplete
-```
+connector = LinearConnector(auth_config=LinearAuthConfig(api_key="..."))result = connector.issues.list()```
 
 ## Documentation
 
@@ -28,8 +24,8 @@ For the service's official API docs, see [Linear API Reference](https://linear.a
 
 ## Version Information
 
-**Package Version:** 0.19.3
+**Package Version:** 0.19.4
 
 **Connector Version:** 0.1.0
 
-**Generated with connector-sdk:** f2497f7128da08585d1470953e773671d33f348f
+**Generated with connector-sdk:** bdd5df6d00c95fe27bf5a01652296763fbc05614
