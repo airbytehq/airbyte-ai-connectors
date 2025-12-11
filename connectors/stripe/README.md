@@ -18,30 +18,18 @@ from airbyte_ai_stripe.models import StripeAuthConfig
 connector = StripeConnector(auth_config=StripeAuthConfig(token="..."))
 
 # Use typed methods with full IDE autocomplete
-# (See Available Actions below for all methods)
 ```
-
-## Available Actions
-
-### Customers Actions
-- `customers__list()` - Returns a list of customers
-- `customers__get()` - Gets the details of an existing customer
-
-## Type Definitions
-
-All response types are fully typed using Pydantic models for IDE autocomplete support.
-Import types from `airbyte_ai_stripe.types`.
 
 ## Documentation
 
-Generated from OpenAPI 3.0 specification.
+For available actions and detailed API documentation, see [DOCS.md](./DOCS.md).
 
-For API documentation, see the service's official API docs.
+For the service's official API docs, see [Stripe API Reference](https://docs.stripe.com/api).
 
 ## Version Information
 
-**Package Version:** 0.5.2
+**Package Version:** 0.5.3
 
 **Connector Version:** 0.1.0
 
-**SDK Version:** 0.1.0
+**Generated with connector-sdk:** f2497f7128da08585d1470953e773671d33f348f
