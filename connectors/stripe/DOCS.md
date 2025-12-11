@@ -126,9 +126,7 @@ Gets the details of an existing customer
 **Python SDK**
 
 ```python
-stripe.customers.get(
-    id="<str>"
-)
+stripe.customers.get(    id="<str>")
 ```
 
 **API**
