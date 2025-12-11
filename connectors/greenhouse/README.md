@@ -14,11 +14,7 @@ uv pip install airbyte-ai-greenhouse
 from airbyte_ai_greenhouse import GreenhouseConnector
 from airbyte_ai_greenhouse.models import GreenhouseAuthConfig
 
-# Create connector
-connector = GreenhouseConnector(auth_config=GreenhouseAuthConfig(api_key="..."))
-
-# Use typed methods with full IDE autocomplete
-```
+connector = GreenhouseConnector(auth_config=GreenhouseAuthConfig(api_key="..."))result = connector.candidates.list()```
 
 ## Documentation
 
@@ -28,8 +24,8 @@ For the service's official API docs, see [Greenhouse API Reference](https://deve
 
 ## Version Information
 
-**Package Version:** 0.17.3
+**Package Version:** 0.17.4
 
 **Connector Version:** 0.1.0
 
-**Generated with connector-sdk:** f2497f7128da08585d1470953e773671d33f348f
+**Generated with connector-sdk:** bdd5df6d00c95fe27bf5a01652296763fbc05614

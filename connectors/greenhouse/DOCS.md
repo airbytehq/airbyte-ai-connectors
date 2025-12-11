@@ -97,9 +97,7 @@ Get a single candidate by ID
 **Python SDK**
 
 ```python
-greenhouse.candidates.get(
-    id="<str>"
-)
+greenhouse.candidates.get(    id="<str>")
 ```
 
 **API**
@@ -207,9 +205,7 @@ Get a single application by ID
 **Python SDK**
 
 ```python
-greenhouse.applications.get(
-    id="<str>"
-)
+greenhouse.applications.get(    id="<str>")
 ```
 
 **API**
@@ -311,9 +307,7 @@ Get a single job by ID
 **Python SDK**
 
 ```python
-greenhouse.jobs.get(
-    id="<str>"
-)
+greenhouse.jobs.get(    id="<str>")
 ```
 
 **API**
@@ -408,9 +402,7 @@ Get a single offer by ID
 **Python SDK**
 
 ```python
-greenhouse.offers.get(
-    id="<str>"
-)
+greenhouse.offers.get(    id="<str>")
 ```
 
 **API**
@@ -504,9 +496,7 @@ Get a single user by ID
 **Python SDK**
 
 ```python
-greenhouse.users.get(
-    id="<str>"
-)
+greenhouse.users.get(    id="<str>")
 ```
 
 **API**
@@ -597,9 +587,7 @@ Get a single department by ID
 **Python SDK**
 
 ```python
-greenhouse.departments.get(
-    id="<str>"
-)
+greenhouse.departments.get(    id="<str>")
 ```
 
 **API**
@@ -683,9 +671,7 @@ Get a single office by ID
 **Python SDK**
 
 ```python
-greenhouse.offices.get(
-    id="<str>"
-)
+greenhouse.offices.get(    id="<str>")
 ```
 
 **API**
@@ -773,9 +759,7 @@ Get a single job post by ID
 **Python SDK**
 
 ```python
-greenhouse.job_posts.get(
-    id="<str>"
-)
+greenhouse.job_posts.get(    id="<str>")
 ```
 
 **API**
@@ -906,9 +890,7 @@ Get a single scheduled interview by ID
 **Python SDK**
 
 ```python
-greenhouse.scheduled_interviews.get(
-    id="<str>"
-)
+greenhouse.scheduled_interviews.get(    id="<str>")
 ```
 
 **API**
@@ -970,11 +952,7 @@ Files should be downloaded immediately after retrieval.
 **Python SDK**
 
 ```python
-async for chunk in greenhouse.application_attachment.download(
-    id="<str>",
-    attachment_index="<str>"
-):
-    # Process each chunk (e.g., write to file)
+async for chunk in greenhouse.application_attachment.download(    id="<str>",    attachment_index="<str>"):# Process each chunk (e.g., write to file)
     file.write(chunk)
 ```
 
@@ -1018,11 +996,7 @@ Files should be downloaded immediately after retrieval.
 **Python SDK**
 
 ```python
-async for chunk in greenhouse.candidate_attachment.download(
-    id="<str>",
-    attachment_index="<str>"
-):
-    # Process each chunk (e.g., write to file)
+async for chunk in greenhouse.candidate_attachment.download(    id="<str>",    attachment_index="<str>"):# Process each chunk (e.g., write to file)
     file.write(chunk)
 ```
 
