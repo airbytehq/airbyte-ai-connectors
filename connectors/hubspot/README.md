@@ -27,7 +27,7 @@ tickets, and custom objects for customer relationship management and sales analy
 ## Installation
 
 ```bash
-uv pip install airbyte-ai-hubspot
+uv pip install airbyte-agent-hubspot
 ```
 
 ## Usage
@@ -64,7 +64,7 @@ For the service's official API docs, see [Hubspot API Reference](https://develop
 
 ## Version Information
 
-**Package Version:** 0.15.10
+**Package Version:** 0.1.0
 
 **Connector Version:** 0.1.2
 

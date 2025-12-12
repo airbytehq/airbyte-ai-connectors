@@ -29,7 +29,7 @@ notes, and attachments for sales analytics and customer relationship management.
 ## Installation
 
 ```bash
-uv pip install airbyte-ai-salesforce
+uv pip install airbyte-agent-salesforce
 ```
 
 ## Usage
@@ -71,7 +71,7 @@ For the service's official API docs, see [Salesforce API Reference](https://deve
 
 ## Version Information
 
-**Package Version:** 0.1.3
+**Package Version:** 0.1.0
 
 **Connector Version:** 1.0.3
 

@@ -32,7 +32,7 @@ The Python SDK exposes Airbyte AI Connectors as native Python clients. These can
 ```yaml
 dependencies = [
     "pydantic-ai>=0.0.1",
-    "airbyte-ai-gong",
+    "airbyte-agent-gong",
 ]
 ```
 

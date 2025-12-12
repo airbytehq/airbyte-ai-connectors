@@ -29,7 +29,7 @@ coaching metrics, and library content for sales performance analysis and revenue
 ## Installation
 
 ```bash
-uv pip install airbyte-ai-gong
+uv pip install airbyte-agent-gong
 ```
 
 ## Usage
@@ -74,7 +74,7 @@ For the service's official API docs, see [Gong API Reference](https://gong.app.g
 
 ## Version Information
 
-**Package Version:** 0.19.11
+**Package Version:** 0.1.0
 
 **Connector Version:** 0.1.3
 

@@ -30,7 +30,7 @@ teams, and users for project tracking, workload analysis, and productivity insig
 ## Installation
 
 ```bash
-uv pip install airbyte-ai-asana
+uv pip install airbyte-agent-asana
 ```
 
 ## Usage
@@ -75,7 +75,7 @@ For the service's official API docs, see [Asana API Reference](https://developer
 
 ## Version Information
 
-**Package Version:** 0.19.9
+**Package Version:** 0.1.0
 
 **Connector Version:** 0.1.1
 

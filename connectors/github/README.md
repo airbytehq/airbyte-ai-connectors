@@ -30,7 +30,7 @@ development workflow analysis and project management insights.
 ## Installation
 
 ```bash
-uv pip install airbyte-ai-github
+uv pip install airbyte-agent-github
 ```
 
 ## Usage
@@ -80,7 +80,7 @@ For the service's official API docs, see [Github API Reference](https://docs.git
 
 ## Version Information
 
-**Package Version:** 0.18.9
+**Package Version:** 0.1.0
 
 **Connector Version:** 0.1.1
 

@@ -29,7 +29,7 @@ for sprint planning, backlog management, and development workflow analysis.
 ## Installation
 
 ```bash
-uv pip install airbyte-ai-linear
+uv pip install airbyte-agent-linear
 ```
 
 ## Usage
@@ -60,7 +60,7 @@ For the service's official API docs, see [Linear API Reference](https://linear.a
 
 ## Version Information
 
-**Package Version:** 0.19.9
+**Package Version:** 0.1.0
 
 **Connector Version:** 0.1.1
 

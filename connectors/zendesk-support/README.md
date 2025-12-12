@@ -29,7 +29,7 @@ for customer support analytics and service performance insights.
 ## Installation
 
 ```bash
-uv pip install airbyte-ai-zendesk-support
+uv pip install airbyte-agent-zendesk-support
 ```
 
 ## Usage
@@ -80,7 +80,7 @@ For the service's official API docs, see [Zendesk-Support API Reference](https:/
 
 ## Version Information
 
-**Package Version:** 0.18.10
+**Package Version:** 0.1.0
 
 **Connector Version:** 0.1.3
 

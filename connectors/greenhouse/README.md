@@ -31,7 +31,7 @@ for recruiting analytics and talent acquisition insights.
 ## Installation
 
 ```bash
-uv pip install airbyte-ai-greenhouse
+uv pip install airbyte-agent-greenhouse
 ```
 
 ## Usage
@@ -71,7 +71,7 @@ For the service's official API docs, see [Greenhouse API Reference](https://deve
 
 ## Version Information
 
-**Package Version:** 0.17.9
+**Package Version:** 0.1.0
 
 **Connector Version:** 0.1.1
 

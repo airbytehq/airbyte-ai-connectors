@@ -29,7 +29,7 @@ access to customers for payment analytics and customer management.
 ## Installation
 
 ```bash
-uv pip install airbyte-ai-stripe
+uv pip install airbyte-agent-stripe
 ```
 
 ## Usage
@@ -58,7 +58,7 @@ For the service's official API docs, see [Stripe API Reference](https://docs.str
 
 ## Version Information
 
-**Package Version:** 0.5.9
+**Package Version:** 0.1.0
 
 **Connector Version:** 0.1.1
 
