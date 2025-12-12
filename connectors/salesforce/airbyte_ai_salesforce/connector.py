@@ -51,7 +51,6 @@ from .types import (
 
 if TYPE_CHECKING:
     from .models import SalesforceAuthConfig
-
 # Import response models and envelope models at runtime
 from .models import (
     SalesforceExecuteResult,
