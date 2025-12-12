@@ -1,6 +1,6 @@
 # Airbyte Asana AI Connector
 
-Type-safe Asana API connector with full IDE autocomplete support for AI applications.
+Connector for Asana API
 
 ## Installation
 
@@ -11,8 +11,7 @@ uv pip install airbyte-ai-asana
 ## Usage
 
 ```python
-from airbyte_ai_asana import AsanaConnector
-from airbyte_ai_asana.models import AsanaAuthConfig
+from airbyte_ai_asana import AsanaConnector, AsanaAuthConfig
 
 connector = AsanaConnector(auth_config=AsanaAuthConfig(access_token="...", refresh_token="...", client_id="...", client_secret="..."))
 result = connector.tasks.list()
@@ -20,14 +19,32 @@ result = connector.tasks.list()
 
 ## Documentation
 
-For available actions and detailed API documentation, see [DOCS.md](./DOCS.md).
+| Entity | Actions |
+|--------|---------|
+| Tasks | [List](./REFERENCE.md#tasks-list), [Get](./REFERENCE.md#tasks-get) |
+| Project Tasks | [List](./REFERENCE.md#project-tasks-list) |
+| Workspace Task Search | [List](./REFERENCE.md#workspace-task-search-list) |
+| Projects | [List](./REFERENCE.md#projects-list), [Get](./REFERENCE.md#projects-get) |
+| Task Projects | [List](./REFERENCE.md#task-projects-list) |
+| Team Projects | [List](./REFERENCE.md#team-projects-list) |
+| Workspace Projects | [List](./REFERENCE.md#workspace-projects-list) |
+| Workspaces | [List](./REFERENCE.md#workspaces-list), [Get](./REFERENCE.md#workspaces-get) |
+| Users | [List](./REFERENCE.md#users-list), [Get](./REFERENCE.md#users-get) |
+| Workspace Users | [List](./REFERENCE.md#workspace-users-list) |
+| Team Users | [List](./REFERENCE.md#team-users-list) |
+| Teams | [Get](./REFERENCE.md#teams-get) |
+| Workspace Teams | [List](./REFERENCE.md#workspace-teams-list) |
+| User Teams | [List](./REFERENCE.md#user-teams-list) |
+
+
+For detailed documentation on available actions and parameters, see [REFERENCE.md](./REFERENCE.md).
 
 For the service's official API docs, see [Asana API Reference](https://developers.asana.com/reference/rest-api-reference).
 
 ## Version Information
 
-**Package Version:** 0.19.6
+**Package Version:** 0.19.7
 
 **Connector Version:** 0.1.0
 
-**Generated with connector-sdk:** 8c06aa103e1f805b2e8fad3f0ba7004db3d2773a
+**Generated with connector-sdk:** 9f7f8a98389c3775a4d22db1aa81fbb03020a65b
