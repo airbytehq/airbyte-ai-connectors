@@ -1,6 +1,6 @@
 # Airbyte Agent MCP Server
 
-MCP server that exposes the Airbyte Connector SDK as Model Context Protocol tools.
+MCP server that exposes the Airbyte Connector SDK as Model Context Protocol tools. This MCP server is currently in early access and should be considered experimental.
 
 ## Features
 
@@ -25,32 +25,7 @@ connectors:
       token: STRIPE_API_KEY
 ```
 
-You can pin to a specific version from the registry:
-
-```yaml
-connectors:
-  - id: stripe
-    type: local
-    connector_name: stripe
-    version: 0.1.0
-    description: "Stripe connector pinned to v0.1.0"
-    secrets:
-      token: STRIPE_API_KEY
-```
-
-You can also load connectors from a local file path (version pinning not supported):
-
-```yaml
-connectors:
-  - id: my_api
-    type: local
-    path: ./connectors/my-api/connector.yaml
-    description: "My custom API connector"
-    secrets:
-      token: MY_API_KEY
-```
-
-See `configured_connectors.yaml.example` for more examples.
+See `configured_connectors.yaml.example` for more advanced examples, including pinning a connector version and loading connectors from local file path.
 
 ### 2. Create .env file
 
