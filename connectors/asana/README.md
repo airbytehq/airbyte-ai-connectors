@@ -13,7 +13,14 @@ uv pip install airbyte-ai-asana
 ```python
 from airbyte_ai_asana import AsanaConnector, AsanaAuthConfig
 
-connector = AsanaConnector(auth_config=AsanaAuthConfig(access_token="...", refresh_token="...", client_id="...", client_secret="..."))
+connector = AsanaConnector(
+  auth_config=AsanaAuthConfig(
+    access_token="...",
+    refresh_token="...",
+    client_id="...",
+    client_secret="..."
+  )
+)
 result = connector.tasks.list()
 ```
 
@@ -43,8 +50,8 @@ For the service's official API docs, see [Asana API Reference](https://developer
 
 ## Version Information
 
-**Package Version:** 0.19.7
+**Package Version:** 0.19.8
 
 **Connector Version:** 0.1.0
 
-**Generated with connector-sdk:** 9f7f8a98389c3775a4d22db1aa81fbb03020a65b
+**Generated with connector-sdk:** dc79dc8b685e9d8cb980ea80f12595e31c88fdf7
