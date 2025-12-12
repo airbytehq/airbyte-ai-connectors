@@ -5,14 +5,37 @@ openapi: 3.1.0
 
 info:
   title: Greenhouse Harvest API Connector
-  version: 0.1.0
-  description: Connector for Greenhouse Harvest API
+  version: 0.1.1
+  description: |
+    Greenhouse is an applicant tracking system (ATS) that helps companies manage their
+    hiring process. This connector provides access to candidates, applications, jobs,
+    offers, users, departments, offices, job posts, sources, and scheduled interviews
+    for recruiting analytics and talent acquisition insights.
   x-airbyte-connector-name: greenhouse
   x-airbyte-connector-id: 59f1e50a-331f-4f09-b3e8-2e8d4d355f44
   x-airbyte-external-documentation-urls:
     - type: api_reference
       title: Greenhouse API Reference documentation
       url: "https://developers.greenhouse.io/harvest.html"
+  x-airbyte-example-questions:
+    supported:
+      - "Show me candidates from [Company] who applied last month"
+      - "What are the top 5 sources for our job applications this quarter?"
+      - "List all open jobs in the Sales department"
+      - "Analyze the interview schedules for our engineering candidates this week"
+      - "Get details of recent job offers for [teamMember]"
+      - "Compare the number of applications across different offices"
+      - "Identify candidates who have multiple applications in our system"
+      - "Show me upcoming scheduled interviews for our marketing positions"
+      - "Summarize the candidate pipeline for our latest job posting"
+      - "Find the most active departments in recruiting this month"
+    unsupported:
+      - "Create a new job posting for the marketing team"
+      - "Schedule an interview for [candidate]"
+      - "Update the status of [candidate]'s application"
+      - "Delete a candidate profile"
+      - "Send an offer letter to [candidate]"
+      - "Edit the details of a job description"
 
 servers:
   - url: https://harvest.greenhouse.io/v1

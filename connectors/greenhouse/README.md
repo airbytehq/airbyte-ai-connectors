@@ -1,6 +1,32 @@
 # Airbyte Greenhouse AI Connector
 
-Connector for Greenhouse Harvest API
+Greenhouse is an applicant tracking system (ATS) that helps companies manage their
+hiring process. This connector provides access to candidates, applications, jobs,
+offers, users, departments, offices, job posts, sources, and scheduled interviews
+for recruiting analytics and talent acquisition insights.
+
+
+## Example Questions
+
+- Show me candidates from [Company] who applied last month
+- What are the top 5 sources for our job applications this quarter?
+- List all open jobs in the Sales department
+- Analyze the interview schedules for our engineering candidates this week
+- Get details of recent job offers for [teamMember]
+- Compare the number of applications across different offices
+- Identify candidates who have multiple applications in our system
+- Show me upcoming scheduled interviews for our marketing positions
+- Summarize the candidate pipeline for our latest job posting
+- Find the most active departments in recruiting this month
+
+## Unsupported Questions
+
+- Create a new job posting for the marketing team
+- Schedule an interview for [candidate]
+- Update the status of [candidate]'s application
+- Delete a candidate profile
+- Send an offer letter to [candidate]
+- Edit the details of a job description
 
 ## Installation
 
@@ -45,8 +71,8 @@ For the service's official API docs, see [Greenhouse API Reference](https://deve
 
 ## Version Information
 
-**Package Version:** 0.17.8
+**Package Version:** 0.17.9
 
-**Connector Version:** 0.1.0
+**Connector Version:** 0.1.1
 
-**Generated with connector-sdk:** dc79dc8b685e9d8cb980ea80f12595e31c88fdf7
+**Generated with connector-sdk:** 4d366cb586482b57efd0c680b3523bbfe48f2180
