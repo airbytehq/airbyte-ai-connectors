@@ -5,10 +5,31 @@ openapi: 3.1.0
 
 info:
   title: Gong API Connector
-  version: 0.1.1
-  description: Connector for Gong API
+  version: 0.1.2
+  description: |
+    Gong is a revenue intelligence platform that captures and analyzes customer interactions
+    across calls, emails, and web conferences. This connector provides access to users,
+    recorded calls with transcripts, activity statistics, scorecards, trackers, workspaces,
+    coaching metrics, and library content for sales performance analysis and revenue insights.
   x-airbyte-connector-name: gong
   x-airbyte-connector-id: 32382e40-3b49-4b99-9c5c-4076501914e7
+  x-airbyte-example-questions:
+    supported:
+      - "List all users in my Gong account"
+      - "Show me calls from last week"
+      - "Get the transcript for call abc123"
+      - "What are the activity stats for our sales team?"
+      - "List all workspaces in Gong"
+      - "Show me the scorecard configurations"
+      - "What trackers are set up in my account?"
+      - "Get coaching metrics for manager user123"
+    unsupported:
+      - "Create a new user in Gong"
+      - "Delete a call recording"
+      - "Update scorecard questions"
+      - "Schedule a new meeting"
+      - "Send feedback to a team member"
+      - "Modify tracker keywords"
   x-airbyte-external-documentation-urls:
     - type: api_reference
       title: Gong API Documentation
