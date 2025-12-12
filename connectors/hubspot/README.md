@@ -1,6 +1,28 @@
 # Airbyte Hubspot AI Connector
 
-Connector for HubSpot CRM API
+HubSpot is a CRM platform that provides tools for marketing, sales, customer service,
+and content management. This connector provides access to contacts, companies, deals,
+tickets, and custom objects for customer relationship management and sales analytics.
+
+
+## Example Questions
+
+- Show me all deals from [Company] this quarter
+- What are the top 5 most valuable deals in my pipeline right now?
+- List recent tickets from [customerX] and analyze their support trends
+- Search for contacts in the marketing department at [Company]
+- Give me an overview of my sales team's deals in the last 30 days
+- Identify the most active companies in our CRM this month
+- Compare the number of deals closed by different sales representatives
+- Find all tickets related to a specific product issue and summarize their status
+
+## Unsupported Questions
+
+- Create a new contact record for [personX]
+- Update the contact information for [customerY]
+- Delete the ticket from last week's support case
+- Schedule a follow-up task for this deal
+- Send an email to all contacts in the sales pipeline
 
 ## Installation
 
@@ -42,8 +64,8 @@ For the service's official API docs, see [Hubspot API Reference](https://develop
 
 ## Version Information
 
-**Package Version:** 0.15.9
+**Package Version:** 0.15.10
 
-**Connector Version:** 0.1.1
+**Connector Version:** 0.1.2
 
-**Generated with connector-sdk:** dc79dc8b685e9d8cb980ea80f12595e31c88fdf7
+**Generated with connector-sdk:** 4d366cb586482b57efd0c680b3523bbfe48f2180
