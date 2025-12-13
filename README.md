@@ -112,7 +112,7 @@ Compared to building ad‑hoc API wrappers, these connectors give you a shared s
 We are actively expanding AI Connectors. Coming soon:
 * Writes!
 * MCP support (Model Context Protocol)
-* Hosted execution and search
+* Hosted execution, authentication, and search
 * Demo apps + starter templates
 * More connectors added weekly
 
