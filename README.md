@@ -110,6 +110,7 @@ Compared to building ad‑hoc API wrappers, these connectors give you a shared s
 
 ## Roadmap
 We are actively expanding AI Connectors. Coming soon:
+* Writes!
 * MCP support (Model Context Protocol)
 * Hosted API Gateway for managed tool execution
 * Demo apps + starter templates
