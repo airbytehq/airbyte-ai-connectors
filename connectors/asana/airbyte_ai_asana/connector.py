@@ -93,6 +93,29 @@ class AsanaConnector:
         ("user_teams", "list"): True,
     }
 
+    # Map of (entity, action) -> {python_param_name: api_param_name}
+    # Used to convert snake_case TypedDict keys to API parameter names in execute()
+    _PARAM_MAP = {
+        ('tasks', 'list'): {'limit': 'limit', 'offset': 'offset', 'project': 'project', 'workspace': 'workspace', 'section': 'section', 'assignee': 'assignee', 'completed_since': 'completed_since', 'modified_since': 'modified_since'},
+        ('project_tasks', 'list'): {'project_gid': 'project_gid', 'limit': 'limit', 'offset': 'offset', 'completed_since': 'completed_since'},
+        ('tasks', 'get'): {'task_gid': 'task_gid'},
+        ('workspace_task_search', 'list'): {'workspace_gid': 'workspace_gid', 'limit': 'limit', 'offset': 'offset', 'text': 'text', 'completed': 'completed', 'assignee_any': 'assignee.any', 'projects_any': 'projects.any', 'sections_any': 'sections.any', 'teams_any': 'teams.any', 'followers_any': 'followers.any', 'created_at_after': 'created_at.after', 'created_at_before': 'created_at.before', 'modified_at_after': 'modified_at.after', 'modified_at_before': 'modified_at.before', 'due_on_after': 'due_on.after', 'due_on_before': 'due_on.before', 'resource_subtype': 'resource_subtype', 'sort_by': 'sort_by', 'sort_ascending': 'sort_ascending'},
+        ('projects', 'list'): {'limit': 'limit', 'offset': 'offset', 'workspace': 'workspace', 'team': 'team', 'archived': 'archived'},
+        ('projects', 'get'): {'project_gid': 'project_gid'},
+        ('task_projects', 'list'): {'task_gid': 'task_gid', 'limit': 'limit', 'offset': 'offset'},
+        ('team_projects', 'list'): {'team_gid': 'team_gid', 'limit': 'limit', 'offset': 'offset', 'archived': 'archived'},
+        ('workspace_projects', 'list'): {'workspace_gid': 'workspace_gid', 'limit': 'limit', 'offset': 'offset', 'archived': 'archived'},
+        ('workspaces', 'list'): {'limit': 'limit', 'offset': 'offset'},
+        ('workspaces', 'get'): {'workspace_gid': 'workspace_gid'},
+        ('users', 'list'): {'limit': 'limit', 'offset': 'offset', 'workspace': 'workspace', 'team': 'team'},
+        ('users', 'get'): {'user_gid': 'user_gid'},
+        ('workspace_users', 'list'): {'workspace_gid': 'workspace_gid', 'limit': 'limit', 'offset': 'offset'},
+        ('team_users', 'list'): {'team_gid': 'team_gid', 'limit': 'limit', 'offset': 'offset'},
+        ('teams', 'get'): {'team_gid': 'team_gid'},
+        ('workspace_teams', 'list'): {'workspace_gid': 'workspace_gid', 'limit': 'limit', 'offset': 'offset'},
+        ('user_teams', 'list'): {'user_gid': 'user_gid', 'organization': 'organization', 'limit': 'limit', 'offset': 'offset'},
+    }
+
     def __init__(
         self,
         auth_config: AsanaAuthConfig | None = None,
@@ -380,6 +403,12 @@ class AsanaConnector:
             )
         """
         from ._vendored.connector_sdk.executor import ExecutionConfig
+
+        # Remap parameter names from snake_case (TypedDict keys) to API parameter names
+        if params:
+            param_map = self._PARAM_MAP.get((entity, action), {})
+            if param_map:
+                params = {param_map.get(k, k): v for k, v in params.items()}
 
         # Use ExecutionConfig for both local and hosted executors
         config = ExecutionConfig(
