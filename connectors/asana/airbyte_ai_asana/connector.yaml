@@ -5,7 +5,7 @@ openapi: 3.1.0
 
 info:
   title: Asana API Connector
-  version: 0.1.3
+  version: 0.1.4
   description: |
     Asana is a work management platform that helps teams organize, track, and manage
     projects and tasks. This connector provides access to tasks, projects, workspaces,
@@ -54,6 +54,7 @@ servers:
 
 security:
   - oauth2: []
+  - personalAccessToken: []
 
 paths:
   # Tasks endpoints
@@ -977,6 +978,263 @@ paths:
         "401":
           description: Unauthorized
 
+  # Tags endpoints
+  "/workspaces/{workspace_gid}/tags":
+    get:
+      summary: List tags for a workspace
+      description: Returns all tags in a workspace
+      operationId: listWorkspaceTags
+      x-airbyte-entity: workspace_tags
+      x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
+      parameters:
+        - name: workspace_gid
+          in: path
+          required: true
+          description: Workspace GID to list tags from
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of items to return per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Pagination offset token
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of tags
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TagsList"
+        "401":
+          description: Unauthorized
+
+  "/tags/{tag_gid}":
+    get:
+      summary: Get a tag
+      description: Get a single tag by its ID
+      operationId: getTag
+      x-airbyte-entity: tags
+      x-airbyte-action: get
+      x-airbyte-record-extractor: "$.data"
+      parameters:
+        - name: tag_gid
+          in: path
+          required: true
+          description: Tag GID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Tag object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TagResponse"
+        "404":
+          description: Tag not found
+        "401":
+          description: Unauthorized
+
+  # Sections endpoints
+  "/projects/{project_gid}/sections":
+    get:
+      summary: List sections for a project
+      description: Returns all sections in a project
+      operationId: listProjectSections
+      x-airbyte-entity: project_sections
+      x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
+      parameters:
+        - name: project_gid
+          in: path
+          required: true
+          description: Project GID to list sections from
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of items to return per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Pagination offset token
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of sections
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SectionsList"
+        "401":
+          description: Unauthorized
+
+  "/sections/{section_gid}":
+    get:
+      summary: Get a section
+      description: Get a single section by its ID
+      operationId: getSection
+      x-airbyte-entity: sections
+      x-airbyte-action: get
+      x-airbyte-record-extractor: "$.data"
+      parameters:
+        - name: section_gid
+          in: path
+          required: true
+          description: Section GID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Section object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SectionResponse"
+        "404":
+          description: Section not found
+        "401":
+          description: Unauthorized
+
+  # Task relationships endpoints
+  "/tasks/{task_gid}/subtasks":
+    get:
+      summary: List subtasks for a task
+      description: Returns all subtasks of a task
+      operationId: listTaskSubtasks
+      x-airbyte-entity: task_subtasks
+      x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
+      parameters:
+        - name: task_gid
+          in: path
+          required: true
+          description: Task GID to list subtasks from
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of items to return per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Pagination offset token
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of subtasks
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TasksList"
+        "401":
+          description: Unauthorized
+
+  "/tasks/{task_gid}/dependencies":
+    get:
+      summary: List dependencies for a task
+      description: Returns all tasks that this task depends on
+      operationId: listTaskDependencies
+      x-airbyte-entity: task_dependencies
+      x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
+      parameters:
+        - name: task_gid
+          in: path
+          required: true
+          description: Task GID to list dependencies from
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of items to return per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Pagination offset token
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of dependencies
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TasksList"
+        "401":
+          description: Unauthorized
+
+  "/tasks/{task_gid}/dependents":
+    get:
+      summary: List dependents for a task
+      description: Returns all tasks that depend on this task
+      operationId: listTaskDependents
+      x-airbyte-entity: task_dependents
+      x-airbyte-action: list
+      x-airbyte-record-extractor: "$.data"
+      x-airbyte-meta-extractor:
+        next_page: $.next_page
+      parameters:
+        - name: task_gid
+          in: path
+          required: true
+          description: Task GID to list dependents from
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of items to return per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Pagination offset token
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of dependents
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TasksList"
+        "401":
+          description: Unauthorized
+
 components:
   securitySchemes:
     oauth2:
@@ -989,13 +1247,13 @@ components:
           refreshUrl: https://app.asana.com/-/oauth_token
           scopes:
             default: Default access to user's Asana data
-            # tasks:read: Read access to tasks
-            # tasks:write: Write access to tasks
-            # tasks:delete: Delete tasks
-            # projects:read: Read access to projects
-            # projects:write: Write access to projects
-            # users:read: Read access to users
-            # workspaces:read: Read access to workspaces
+            tasks:read: Read access to tasks
+            projects:read: Read access to projects
+            users:read: Read access to users
+            workspaces:read: Read access to workspaces
+            teams:read: Read access to teams
+            attachments:read: Read access to attachments
+            tags:read: Read access to tags
       x-airbyte-token-refresh:
         auth_style: body
         body_format: form
@@ -1003,7 +1261,6 @@ components:
         title: "Asana OAuth 2.0"
         type: object
         required:
-          - access_token
           - refresh_token
           - client_id
           - client_secret
@@ -1032,6 +1289,24 @@ components:
           refresh_token: "${refresh_token}"
           client_id: "${client_id}"
           client_secret: "${client_secret}"
+
+    personalAccessToken:
+      type: http
+      scheme: bearer
+      description: Personal Access Token authentication for Asana API
+      x-airbyte-auth-config:
+        title: "Personal Access Token"
+        type: object
+        required:
+          - token
+        properties:
+          token:
+            type: string
+            title: "Personal Access Token"
+            description: "Your Asana Personal Access Token. Generate one at https://app.asana.com/0/my-apps"
+            airbyte_secret: true
+        auth_mapping:
+          token: "${token}"
 
   schemas:
     # Task schemas
@@ -1668,6 +1943,140 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/AttachmentCompact"
+        next_page:
+          type: ["object", "null"]
+          properties:
+            offset:
+              type: string
+            path:
+              type: string
+            uri:
+              type: string
+
+    # Tag schemas
+    TagCompact:
+      type: object
+      x-airbyte-entity-name: tags
+      description: Compact tag object
+      properties:
+        gid:
+          type: string
+          description: Globally unique identifier
+        resource_type:
+          type: string
+          description: Resource type (tag)
+        name:
+          type: string
+          description: Tag name
+
+    Tag:
+      type: object
+      description: Full tag object
+      properties:
+        gid:
+          type: string
+        resource_type:
+          type: string
+        name:
+          type: string
+        color:
+          type: string
+        created_at:
+          type: string
+        followers:
+          type: array
+        notes:
+          type: string
+        permalink_url:
+          type: string
+        workspace:
+          type: object
+          properties:
+            gid:
+              type: string
+            name:
+              type: string
+            resource_type:
+              type: string
+
+    TagResponse:
+      type: object
+      description: Tag response wrapper
+      properties:
+        data:
+          $ref: "#/components/schemas/Tag"
+
+    TagsList:
+      type: object
+      description: Paginated list of tags containing compact tag objects
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/TagCompact"
+        next_page:
+          type: ["object", "null"]
+          properties:
+            offset:
+              type: string
+            path:
+              type: string
+            uri:
+              type: string
+
+    # Section schemas
+    SectionCompact:
+      type: object
+      x-airbyte-entity-name: sections
+      description: Compact section object
+      properties:
+        gid:
+          type: string
+          description: Globally unique identifier
+        resource_type:
+          type: string
+          description: Resource type (section)
+        name:
+          type: string
+          description: Section name
+
+    Section:
+      type: object
+      description: Full section object
+      properties:
+        gid:
+          type: string
+        resource_type:
+          type: string
+        name:
+          type: string
+        created_at:
+          type: string
+        project:
+          type: object
+          properties:
+            gid:
+              type: string
+            name:
+              type: string
+            resource_type:
+              type: string
+
+    SectionResponse:
+      type: object
+      description: Section response wrapper
+      properties:
+        data:
+          $ref: "#/components/schemas/Section"
+
+    SectionsList:
+      type: object
+      description: Paginated list of sections containing compact section objects
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/SectionCompact"
         next_page:
           type: ["object", "null"]
           properties:

@@ -68,6 +68,13 @@ result = connector.tasks.list()
 | Workspace Teams | [List](./REFERENCE.md#workspace-teams-list) |
 | User Teams | [List](./REFERENCE.md#user-teams-list) |
 | Attachments | [List](./REFERENCE.md#attachments-list), [Get](./REFERENCE.md#attachments-get), [Download](./REFERENCE.md#attachments-download) |
+| Workspace Tags | [List](./REFERENCE.md#workspace-tags-list) |
+| Tags | [Get](./REFERENCE.md#tags-get) |
+| Project Sections | [List](./REFERENCE.md#project-sections-list) |
+| Sections | [Get](./REFERENCE.md#sections-get) |
+| Task Subtasks | [List](./REFERENCE.md#task-subtasks-list) |
+| Task Dependencies | [List](./REFERENCE.md#task-dependencies-list) |
+| Task Dependents | [List](./REFERENCE.md#task-dependents-list) |
 
 
 For detailed documentation on available actions and parameters, see [REFERENCE.md](./REFERENCE.md).
@@ -76,8 +83,8 @@ For the service's official API docs, see [Asana API Reference](https://developer
 
 ## Version Information
 
-**Package Version:** 0.19.16
+**Package Version:** 0.19.17
 
-**Connector Version:** 0.1.3
+**Connector Version:** 0.1.4
 
-**Generated with connector-sdk:** 0bfa6500a4fcf1cba2cffcc4d7ec640a76bbc568
+**Generated with connector-sdk:** 2a87588566814b03f5ce2400ba0c36743c859ba2
