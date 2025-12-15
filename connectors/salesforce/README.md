@@ -29,13 +29,13 @@ notes, and attachments for sales analytics and customer relationship management.
 ## Installation
 
 ```bash
-uv pip install airbyte-ai-salesforce
+uv pip install airbyte-agent-salesforce
 ```
 
 ## Usage
 
 ```python
-from airbyte_ai_salesforce import SalesforceConnector, SalesforceAuthConfig
+from airbyte_agent_salesforce import SalesforceConnector, SalesforceAuthConfig
 
 connector = SalesforceConnector(
   auth_config=SalesforceAuthConfig(
@@ -71,8 +71,8 @@ For the service's official API docs, see [Salesforce API Reference](https://deve
 
 ## Version Information
 
-**Package Version:** 0.1.9
+**Package Version:** 0.1.10
 
 **Connector Version:** 1.0.3
 
-**Generated with connector-sdk:** 0bfa6500a4fcf1cba2cffcc4d7ec640a76bbc568
+**Generated with connector-sdk:** 85f4e6b03728cce87761a48e33f02aab68255baf
