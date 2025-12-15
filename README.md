@@ -10,7 +10,7 @@
 
 <p/>
 
-[![Python](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
 [![Publish Connectors](https://github.com/airbytehq/airbyte-ai-connectors/actions/workflows/publish.yml/badge.svg)](https://github.com/airbytehq/airbyte-ai-connectors/actions/workflows/publish.yml)
 [![License](https://img.shields.io/badge/License-Elastic_2.0-blue.svg)](LICENSE)
 [![Airbyte Stars](https://img.shields.io/github/stars/airbytehq/airbyte-agent-connectors?style=social)](https://github.com/airbytehq/airbyte-agent-connectors)
