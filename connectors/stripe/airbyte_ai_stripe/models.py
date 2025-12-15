@@ -62,59 +62,31 @@ class CustomerDiscount(BaseModel):
     subscription_item: Union[str | None, Any] = Field(default=None, description="The subscription item that this coupon is applied to")
     """The subscription item that this coupon is applied to"""
 
-class CustomerShippingAddress(BaseModel):
-    """Customer shipping address"""
+class CustomerCashBalanceSettings(BaseModel):
+    """A hash of settings for this cash balance"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    city: Union[str | None, Any] = Field(default=None, description="City, district, suburb, town, or village")
-    """City, district, suburb, town, or village"""
-    country: Union[str | None, Any] = Field(default=None, description="Two-letter country code (ISO 3166-1 alpha-2)")
-    """Two-letter country code (ISO 3166-1 alpha-2)"""
-    line1: Union[str | None, Any] = Field(default=None, description="Address line 1, such as the street, PO Box, or company name")
-    """Address line 1, such as the street, PO Box, or company name"""
-    line2: Union[str | None, Any] = Field(default=None, description="Address line 2, such as the apartment, suite, unit, or building")
-    """Address line 2, such as the apartment, suite, unit, or building"""
-    postal_code: Union[str | None, Any] = Field(default=None, description="ZIP or postal code")
-    """ZIP or postal code"""
-    state: Union[str | None, Any] = Field(default=None, description="State, county, province, or region")
-    """State, county, province, or region"""
+    reconciliation_mode: Union[str, Any] = Field(default=None, description="The configuration for how funds that land in the customer cash balance are reconciled")
+    """The configuration for how funds that land in the customer cash balance are reconciled"""
+    using_merchant_default: Union[bool, Any] = Field(default=None, description="A flag to indicate if reconciliation mode returned is the user's default or is specific to this customer cash balance")
+    """A flag to indicate if reconciliation mode returned is the user's default or is specific to this customer cash balance"""
 
-class CustomerShipping(BaseModel):
-    """Mailing and shipping address for the customer"""
+class CustomerCashBalance(BaseModel):
+    """The current funds being held by Stripe on behalf of the customer"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    address: Union[CustomerShippingAddress, Any] = Field(default=None, description="Customer shipping address")
-    """Customer shipping address"""
-    name: Union[str, Any] = Field(default=None, description="Customer name")
-    """Customer name"""
-    phone: Union[str | None, Any] = Field(default=None, description="Customer phone (including extension)")
-    """Customer phone (including extension)"""
-
-class CustomerAddress(BaseModel):
-    """The customer's address"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    city: Union[str | None, Any] = Field(default=None, description="City, district, suburb, town, or village")
-    """City, district, suburb, town, or village"""
-    country: Union[str | None, Any] = Field(default=None, description="Two-letter country code (ISO 3166-1 alpha-2)")
-    """Two-letter country code (ISO 3166-1 alpha-2)"""
-    line1: Union[str | None, Any] = Field(default=None, description="Address line 1, such as the street, PO Box, or company name")
-    """Address line 1, such as the street, PO Box, or company name"""
-    line2: Union[str | None, Any] = Field(default=None, description="Address line 2, such as the apartment, suite, unit, or building")
-    """Address line 2, such as the apartment, suite, unit, or building"""
-    postal_code: Union[str | None, Any] = Field(default=None, description="ZIP or postal code")
-    """ZIP or postal code"""
-    state: Union[str | None, Any] = Field(default=None, description="State, county, province, or region")
-    """State, county, province, or region"""
-
-class SubscriptionBillingThresholds(BaseModel):
-    """Define thresholds at which an invoice will be sent, and the subscription advanced to a new billing period"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    amount_gte: Union[int | None, Any] = Field(default=None, description="Monetary threshold that triggers the subscription to create an invoice")
-    """Monetary threshold that triggers the subscription to create an invoice"""
-    reset_billing_cycle_anchor: Union[bool | None, Any] = Field(default=None, description="Indicates if the billing_cycle_anchor should be reset when a threshold is reached")
-    """Indicates if the billing_cycle_anchor should be reset when a threshold is reached"""
+    object: Union[str, Any] = Field(default=None, description="String representing the object's type")
+    """String representing the object's type"""
+    available: Union[dict[str, Any] | None, Any] = Field(default=None, description="A hash of all cash balances available to this customer")
+    """A hash of all cash balances available to this customer"""
+    customer: Union[str, Any] = Field(default=None, description="The ID of the customer whose cash balance this object represents")
+    """The ID of the customer whose cash balance this object represents"""
+    customer_account: Union[str | None, Any] = Field(default=None, description="The ID of the account whose cash balance this object represents")
+    """The ID of the account whose cash balance this object represents"""
+    livemode: Union[bool, Any] = Field(default=None, description="Has the value true if the object exists in live mode or false if in test mode")
+    """Has the value true if the object exists in live mode or false if in test mode"""
+    settings: Union[CustomerCashBalanceSettings, Any] = Field(default=None, description="A hash of settings for this cash balance")
+    """A hash of settings for this cash balance"""
 
 class SubscriptionBillingCycleAnchorConfig(BaseModel):
     """The fixed values used to calculate the billing_cycle_anchor"""
@@ -131,54 +103,64 @@ class SubscriptionBillingCycleAnchorConfig(BaseModel):
     second: Union[int | None, Any] = Field(default=None, description="The second of the minute of the billing_cycle_anchor")
     """The second of the minute of the billing_cycle_anchor"""
 
-class SubscriptionAutomaticTaxLiability(BaseModel):
-    """The account that's liable for tax"""
+class SubscriptionDefaultTaxRatesItemFlatAmount(BaseModel):
+    """The amount of the tax rate when the rate_type is flat_amount"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    account: Union[str | None, Any] = Field(default=None, description="The connected account being referenced when type is account")
-    """The connected account being referenced when type is account"""
-    type: Union[str, Any] = Field(default=None, description="Type of the account referenced")
-    """Type of the account referenced"""
+    amount: Union[int, Any] = Field(default=None, description="Amount of the tax when the rate_type is flat_amount")
+    """Amount of the tax when the rate_type is flat_amount"""
+    currency: Union[str, Any] = Field(default=None, description="Three-letter ISO currency code, in lowercase")
+    """Three-letter ISO currency code, in lowercase"""
 
-class SubscriptionAutomaticTax(BaseModel):
-    """Automatic tax settings for this subscription"""
+class SubscriptionDefaultTaxRatesItem(BaseModel):
+    """Nested schema for Subscription.default_tax_rates_item"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    disabled_reason: Union[str | None, Any] = Field(default=None, description="If Stripe disabled automatic tax, this enum describes why")
-    """If Stripe disabled automatic tax, this enum describes why"""
-    enabled: Union[bool, Any] = Field(default=None, description="Whether Stripe automatically computes tax on this subscription")
-    """Whether Stripe automatically computes tax on this subscription"""
-    liability: Union[SubscriptionAutomaticTaxLiability | None, Any] = Field(default=None, description="The account that's liable for tax")
-    """The account that's liable for tax"""
+    id: Union[str, Any] = Field(default=None, description="Unique identifier for the object")
+    """Unique identifier for the object"""
+    object: Union[str, Any] = Field(default=None, description="String representing the object's type")
+    """String representing the object's type"""
+    active: Union[bool, Any] = Field(default=None, description="Defaults to true")
+    """Defaults to true"""
+    country: Union[str | None, Any] = Field(default=None, description="Two-letter country code (ISO 3166-1 alpha-2)")
+    """Two-letter country code (ISO 3166-1 alpha-2)"""
+    created: Union[int, Any] = Field(default=None, description="Time at which the object was created")
+    """Time at which the object was created"""
+    description: Union[str | None, Any] = Field(default=None, description="An arbitrary string attached to the tax rate for your internal use only")
+    """An arbitrary string attached to the tax rate for your internal use only"""
+    display_name: Union[str, Any] = Field(default=None, description="The display name of the tax rates")
+    """The display name of the tax rates"""
+    effective_percentage: Union[float | None, Any] = Field(default=None, description="Actual/effective tax rate percentage out of 100")
+    """Actual/effective tax rate percentage out of 100"""
+    flat_amount: Union[SubscriptionDefaultTaxRatesItemFlatAmount | None, Any] = Field(default=None, description="The amount of the tax rate when the rate_type is flat_amount")
+    """The amount of the tax rate when the rate_type is flat_amount"""
+    inclusive: Union[bool, Any] = Field(default=None, description="This specifies if the tax rate is inclusive or exclusive")
+    """This specifies if the tax rate is inclusive or exclusive"""
+    jurisdiction: Union[str | None, Any] = Field(default=None, description="The jurisdiction for the tax rate")
+    """The jurisdiction for the tax rate"""
+    jurisdiction_level: Union[str | None, Any] = Field(default=None, description="The level of the jurisdiction that imposes this tax rate")
+    """The level of the jurisdiction that imposes this tax rate"""
+    livemode: Union[bool, Any] = Field(default=None, description="Has the value true if the object exists in live mode or false if in test mode")
+    """Has the value true if the object exists in live mode or false if in test mode"""
+    metadata: Union[dict[str, str] | None, Any] = Field(default=None, description="Set of key-value pairs")
+    """Set of key-value pairs"""
+    percentage: Union[float, Any] = Field(default=None, description="Tax rate percentage out of 100")
+    """Tax rate percentage out of 100"""
+    rate_type: Union[str | None, Any] = Field(default=None, description="Indicates the type of tax rate applied to the taxable amount")
+    """Indicates the type of tax rate applied to the taxable amount"""
+    state: Union[str | None, Any] = Field(default=None, description="ISO 3166-2 subdivision code, without country prefix")
+    """ISO 3166-2 subdivision code, without country prefix"""
+    tax_type: Union[str | None, Any] = Field(default=None, description="The high-level tax type")
+    """The high-level tax type"""
 
-class SubscriptionCancellationDetails(BaseModel):
-    """Details about why this subscription was cancelled"""
+class SubscriptionBillingThresholds(BaseModel):
+    """Define thresholds at which an invoice will be sent, and the subscription advanced to a new billing period"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    comment: Union[str | None, Any] = Field(default=None, description="Additional comments about why the user canceled the subscription")
-    """Additional comments about why the user canceled the subscription"""
-    feedback: Union[str | None, Any] = Field(default=None, description="The customer submitted reason for why they canceled")
-    """The customer submitted reason for why they canceled"""
-    reason: Union[str | None, Any] = Field(default=None, description="Why this subscription was canceled")
-    """Why this subscription was canceled"""
-
-class SubscriptionInvoiceSettingsIssuer(BaseModel):
-    """The connected account that issues the invoice"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    account: Union[str | None, Any] = Field(default=None, description="The connected account being referenced when type is account")
-    """The connected account being referenced when type is account"""
-    type: Union[str, Any] = Field(default=None, description="Type of the account referenced")
-    """Type of the account referenced"""
-
-class SubscriptionInvoiceSettings(BaseModel):
-    """All invoices will be billed using the specified settings"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    account_tax_ids: Union[list[str] | None, Any] = Field(default=None, description="The account tax IDs associated with the subscription")
-    """The account tax IDs associated with the subscription"""
-    issuer: Union[SubscriptionInvoiceSettingsIssuer, Any] = Field(default=None, description="The connected account that issues the invoice")
-    """The connected account that issues the invoice"""
+    amount_gte: Union[int | None, Any] = Field(default=None, description="Monetary threshold that triggers the subscription to create an invoice")
+    """Monetary threshold that triggers the subscription to create an invoice"""
+    reset_billing_cycle_anchor: Union[bool | None, Any] = Field(default=None, description="Indicates if the billing_cycle_anchor should be reset when a threshold is reached")
+    """Indicates if the billing_cycle_anchor should be reset when a threshold is reached"""
 
 class SubscriptionItemsDataItemBillingThresholds(BaseModel):
     """Define thresholds at which an invoice will be sent"""
@@ -233,14 +215,49 @@ class SubscriptionItems(BaseModel):
     total_count: Union[int, Any] = Field(default=None, description="The total count of items in the list")
     """The total count of items in the list"""
 
-class SubscriptionPaymentSettings(BaseModel):
-    """Payment settings passed on to invoices created by the subscription"""
+class SubscriptionAutomaticTaxLiability(BaseModel):
+    """The account that's liable for tax"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    payment_method_options: Union[dict[str, Any] | None, Any] = Field(default=None, description="Payment-method-specific configuration to provide to invoices")
-    """Payment-method-specific configuration to provide to invoices"""
-    payment_method_types: Union[list[str] | None, Any] = Field(default=None, description="The list of payment method types to provide to every invoice")
-    """The list of payment method types to provide to every invoice"""
+    account: Union[str | None, Any] = Field(default=None, description="The connected account being referenced when type is account")
+    """The connected account being referenced when type is account"""
+    type: Union[str, Any] = Field(default=None, description="Type of the account referenced")
+    """Type of the account referenced"""
+
+class SubscriptionAutomaticTax(BaseModel):
+    """Automatic tax settings for this subscription"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    disabled_reason: Union[str | None, Any] = Field(default=None, description="If Stripe disabled automatic tax, this enum describes why")
+    """If Stripe disabled automatic tax, this enum describes why"""
+    enabled: Union[bool, Any] = Field(default=None, description="Whether Stripe automatically computes tax on this subscription")
+    """Whether Stripe automatically computes tax on this subscription"""
+    liability: Union[SubscriptionAutomaticTaxLiability | None, Any] = Field(default=None, description="The account that's liable for tax")
+    """The account that's liable for tax"""
+
+class SubscriptionCancellationDetails(BaseModel):
+    """Details about why this subscription was cancelled"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    comment: Union[str | None, Any] = Field(default=None, description="Additional comments about why the user canceled the subscription")
+    """Additional comments about why the user canceled the subscription"""
+    feedback: Union[str | None, Any] = Field(default=None, description="The customer submitted reason for why they canceled")
+    """The customer submitted reason for why they canceled"""
+    reason: Union[str | None, Any] = Field(default=None, description="Why this subscription was canceled")
+    """Why this subscription was canceled"""
+
+class SubscriptionTrialSettingsEndBehavior(BaseModel):
+    """Nested schema for SubscriptionTrialSettings.end_behavior"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    missing_payment_method: Union[str, Any] = Field(default=None, description="Behavior when the trial ends and payment method is missing")
+    """Behavior when the trial ends and payment method is missing"""
+
+class SubscriptionTrialSettings(BaseModel):
+    """Settings related to subscription trials"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    end_behavior: Union[SubscriptionTrialSettingsEndBehavior, Any] = Field(default=None)
 
 class SubscriptionBillingModeFlexible(BaseModel):
     """Configure behavior for flexible billing mode"""
@@ -260,6 +277,33 @@ class SubscriptionBillingMode(BaseModel):
     updated_at: Union[int | None, Any] = Field(default=None, description="Details on when the current billing_mode was adopted")
     """Details on when the current billing_mode was adopted"""
 
+class SubscriptionInvoiceSettingsIssuer(BaseModel):
+    """The connected account that issues the invoice"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    account: Union[str | None, Any] = Field(default=None, description="The connected account being referenced when type is account")
+    """The connected account being referenced when type is account"""
+    type: Union[str, Any] = Field(default=None, description="Type of the account referenced")
+    """Type of the account referenced"""
+
+class SubscriptionInvoiceSettings(BaseModel):
+    """All invoices will be billed using the specified settings"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    account_tax_ids: Union[list[str] | None, Any] = Field(default=None, description="The account tax IDs associated with the subscription")
+    """The account tax IDs associated with the subscription"""
+    issuer: Union[SubscriptionInvoiceSettingsIssuer, Any] = Field(default=None, description="The connected account that issues the invoice")
+    """The connected account that issues the invoice"""
+
+class SubscriptionPaymentSettings(BaseModel):
+    """Payment settings passed on to invoices created by the subscription"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    payment_method_options: Union[dict[str, Any] | None, Any] = Field(default=None, description="Payment-method-specific configuration to provide to invoices")
+    """Payment-method-specific configuration to provide to invoices"""
+    payment_method_types: Union[list[str] | None, Any] = Field(default=None, description="The list of payment method types to provide to every invoice")
+    """The list of payment method types to provide to every invoice"""
+
 class SubscriptionPauseCollection(BaseModel):
     """If specified, payment collection for this subscription will be paused"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
@@ -268,69 +312,6 @@ class SubscriptionPauseCollection(BaseModel):
     """The payment collection behavior for this subscription while paused"""
     resumes_at: Union[int | None, Any] = Field(default=None, description="The time after which the subscription will resume collecting payments")
     """The time after which the subscription will resume collecting payments"""
-
-class SubscriptionTrialSettingsEndBehavior(BaseModel):
-    """Nested schema for SubscriptionTrialSettings.end_behavior"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    missing_payment_method: Union[str, Any] = Field(default=None, description="Behavior when the trial ends and payment method is missing")
-    """Behavior when the trial ends and payment method is missing"""
-
-class SubscriptionTrialSettings(BaseModel):
-    """Settings related to subscription trials"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    end_behavior: Union[SubscriptionTrialSettingsEndBehavior, Any] = Field(default=None)
-
-class SubscriptionDefaultTaxRatesItemFlatAmount(BaseModel):
-    """The amount of the tax rate when the rate_type is flat_amount"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    amount: Union[int, Any] = Field(default=None, description="Amount of the tax when the rate_type is flat_amount")
-    """Amount of the tax when the rate_type is flat_amount"""
-    currency: Union[str, Any] = Field(default=None, description="Three-letter ISO currency code, in lowercase")
-    """Three-letter ISO currency code, in lowercase"""
-
-class SubscriptionDefaultTaxRatesItem(BaseModel):
-    """Nested schema for Subscription.default_tax_rates_item"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    id: Union[str, Any] = Field(default=None, description="Unique identifier for the object")
-    """Unique identifier for the object"""
-    object: Union[str, Any] = Field(default=None, description="String representing the object's type")
-    """String representing the object's type"""
-    active: Union[bool, Any] = Field(default=None, description="Defaults to true")
-    """Defaults to true"""
-    country: Union[str | None, Any] = Field(default=None, description="Two-letter country code (ISO 3166-1 alpha-2)")
-    """Two-letter country code (ISO 3166-1 alpha-2)"""
-    created: Union[int, Any] = Field(default=None, description="Time at which the object was created")
-    """Time at which the object was created"""
-    description: Union[str | None, Any] = Field(default=None, description="An arbitrary string attached to the tax rate for your internal use only")
-    """An arbitrary string attached to the tax rate for your internal use only"""
-    display_name: Union[str, Any] = Field(default=None, description="The display name of the tax rates")
-    """The display name of the tax rates"""
-    effective_percentage: Union[float | None, Any] = Field(default=None, description="Actual/effective tax rate percentage out of 100")
-    """Actual/effective tax rate percentage out of 100"""
-    flat_amount: Union[SubscriptionDefaultTaxRatesItemFlatAmount | None, Any] = Field(default=None, description="The amount of the tax rate when the rate_type is flat_amount")
-    """The amount of the tax rate when the rate_type is flat_amount"""
-    inclusive: Union[bool, Any] = Field(default=None, description="This specifies if the tax rate is inclusive or exclusive")
-    """This specifies if the tax rate is inclusive or exclusive"""
-    jurisdiction: Union[str | None, Any] = Field(default=None, description="The jurisdiction for the tax rate")
-    """The jurisdiction for the tax rate"""
-    jurisdiction_level: Union[str | None, Any] = Field(default=None, description="The level of the jurisdiction that imposes this tax rate")
-    """The level of the jurisdiction that imposes this tax rate"""
-    livemode: Union[bool, Any] = Field(default=None, description="Has the value true if the object exists in live mode or false if in test mode")
-    """Has the value true if the object exists in live mode or false if in test mode"""
-    metadata: Union[dict[str, str] | None, Any] = Field(default=None, description="Set of key-value pairs")
-    """Set of key-value pairs"""
-    percentage: Union[float, Any] = Field(default=None, description="Tax rate percentage out of 100")
-    """Tax rate percentage out of 100"""
-    rate_type: Union[str | None, Any] = Field(default=None, description="Indicates the type of tax rate applied to the taxable amount")
-    """Indicates the type of tax rate applied to the taxable amount"""
-    state: Union[str | None, Any] = Field(default=None, description="ISO 3166-2 subdivision code, without country prefix")
-    """ISO 3166-2 subdivision code, without country prefix"""
-    tax_type: Union[str | None, Any] = Field(default=None, description="The high-level tax type")
-    """The high-level tax type"""
 
 class Subscription(BaseModel):
     """Subscription type definition"""
@@ -400,31 +381,50 @@ class CustomerSubscriptions(BaseModel):
     url: Union[str, Any] = Field(default=None, description="The URL where this list can be accessed")
     """The URL where this list can be accessed"""
 
-class CustomerCashBalanceSettings(BaseModel):
-    """A hash of settings for this cash balance"""
+class CustomerAddress(BaseModel):
+    """The customer's address"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    reconciliation_mode: Union[str, Any] = Field(default=None, description="The configuration for how funds that land in the customer cash balance are reconciled")
-    """The configuration for how funds that land in the customer cash balance are reconciled"""
-    using_merchant_default: Union[bool, Any] = Field(default=None, description="A flag to indicate if reconciliation mode returned is the user's default or is specific to this customer cash balance")
-    """A flag to indicate if reconciliation mode returned is the user's default or is specific to this customer cash balance"""
+    city: Union[str | None, Any] = Field(default=None, description="City, district, suburb, town, or village")
+    """City, district, suburb, town, or village"""
+    country: Union[str | None, Any] = Field(default=None, description="Two-letter country code (ISO 3166-1 alpha-2)")
+    """Two-letter country code (ISO 3166-1 alpha-2)"""
+    line1: Union[str | None, Any] = Field(default=None, description="Address line 1, such as the street, PO Box, or company name")
+    """Address line 1, such as the street, PO Box, or company name"""
+    line2: Union[str | None, Any] = Field(default=None, description="Address line 2, such as the apartment, suite, unit, or building")
+    """Address line 2, such as the apartment, suite, unit, or building"""
+    postal_code: Union[str | None, Any] = Field(default=None, description="ZIP or postal code")
+    """ZIP or postal code"""
+    state: Union[str | None, Any] = Field(default=None, description="State, county, province, or region")
+    """State, county, province, or region"""
 
-class CustomerCashBalance(BaseModel):
-    """The current funds being held by Stripe on behalf of the customer"""
+class CustomerShippingAddress(BaseModel):
+    """Customer shipping address"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    object: Union[str, Any] = Field(default=None, description="String representing the object's type")
-    """String representing the object's type"""
-    available: Union[dict[str, Any] | None, Any] = Field(default=None, description="A hash of all cash balances available to this customer")
-    """A hash of all cash balances available to this customer"""
-    customer: Union[str, Any] = Field(default=None, description="The ID of the customer whose cash balance this object represents")
-    """The ID of the customer whose cash balance this object represents"""
-    customer_account: Union[str | None, Any] = Field(default=None, description="The ID of the account whose cash balance this object represents")
-    """The ID of the account whose cash balance this object represents"""
-    livemode: Union[bool, Any] = Field(default=None, description="Has the value true if the object exists in live mode or false if in test mode")
-    """Has the value true if the object exists in live mode or false if in test mode"""
-    settings: Union[CustomerCashBalanceSettings, Any] = Field(default=None, description="A hash of settings for this cash balance")
-    """A hash of settings for this cash balance"""
+    city: Union[str | None, Any] = Field(default=None, description="City, district, suburb, town, or village")
+    """City, district, suburb, town, or village"""
+    country: Union[str | None, Any] = Field(default=None, description="Two-letter country code (ISO 3166-1 alpha-2)")
+    """Two-letter country code (ISO 3166-1 alpha-2)"""
+    line1: Union[str | None, Any] = Field(default=None, description="Address line 1, such as the street, PO Box, or company name")
+    """Address line 1, such as the street, PO Box, or company name"""
+    line2: Union[str | None, Any] = Field(default=None, description="Address line 2, such as the apartment, suite, unit, or building")
+    """Address line 2, such as the apartment, suite, unit, or building"""
+    postal_code: Union[str | None, Any] = Field(default=None, description="ZIP or postal code")
+    """ZIP or postal code"""
+    state: Union[str | None, Any] = Field(default=None, description="State, county, province, or region")
+    """State, county, province, or region"""
+
+class CustomerShipping(BaseModel):
+    """Mailing and shipping address for the customer"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    address: Union[CustomerShippingAddress, Any] = Field(default=None, description="Customer shipping address")
+    """Customer shipping address"""
+    name: Union[str, Any] = Field(default=None, description="Customer name")
+    """Customer name"""
+    phone: Union[str | None, Any] = Field(default=None, description="Customer phone (including extension)")
+    """Customer phone (including extension)"""
 
 class CustomerSourcesDataItem(BaseModel):
     """Nested schema for CustomerSources.data_item"""
@@ -476,15 +476,6 @@ class CustomerSources(BaseModel):
     url: Union[str, Any] = Field(default=None, description="The URL where this list can be accessed")
     """The URL where this list can be accessed"""
 
-class CustomerInvoiceSettingsCustomFieldsItem(BaseModel):
-    """Nested schema for CustomerInvoiceSettings.custom_fields_item"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    name: Union[str, Any] = Field(default=None, description="The name of the custom field")
-    """The name of the custom field"""
-    value: Union[str, Any] = Field(default=None, description="The value of the custom field")
-    """The value of the custom field"""
-
 class CustomerInvoiceSettingsRenderingOptions(BaseModel):
     """Default options for invoice PDF rendering for this customer"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
@@ -493,6 +484,15 @@ class CustomerInvoiceSettingsRenderingOptions(BaseModel):
     """How line-item prices and amounts will be displayed with respect to tax on invoice PDFs"""
     template: Union[str | None, Any] = Field(default=None, description="ID of the invoice rendering template to be used for this customer's invoices")
     """ID of the invoice rendering template to be used for this customer's invoices"""
+
+class CustomerInvoiceSettingsCustomFieldsItem(BaseModel):
+    """Nested schema for CustomerInvoiceSettings.custom_fields_item"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    name: Union[str, Any] = Field(default=None, description="The name of the custom field")
+    """The name of the custom field"""
+    value: Union[str, Any] = Field(default=None, description="The value of the custom field")
+    """The value of the custom field"""
 
 class CustomerInvoiceSettings(BaseModel):
     """The customer's default invoice settings"""
@@ -551,157 +551,6 @@ class CustomerList(BaseModel):
     has_more: Union[bool, Any] = Field(default=None)
     url: Union[str, Any] = Field(default=None)
 
-class InvoicePaymentsDataItem(BaseModel):
-    """Nested schema for InvoicePayments.data_item"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    id: Union[str, Any] = Field(default=None, description="Unique identifier for the object")
-    """Unique identifier for the object"""
-    object: Union[str, Any] = Field(default=None, description="String representing the object's type")
-    """String representing the object's type"""
-    amount_paid: Union[int | None, Any] = Field(default=None, description="Amount that was actually paid for this invoice")
-    """Amount that was actually paid for this invoice"""
-    amount_requested: Union[int, Any] = Field(default=None, description="Amount intended to be paid toward this invoice")
-    """Amount intended to be paid toward this invoice"""
-    created: Union[int, Any] = Field(default=None, description="Time at which the object was created")
-    """Time at which the object was created"""
-    currency: Union[str, Any] = Field(default=None, description="Three-letter ISO currency code")
-    """Three-letter ISO currency code"""
-    invoice: Union[str, Any] = Field(default=None, description="The invoice that was paid")
-    """The invoice that was paid"""
-    is_default: Union[bool, Any] = Field(default=None, description="Whether this is the default payment created when the invoice was finalized")
-    """Whether this is the default payment created when the invoice was finalized"""
-    livemode: Union[bool, Any] = Field(default=None, description="Has the value true if the object exists in live mode")
-    """Has the value true if the object exists in live mode"""
-    status: Union[str, Any] = Field(default=None, description="The status of the payment")
-    """The status of the payment"""
-
-class InvoicePayments(BaseModel):
-    """Payments for this invoice"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    object: Union[str, Any] = Field(default=None, description="String representing the object's type")
-    """String representing the object's type"""
-    data: Union[list[InvoicePaymentsDataItem], Any] = Field(default=None, description="Details about each payment")
-    """Details about each payment"""
-    has_more: Union[bool, Any] = Field(default=None, description="True if this list has another page of items")
-    """True if this list has another page of items"""
-    url: Union[str, Any] = Field(default=None, description="The URL where this list can be accessed")
-    """The URL where this list can be accessed"""
-
-class InvoiceDefaultTaxRatesItemFlatAmount(BaseModel):
-    """The amount of the tax rate when the rate_type is flat_amount"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    amount: Union[int, Any] = Field(default=None, description="Amount of the tax when the rate_type is flat_amount")
-    """Amount of the tax when the rate_type is flat_amount"""
-    currency: Union[str, Any] = Field(default=None, description="Three-letter ISO currency code")
-    """Three-letter ISO currency code"""
-
-class InvoiceDefaultTaxRatesItem(BaseModel):
-    """Nested schema for Invoice.default_tax_rates_item"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    id: Union[str, Any] = Field(default=None, description="Unique identifier for the object")
-    """Unique identifier for the object"""
-    object: Union[str, Any] = Field(default=None, description="String representing the object's type")
-    """String representing the object's type"""
-    active: Union[bool, Any] = Field(default=None, description="Defaults to true")
-    """Defaults to true"""
-    country: Union[str | None, Any] = Field(default=None, description="Two-letter country code (ISO 3166-1 alpha-2)")
-    """Two-letter country code (ISO 3166-1 alpha-2)"""
-    created: Union[int, Any] = Field(default=None, description="Time at which the object was created")
-    """Time at which the object was created"""
-    description: Union[str | None, Any] = Field(default=None, description="An arbitrary string attached to the tax rate for your internal use only")
-    """An arbitrary string attached to the tax rate for your internal use only"""
-    display_name: Union[str, Any] = Field(default=None, description="The display name of the tax rate")
-    """The display name of the tax rate"""
-    effective_percentage: Union[float | None, Any] = Field(default=None, description="Actual/effective tax rate percentage out of 100")
-    """Actual/effective tax rate percentage out of 100"""
-    inclusive: Union[bool, Any] = Field(default=None, description="This specifies if the tax rate is inclusive or exclusive")
-    """This specifies if the tax rate is inclusive or exclusive"""
-    jurisdiction: Union[str | None, Any] = Field(default=None, description="The jurisdiction for the tax rate")
-    """The jurisdiction for the tax rate"""
-    livemode: Union[bool, Any] = Field(default=None, description="Has the value true if the object exists in live mode")
-    """Has the value true if the object exists in live mode"""
-    metadata: Union[dict[str, str] | None, Any] = Field(default=None, description="Set of key-value pairs")
-    """Set of key-value pairs"""
-    percentage: Union[float, Any] = Field(default=None, description="Tax rate percentage out of 100")
-    """Tax rate percentage out of 100"""
-    flat_amount: Union[InvoiceDefaultTaxRatesItemFlatAmount | None, Any] = Field(default=None, description="The amount of the tax rate when the rate_type is flat_amount")
-    """The amount of the tax rate when the rate_type is flat_amount"""
-    jurisdiction_level: Union[str | None, Any] = Field(default=None, description="The level of the jurisdiction that imposes this tax rate")
-    """The level of the jurisdiction that imposes this tax rate"""
-    rate_type: Union[str | None, Any] = Field(default=None, description="Indicates the type of tax rate applied to the taxable amount")
-    """Indicates the type of tax rate applied to the taxable amount"""
-    state: Union[str | None, Any] = Field(default=None, description="ISO 3166-2 subdivision code")
-    """ISO 3166-2 subdivision code"""
-    tax_type: Union[str | None, Any] = Field(default=None, description="The high-level tax type")
-    """The high-level tax type"""
-
-class InvoiceParentQuoteDetails(BaseModel):
-    """Details about the quote that generated this invoice"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    quote: Union[str, Any] = Field(default=None, description="The quote that generated this invoice")
-    """The quote that generated this invoice"""
-
-class InvoiceParentSubscriptionDetails(BaseModel):
-    """Details about the subscription that generated this invoice"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    metadata: Union[dict[str, str] | None, Any] = Field(default=None, description="Set of key-value pairs defined as subscription metadata")
-    """Set of key-value pairs defined as subscription metadata"""
-    subscription: Union[str, Any] = Field(default=None, description="The subscription that generated this invoice")
-    """The subscription that generated this invoice"""
-    subscription_proration_date: Union[int | None, Any] = Field(default=None, description="Only set for upcoming invoices that preview prorations")
-    """Only set for upcoming invoices that preview prorations"""
-
-class InvoiceParent(BaseModel):
-    """The parent that generated this invoice"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    quote_details: Union[InvoiceParentQuoteDetails | None, Any] = Field(default=None, description="Details about the quote that generated this invoice")
-    """Details about the quote that generated this invoice"""
-    subscription_details: Union[InvoiceParentSubscriptionDetails | None, Any] = Field(default=None, description="Details about the subscription that generated this invoice")
-    """Details about the subscription that generated this invoice"""
-    type: Union[str, Any] = Field(default=None, description="The type of parent that generated this invoice")
-    """The type of parent that generated this invoice"""
-
-class InvoiceLastFinalizationError(BaseModel):
-    """The error encountered during the last finalization attempt"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    advice_code: Union[str | None, Any] = Field(default=None, description="For card errors resulting from a card issuer decline")
-    """For card errors resulting from a card issuer decline"""
-    code: Union[str | None, Any] = Field(default=None, description="For some errors that could be handled programmatically, a short string indicating the error code")
-    """For some errors that could be handled programmatically, a short string indicating the error code"""
-    doc_url: Union[str | None, Any] = Field(default=None, description="A URL to more information about the error code reported")
-    """A URL to more information about the error code reported"""
-    message: Union[str | None, Any] = Field(default=None, description="A human-readable message providing more details about the error")
-    """A human-readable message providing more details about the error"""
-    network_advice_code: Union[str | None, Any] = Field(default=None, description="For card errors resulting from a card issuer decline")
-    """For card errors resulting from a card issuer decline"""
-    network_decline_code: Union[str | None, Any] = Field(default=None, description="For payments declined by the network")
-    """For payments declined by the network"""
-    param: Union[str | None, Any] = Field(default=None, description="If the error is parameter-specific, the parameter related to the error")
-    """If the error is parameter-specific, the parameter related to the error"""
-    payment_method_type: Union[str | None, Any] = Field(default=None, description="If the error is specific to the type of payment method")
-    """If the error is specific to the type of payment method"""
-    type: Union[str, Any] = Field(default=None, description="The type of error returned")
-    """The type of error returned"""
-
-class InvoicePaymentSettings(BaseModel):
-    """Configuration settings for the PaymentIntent that is generated when the invoice is finalized"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    default_mandate: Union[str | None, Any] = Field(default=None, description="ID of the mandate to be used for this invoice")
-    """ID of the mandate to be used for this invoice"""
-    payment_method_options: Union[dict[str, Any] | None, Any] = Field(default=None, description="Payment-method-specific configuration to provide to the invoice's PaymentIntent")
-    """Payment-method-specific configuration to provide to the invoice's PaymentIntent"""
-    payment_method_types: Union[list[str] | None, Any] = Field(default=None, description="The list of payment method types to provide to the invoice's PaymentIntent")
-    """The list of payment method types to provide to the invoice's PaymentIntent"""
-
 class InvoiceShippingCostTaxesItem(BaseModel):
     """Nested schema for InvoiceShippingCost.taxes_item"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
@@ -727,6 +576,114 @@ class InvoiceShippingCost(BaseModel):
     """The ID of the ShippingRate for this invoice"""
     taxes: Union[list[InvoiceShippingCostTaxesItem] | None, Any] = Field(default=None, description="The taxes applied to the shipping rate")
     """The taxes applied to the shipping rate"""
+
+class InvoiceStatusTransitions(BaseModel):
+    """Status transition timestamps"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    finalized_at: Union[int | None, Any] = Field(default=None, description="The time that the invoice draft was finalized")
+    """The time that the invoice draft was finalized"""
+    marked_uncollectible_at: Union[int | None, Any] = Field(default=None, description="The time that the invoice was marked uncollectible")
+    """The time that the invoice was marked uncollectible"""
+    paid_at: Union[int | None, Any] = Field(default=None, description="The time that the invoice was paid")
+    """The time that the invoice was paid"""
+    voided_at: Union[int | None, Any] = Field(default=None, description="The time that the invoice was voided")
+    """The time that the invoice was voided"""
+
+class InvoiceShippingDetailsAddress(BaseModel):
+    """Shipping address"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    city: Union[str | None, Any] = Field(default=None, description="City, district, suburb, town, or village")
+    """City, district, suburb, town, or village"""
+    country: Union[str | None, Any] = Field(default=None, description="Two-letter country code (ISO 3166-1 alpha-2)")
+    """Two-letter country code (ISO 3166-1 alpha-2)"""
+    line1: Union[str | None, Any] = Field(default=None, description="Address line 1")
+    """Address line 1"""
+    line2: Union[str | None, Any] = Field(default=None, description="Address line 2")
+    """Address line 2"""
+    postal_code: Union[str | None, Any] = Field(default=None, description="ZIP or postal code")
+    """ZIP or postal code"""
+    state: Union[str | None, Any] = Field(default=None, description="State, county, province, or region")
+    """State, county, province, or region"""
+
+class InvoiceShippingDetails(BaseModel):
+    """Shipping details for the invoice"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    address: Union[InvoiceShippingDetailsAddress, Any] = Field(default=None, description="Shipping address")
+    """Shipping address"""
+    name: Union[str, Any] = Field(default=None, description="Recipient name")
+    """Recipient name"""
+    phone: Union[str | None, Any] = Field(default=None, description="Recipient phone")
+    """Recipient phone"""
+
+class InvoiceDiscountCoupon(BaseModel):
+    """Nested schema for InvoiceDiscount.coupon"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    id: Union[str, Any] = Field(default=None)
+    object: Union[str, Any] = Field(default=None)
+    amount_off: Union[int | None, Any] = Field(default=None)
+    created: Union[int, Any] = Field(default=None)
+    currency: Union[str | None, Any] = Field(default=None)
+    duration: Union[str, Any] = Field(default=None)
+    duration_in_months: Union[int | None, Any] = Field(default=None)
+    livemode: Union[bool, Any] = Field(default=None)
+    max_redemptions: Union[int | None, Any] = Field(default=None)
+    metadata: Union[dict[str, str], Any] = Field(default=None)
+    name: Union[str, Any] = Field(default=None)
+    percent_off: Union[float | None, Any] = Field(default=None)
+    redeem_by: Union[int | None, Any] = Field(default=None)
+    times_redeemed: Union[int, Any] = Field(default=None)
+    valid: Union[bool, Any] = Field(default=None)
+
+class InvoiceDiscount(BaseModel):
+    """The discount applied to the invoice"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    id: Union[str, Any] = Field(default=None)
+    object: Union[str, Any] = Field(default=None)
+    checkout_session: Union[str | None, Any] = Field(default=None)
+    coupon: Union[InvoiceDiscountCoupon | None, Any] = Field(default=None)
+    customer: Union[str, Any] = Field(default=None)
+    customer_account: Union[str | None, Any] = Field(default=None)
+    end: Union[int | None, Any] = Field(default=None)
+    invoice: Union[str | None, Any] = Field(default=None)
+    invoice_item: Union[str | None, Any] = Field(default=None)
+    promotion_code: Union[str | None, Any] = Field(default=None)
+    start: Union[int, Any] = Field(default=None)
+    subscription: Union[str | None, Any] = Field(default=None)
+    subscription_item: Union[str | None, Any] = Field(default=None)
+
+class InvoiceTotalPretaxCreditAmountsItem(BaseModel):
+    """Nested schema for Invoice.total_pretax_credit_amounts_item"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    amount: Union[int, Any] = Field(default=None, description="The amount of the pretax credit amount")
+    """The amount of the pretax credit amount"""
+    credit_balance_transaction: Union[str | None, Any] = Field(default=None, description="The credit balance transaction that was applied")
+    """The credit balance transaction that was applied"""
+    discount: Union[str | None, Any] = Field(default=None, description="The discount that was applied")
+    """The discount that was applied"""
+    type: Union[str, Any] = Field(default=None, description="Type of the pretax credit amount referenced")
+    """Type of the pretax credit amount referenced"""
+
+class InvoiceSubscriptionDetails(BaseModel):
+    """Details about the subscription that this invoice was prepared for, if any"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    metadata: Union[dict[str, str] | None, Any] = Field(default=None, description="Set of key-value pairs defined as subscription metadata when the invoice is created")
+    """Set of key-value pairs defined as subscription metadata when the invoice is created"""
+
+class InvoiceConfirmationSecret(BaseModel):
+    """The confirmation secret associated with this invoice"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    client_secret: Union[str, Any] = Field(default=None, description="The client_secret of the payment that Stripe creates for the invoice after finalization")
+    """The client_secret of the payment that Stripe creates for the invoice after finalization"""
+    type: Union[str, Any] = Field(default=None, description="The type of client_secret")
+    """The type of client_secret"""
 
 class InvoiceLinesDataItemPeriod(BaseModel):
     """The period this line_item covers"""
@@ -789,65 +746,23 @@ class InvoiceLines(BaseModel):
     total_count: Union[int | None, Any] = Field(default=None)
     url: Union[str | None, Any] = Field(default=None)
 
-class InvoiceCustomFieldsItem(BaseModel):
-    """Nested schema for Invoice.custom_fields_item"""
+class InvoiceThresholdReasonItemReasonsItem(BaseModel):
+    """Nested schema for InvoiceThresholdReason.item_reasons_item"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    name: Union[str, Any] = Field(default=None, description="The name of the custom field")
-    """The name of the custom field"""
-    value: Union[str, Any] = Field(default=None, description="The value of the custom field")
-    """The value of the custom field"""
+    line_item_ids: Union[list[str], Any] = Field(default=None, description="The IDs of the line items that triggered the threshold invoice")
+    """The IDs of the line items that triggered the threshold invoice"""
+    usage_gte: Union[int, Any] = Field(default=None, description="The quantity threshold boundary that applied to the given line item")
+    """The quantity threshold boundary that applied to the given line item"""
 
-class InvoiceCustomerTaxIdsItem(BaseModel):
-    """Nested schema for Invoice.customer_tax_ids_item"""
+class InvoiceThresholdReason(BaseModel):
+    """If billing_reason is set to subscription_threshold this returns more information"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    type: Union[str, Any] = Field(default=None, description="The type of the tax ID")
-    """The type of the tax ID"""
-    value: Union[str | None, Any] = Field(default=None, description="The value of the tax ID")
-    """The value of the tax ID"""
-
-class InvoiceTotalTaxAmountsItem(BaseModel):
-    """Nested schema for Invoice.total_tax_amounts_item"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    amount: Union[int, Any] = Field(default=None, description="The amount of the tax")
-    """The amount of the tax"""
-    inclusive: Union[bool, Any] = Field(default=None, description="Whether the tax amount is included in the line item amount")
-    """Whether the tax amount is included in the line item amount"""
-    tax_rate: Union[str, Any] = Field(default=None, description="The tax rate applied")
-    """The tax rate applied"""
-    taxability_reason: Union[str | None, Any] = Field(default=None, description="The reasoning behind the tax")
-    """The reasoning behind the tax"""
-    taxable_amount: Union[int, Any] = Field(default=None, description="The amount on which tax is calculated")
-    """The amount on which tax is calculated"""
-
-class InvoiceTotalPretaxCreditAmountsItem(BaseModel):
-    """Nested schema for Invoice.total_pretax_credit_amounts_item"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    amount: Union[int, Any] = Field(default=None, description="The amount of the pretax credit amount")
-    """The amount of the pretax credit amount"""
-    credit_balance_transaction: Union[str | None, Any] = Field(default=None, description="The credit balance transaction that was applied")
-    """The credit balance transaction that was applied"""
-    discount: Union[str | None, Any] = Field(default=None, description="The discount that was applied")
-    """The discount that was applied"""
-    type: Union[str, Any] = Field(default=None, description="Type of the pretax credit amount referenced")
-    """Type of the pretax credit amount referenced"""
-
-class InvoiceSubscriptionDetails(BaseModel):
-    """Details about the subscription that this invoice was prepared for, if any"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    metadata: Union[dict[str, str] | None, Any] = Field(default=None, description="Set of key-value pairs defined as subscription metadata when the invoice is created")
-    """Set of key-value pairs defined as subscription metadata when the invoice is created"""
-
-class InvoiceFromInvoice(BaseModel):
-    """Details of the invoice that was cloned"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    action: Union[str, Any] = Field(default=None)
-    invoice: Union[str, Any] = Field(default=None)
+    amount_gte: Union[int | None, Any] = Field(default=None, description="The total invoice amount threshold boundary if it triggered the threshold invoice")
+    """The total invoice amount threshold boundary if it triggered the threshold invoice"""
+    item_reasons: Union[list[InvoiceThresholdReasonItemReasonsItem], Any] = Field(default=None, description="Indicates which line items triggered a threshold invoice")
+    """Indicates which line items triggered a threshold invoice"""
 
 class InvoiceRenderingPdf(BaseModel):
     """Invoice pdf rendering options"""
@@ -869,97 +784,76 @@ class InvoiceRendering(BaseModel):
     template_version: Union[int | None, Any] = Field(default=None, description="Version of the rendering template that the invoice is using")
     """Version of the rendering template that the invoice is using"""
 
-class InvoiceStatusTransitions(BaseModel):
-    """Status transition timestamps"""
+class InvoicePaymentsDataItem(BaseModel):
+    """Nested schema for InvoicePayments.data_item"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    finalized_at: Union[int | None, Any] = Field(default=None, description="The time that the invoice draft was finalized")
-    """The time that the invoice draft was finalized"""
-    marked_uncollectible_at: Union[int | None, Any] = Field(default=None, description="The time that the invoice was marked uncollectible")
-    """The time that the invoice was marked uncollectible"""
-    paid_at: Union[int | None, Any] = Field(default=None, description="The time that the invoice was paid")
-    """The time that the invoice was paid"""
-    voided_at: Union[int | None, Any] = Field(default=None, description="The time that the invoice was voided")
-    """The time that the invoice was voided"""
+    id: Union[str, Any] = Field(default=None, description="Unique identifier for the object")
+    """Unique identifier for the object"""
+    object: Union[str, Any] = Field(default=None, description="String representing the object's type")
+    """String representing the object's type"""
+    amount_paid: Union[int | None, Any] = Field(default=None, description="Amount that was actually paid for this invoice")
+    """Amount that was actually paid for this invoice"""
+    amount_requested: Union[int, Any] = Field(default=None, description="Amount intended to be paid toward this invoice")
+    """Amount intended to be paid toward this invoice"""
+    created: Union[int, Any] = Field(default=None, description="Time at which the object was created")
+    """Time at which the object was created"""
+    currency: Union[str, Any] = Field(default=None, description="Three-letter ISO currency code")
+    """Three-letter ISO currency code"""
+    invoice: Union[str, Any] = Field(default=None, description="The invoice that was paid")
+    """The invoice that was paid"""
+    is_default: Union[bool, Any] = Field(default=None, description="Whether this is the default payment created when the invoice was finalized")
+    """Whether this is the default payment created when the invoice was finalized"""
+    livemode: Union[bool, Any] = Field(default=None, description="Has the value true if the object exists in live mode")
+    """Has the value true if the object exists in live mode"""
+    status: Union[str, Any] = Field(default=None, description="The status of the payment")
+    """The status of the payment"""
 
-class InvoiceAutomaticTaxLiability(BaseModel):
-    """The account that's liable for tax"""
+class InvoicePayments(BaseModel):
+    """Payments for this invoice"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    account: Union[str | None, Any] = Field(default=None, description="The connected account being referenced when type is account")
-    """The connected account being referenced when type is account"""
-    type: Union[str, Any] = Field(default=None, description="Type of the account referenced")
-    """Type of the account referenced"""
+    object: Union[str, Any] = Field(default=None, description="String representing the object's type")
+    """String representing the object's type"""
+    data: Union[list[InvoicePaymentsDataItem], Any] = Field(default=None, description="Details about each payment")
+    """Details about each payment"""
+    has_more: Union[bool, Any] = Field(default=None, description="True if this list has another page of items")
+    """True if this list has another page of items"""
+    url: Union[str, Any] = Field(default=None, description="The URL where this list can be accessed")
+    """The URL where this list can be accessed"""
 
-class InvoiceAutomaticTax(BaseModel):
-    """Settings and latest results for automatic tax lookup for this invoice"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    disabled_reason: Union[str | None, Any] = Field(default=None, description="If Stripe disabled automatic tax, this enum describes why")
-    """If Stripe disabled automatic tax, this enum describes why"""
-    enabled: Union[bool, Any] = Field(default=None, description="Whether Stripe automatically computes tax on this invoice")
-    """Whether Stripe automatically computes tax on this invoice"""
-    liability: Union[InvoiceAutomaticTaxLiability | None, Any] = Field(default=None, description="The account that's liable for tax")
-    """The account that's liable for tax"""
-    provider: Union[str | None, Any] = Field(default=None, description="The tax provider powering automatic tax")
-    """The tax provider powering automatic tax"""
-    status: Union[str | None, Any] = Field(default=None, description="The status of the most recent automated tax calculation for this invoice")
-    """The status of the most recent automated tax calculation for this invoice"""
-
-class InvoiceDiscountCoupon(BaseModel):
-    """Nested schema for InvoiceDiscount.coupon"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    id: Union[str, Any] = Field(default=None)
-    object: Union[str, Any] = Field(default=None)
-    amount_off: Union[int | None, Any] = Field(default=None)
-    created: Union[int, Any] = Field(default=None)
-    currency: Union[str | None, Any] = Field(default=None)
-    duration: Union[str, Any] = Field(default=None)
-    duration_in_months: Union[int | None, Any] = Field(default=None)
-    livemode: Union[bool, Any] = Field(default=None)
-    max_redemptions: Union[int | None, Any] = Field(default=None)
-    metadata: Union[dict[str, str], Any] = Field(default=None)
-    name: Union[str, Any] = Field(default=None)
-    percent_off: Union[float | None, Any] = Field(default=None)
-    redeem_by: Union[int | None, Any] = Field(default=None)
-    times_redeemed: Union[int, Any] = Field(default=None)
-    valid: Union[bool, Any] = Field(default=None)
-
-class InvoiceDiscount(BaseModel):
-    """The discount applied to the invoice"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    id: Union[str, Any] = Field(default=None)
-    object: Union[str, Any] = Field(default=None)
-    checkout_session: Union[str | None, Any] = Field(default=None)
-    coupon: Union[InvoiceDiscountCoupon | None, Any] = Field(default=None)
-    customer: Union[str, Any] = Field(default=None)
-    customer_account: Union[str | None, Any] = Field(default=None)
-    end: Union[int | None, Any] = Field(default=None)
-    invoice: Union[str | None, Any] = Field(default=None)
-    invoice_item: Union[str | None, Any] = Field(default=None)
-    promotion_code: Union[str | None, Any] = Field(default=None)
-    start: Union[int, Any] = Field(default=None)
-    subscription: Union[str | None, Any] = Field(default=None)
-    subscription_item: Union[str | None, Any] = Field(default=None)
-
-class InvoiceTotalTaxesItem(BaseModel):
-    """Nested schema for Invoice.total_taxes_item"""
+class InvoiceTotalTaxAmountsItem(BaseModel):
+    """Nested schema for Invoice.total_tax_amounts_item"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
     amount: Union[int, Any] = Field(default=None, description="The amount of the tax")
     """The amount of the tax"""
-    tax_behavior: Union[str, Any] = Field(default=None, description="Whether this tax is inclusive or exclusive")
-    """Whether this tax is inclusive or exclusive"""
-    tax_rate_details: Union[dict[str, Any] | None, Any] = Field(default=None, description="Additional details about the tax rate")
-    """Additional details about the tax rate"""
-    taxability_reason: Union[str, Any] = Field(default=None, description="The reasoning behind this tax")
-    """The reasoning behind this tax"""
-    taxable_amount: Union[int | None, Any] = Field(default=None, description="The amount on which tax is calculated")
+    inclusive: Union[bool, Any] = Field(default=None, description="Whether the tax amount is included in the line item amount")
+    """Whether the tax amount is included in the line item amount"""
+    tax_rate: Union[str, Any] = Field(default=None, description="The tax rate applied")
+    """The tax rate applied"""
+    taxability_reason: Union[str | None, Any] = Field(default=None, description="The reasoning behind the tax")
+    """The reasoning behind the tax"""
+    taxable_amount: Union[int, Any] = Field(default=None, description="The amount on which tax is calculated")
     """The amount on which tax is calculated"""
-    type: Union[str, Any] = Field(default=None, description="The type of tax information")
-    """The type of tax information"""
+
+class InvoiceCustomerTaxIdsItem(BaseModel):
+    """Nested schema for Invoice.customer_tax_ids_item"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    type: Union[str, Any] = Field(default=None, description="The type of the tax ID")
+    """The type of the tax ID"""
+    value: Union[str | None, Any] = Field(default=None, description="The value of the tax ID")
+    """The value of the tax ID"""
+
+class InvoiceCustomFieldsItem(BaseModel):
+    """Nested schema for Invoice.custom_fields_item"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    name: Union[str, Any] = Field(default=None, description="The name of the custom field")
+    """The name of the custom field"""
+    value: Union[str, Any] = Field(default=None, description="The value of the custom field")
+    """The value of the custom field"""
 
 class InvoiceCustomerAddress(BaseModel):
     """The customer's address"""
@@ -977,70 +871,6 @@ class InvoiceCustomerAddress(BaseModel):
     """ZIP or postal code"""
     state: Union[str | None, Any] = Field(default=None, description="State, county, province, or region")
     """State, county, province, or region"""
-
-class InvoiceIssuer(BaseModel):
-    """The connected account that issues the invoice"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    account: Union[str | None, Any] = Field(default=None, description="The connected account being referenced when type is account")
-    """The connected account being referenced when type is account"""
-    type: Union[str, Any] = Field(default=None, description="Type of the account referenced")
-    """Type of the account referenced"""
-
-class InvoiceConfirmationSecret(BaseModel):
-    """The confirmation secret associated with this invoice"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    client_secret: Union[str, Any] = Field(default=None, description="The client_secret of the payment that Stripe creates for the invoice after finalization")
-    """The client_secret of the payment that Stripe creates for the invoice after finalization"""
-    type: Union[str, Any] = Field(default=None, description="The type of client_secret")
-    """The type of client_secret"""
-
-class InvoiceShippingDetailsAddress(BaseModel):
-    """Shipping address"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    city: Union[str | None, Any] = Field(default=None, description="City, district, suburb, town, or village")
-    """City, district, suburb, town, or village"""
-    country: Union[str | None, Any] = Field(default=None, description="Two-letter country code (ISO 3166-1 alpha-2)")
-    """Two-letter country code (ISO 3166-1 alpha-2)"""
-    line1: Union[str | None, Any] = Field(default=None, description="Address line 1")
-    """Address line 1"""
-    line2: Union[str | None, Any] = Field(default=None, description="Address line 2")
-    """Address line 2"""
-    postal_code: Union[str | None, Any] = Field(default=None, description="ZIP or postal code")
-    """ZIP or postal code"""
-    state: Union[str | None, Any] = Field(default=None, description="State, county, province, or region")
-    """State, county, province, or region"""
-
-class InvoiceShippingDetails(BaseModel):
-    """Shipping details for the invoice"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    address: Union[InvoiceShippingDetailsAddress, Any] = Field(default=None, description="Shipping address")
-    """Shipping address"""
-    name: Union[str, Any] = Field(default=None, description="Recipient name")
-    """Recipient name"""
-    phone: Union[str | None, Any] = Field(default=None, description="Recipient phone")
-    """Recipient phone"""
-
-class InvoiceThresholdReasonItemReasonsItem(BaseModel):
-    """Nested schema for InvoiceThresholdReason.item_reasons_item"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    line_item_ids: Union[list[str], Any] = Field(default=None, description="The IDs of the line items that triggered the threshold invoice")
-    """The IDs of the line items that triggered the threshold invoice"""
-    usage_gte: Union[int, Any] = Field(default=None, description="The quantity threshold boundary that applied to the given line item")
-    """The quantity threshold boundary that applied to the given line item"""
-
-class InvoiceThresholdReason(BaseModel):
-    """If billing_reason is set to subscription_threshold this returns more information"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    amount_gte: Union[int | None, Any] = Field(default=None, description="The total invoice amount threshold boundary if it triggered the threshold invoice")
-    """The total invoice amount threshold boundary if it triggered the threshold invoice"""
-    item_reasons: Union[list[InvoiceThresholdReasonItemReasonsItem], Any] = Field(default=None, description="Indicates which line items triggered a threshold invoice")
-    """Indicates which line items triggered a threshold invoice"""
 
 class InvoiceCustomerShippingAddress(BaseModel):
     """Customer shipping address"""
@@ -1069,6 +899,176 @@ class InvoiceCustomerShipping(BaseModel):
     """Customer name"""
     phone: Union[str | None, Any] = Field(default=None, description="Customer phone (including extension)")
     """Customer phone (including extension)"""
+
+class InvoiceTotalTaxesItem(BaseModel):
+    """Nested schema for Invoice.total_taxes_item"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    amount: Union[int, Any] = Field(default=None, description="The amount of the tax")
+    """The amount of the tax"""
+    tax_behavior: Union[str, Any] = Field(default=None, description="Whether this tax is inclusive or exclusive")
+    """Whether this tax is inclusive or exclusive"""
+    tax_rate_details: Union[dict[str, Any] | None, Any] = Field(default=None, description="Additional details about the tax rate")
+    """Additional details about the tax rate"""
+    taxability_reason: Union[str, Any] = Field(default=None, description="The reasoning behind this tax")
+    """The reasoning behind this tax"""
+    taxable_amount: Union[int | None, Any] = Field(default=None, description="The amount on which tax is calculated")
+    """The amount on which tax is calculated"""
+    type: Union[str, Any] = Field(default=None, description="The type of tax information")
+    """The type of tax information"""
+
+class InvoiceIssuer(BaseModel):
+    """The connected account that issues the invoice"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    account: Union[str | None, Any] = Field(default=None, description="The connected account being referenced when type is account")
+    """The connected account being referenced when type is account"""
+    type: Union[str, Any] = Field(default=None, description="Type of the account referenced")
+    """Type of the account referenced"""
+
+class InvoiceLastFinalizationError(BaseModel):
+    """The error encountered during the last finalization attempt"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    advice_code: Union[str | None, Any] = Field(default=None, description="For card errors resulting from a card issuer decline")
+    """For card errors resulting from a card issuer decline"""
+    code: Union[str | None, Any] = Field(default=None, description="For some errors that could be handled programmatically, a short string indicating the error code")
+    """For some errors that could be handled programmatically, a short string indicating the error code"""
+    doc_url: Union[str | None, Any] = Field(default=None, description="A URL to more information about the error code reported")
+    """A URL to more information about the error code reported"""
+    message: Union[str | None, Any] = Field(default=None, description="A human-readable message providing more details about the error")
+    """A human-readable message providing more details about the error"""
+    network_advice_code: Union[str | None, Any] = Field(default=None, description="For card errors resulting from a card issuer decline")
+    """For card errors resulting from a card issuer decline"""
+    network_decline_code: Union[str | None, Any] = Field(default=None, description="For payments declined by the network")
+    """For payments declined by the network"""
+    param: Union[str | None, Any] = Field(default=None, description="If the error is parameter-specific, the parameter related to the error")
+    """If the error is parameter-specific, the parameter related to the error"""
+    payment_method_type: Union[str | None, Any] = Field(default=None, description="If the error is specific to the type of payment method")
+    """If the error is specific to the type of payment method"""
+    type: Union[str, Any] = Field(default=None, description="The type of error returned")
+    """The type of error returned"""
+
+class InvoiceParentQuoteDetails(BaseModel):
+    """Details about the quote that generated this invoice"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    quote: Union[str, Any] = Field(default=None, description="The quote that generated this invoice")
+    """The quote that generated this invoice"""
+
+class InvoiceParentSubscriptionDetails(BaseModel):
+    """Details about the subscription that generated this invoice"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    metadata: Union[dict[str, str] | None, Any] = Field(default=None, description="Set of key-value pairs defined as subscription metadata")
+    """Set of key-value pairs defined as subscription metadata"""
+    subscription: Union[str, Any] = Field(default=None, description="The subscription that generated this invoice")
+    """The subscription that generated this invoice"""
+    subscription_proration_date: Union[int | None, Any] = Field(default=None, description="Only set for upcoming invoices that preview prorations")
+    """Only set for upcoming invoices that preview prorations"""
+
+class InvoiceParent(BaseModel):
+    """The parent that generated this invoice"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    quote_details: Union[InvoiceParentQuoteDetails | None, Any] = Field(default=None, description="Details about the quote that generated this invoice")
+    """Details about the quote that generated this invoice"""
+    subscription_details: Union[InvoiceParentSubscriptionDetails | None, Any] = Field(default=None, description="Details about the subscription that generated this invoice")
+    """Details about the subscription that generated this invoice"""
+    type: Union[str, Any] = Field(default=None, description="The type of parent that generated this invoice")
+    """The type of parent that generated this invoice"""
+
+class InvoiceFromInvoice(BaseModel):
+    """Details of the invoice that was cloned"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    action: Union[str, Any] = Field(default=None)
+    invoice: Union[str, Any] = Field(default=None)
+
+class InvoiceDefaultTaxRatesItemFlatAmount(BaseModel):
+    """The amount of the tax rate when the rate_type is flat_amount"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    amount: Union[int, Any] = Field(default=None, description="Amount of the tax when the rate_type is flat_amount")
+    """Amount of the tax when the rate_type is flat_amount"""
+    currency: Union[str, Any] = Field(default=None, description="Three-letter ISO currency code")
+    """Three-letter ISO currency code"""
+
+class InvoiceDefaultTaxRatesItem(BaseModel):
+    """Nested schema for Invoice.default_tax_rates_item"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    id: Union[str, Any] = Field(default=None, description="Unique identifier for the object")
+    """Unique identifier for the object"""
+    object: Union[str, Any] = Field(default=None, description="String representing the object's type")
+    """String representing the object's type"""
+    active: Union[bool, Any] = Field(default=None, description="Defaults to true")
+    """Defaults to true"""
+    country: Union[str | None, Any] = Field(default=None, description="Two-letter country code (ISO 3166-1 alpha-2)")
+    """Two-letter country code (ISO 3166-1 alpha-2)"""
+    created: Union[int, Any] = Field(default=None, description="Time at which the object was created")
+    """Time at which the object was created"""
+    description: Union[str | None, Any] = Field(default=None, description="An arbitrary string attached to the tax rate for your internal use only")
+    """An arbitrary string attached to the tax rate for your internal use only"""
+    display_name: Union[str, Any] = Field(default=None, description="The display name of the tax rate")
+    """The display name of the tax rate"""
+    effective_percentage: Union[float | None, Any] = Field(default=None, description="Actual/effective tax rate percentage out of 100")
+    """Actual/effective tax rate percentage out of 100"""
+    inclusive: Union[bool, Any] = Field(default=None, description="This specifies if the tax rate is inclusive or exclusive")
+    """This specifies if the tax rate is inclusive or exclusive"""
+    jurisdiction: Union[str | None, Any] = Field(default=None, description="The jurisdiction for the tax rate")
+    """The jurisdiction for the tax rate"""
+    livemode: Union[bool, Any] = Field(default=None, description="Has the value true if the object exists in live mode")
+    """Has the value true if the object exists in live mode"""
+    metadata: Union[dict[str, str] | None, Any] = Field(default=None, description="Set of key-value pairs")
+    """Set of key-value pairs"""
+    percentage: Union[float, Any] = Field(default=None, description="Tax rate percentage out of 100")
+    """Tax rate percentage out of 100"""
+    flat_amount: Union[InvoiceDefaultTaxRatesItemFlatAmount | None, Any] = Field(default=None, description="The amount of the tax rate when the rate_type is flat_amount")
+    """The amount of the tax rate when the rate_type is flat_amount"""
+    jurisdiction_level: Union[str | None, Any] = Field(default=None, description="The level of the jurisdiction that imposes this tax rate")
+    """The level of the jurisdiction that imposes this tax rate"""
+    rate_type: Union[str | None, Any] = Field(default=None, description="Indicates the type of tax rate applied to the taxable amount")
+    """Indicates the type of tax rate applied to the taxable amount"""
+    state: Union[str | None, Any] = Field(default=None, description="ISO 3166-2 subdivision code")
+    """ISO 3166-2 subdivision code"""
+    tax_type: Union[str | None, Any] = Field(default=None, description="The high-level tax type")
+    """The high-level tax type"""
+
+class InvoicePaymentSettings(BaseModel):
+    """Configuration settings for the PaymentIntent that is generated when the invoice is finalized"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    default_mandate: Union[str | None, Any] = Field(default=None, description="ID of the mandate to be used for this invoice")
+    """ID of the mandate to be used for this invoice"""
+    payment_method_options: Union[dict[str, Any] | None, Any] = Field(default=None, description="Payment-method-specific configuration to provide to the invoice's PaymentIntent")
+    """Payment-method-specific configuration to provide to the invoice's PaymentIntent"""
+    payment_method_types: Union[list[str] | None, Any] = Field(default=None, description="The list of payment method types to provide to the invoice's PaymentIntent")
+    """The list of payment method types to provide to the invoice's PaymentIntent"""
+
+class InvoiceAutomaticTaxLiability(BaseModel):
+    """The account that's liable for tax"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    account: Union[str | None, Any] = Field(default=None, description="The connected account being referenced when type is account")
+    """The connected account being referenced when type is account"""
+    type: Union[str, Any] = Field(default=None, description="Type of the account referenced")
+    """Type of the account referenced"""
+
+class InvoiceAutomaticTax(BaseModel):
+    """Settings and latest results for automatic tax lookup for this invoice"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    disabled_reason: Union[str | None, Any] = Field(default=None, description="If Stripe disabled automatic tax, this enum describes why")
+    """If Stripe disabled automatic tax, this enum describes why"""
+    enabled: Union[bool, Any] = Field(default=None, description="Whether Stripe automatically computes tax on this invoice")
+    """Whether Stripe automatically computes tax on this invoice"""
+    liability: Union[InvoiceAutomaticTaxLiability | None, Any] = Field(default=None, description="The account that's liable for tax")
+    """The account that's liable for tax"""
+    provider: Union[str | None, Any] = Field(default=None, description="The tax provider powering automatic tax")
+    """The tax provider powering automatic tax"""
+    status: Union[str | None, Any] = Field(default=None, description="The status of the most recent automated tax calculation for this invoice")
+    """The status of the most recent automated tax calculation for this invoice"""
 
 class InvoiceTotalDiscountAmountsItem(BaseModel):
     """Nested schema for Invoice.total_discount_amounts_item"""
@@ -1183,6 +1183,29 @@ class InvoiceList(BaseModel):
     has_more: Union[bool, Any] = Field(default=None)
     url: Union[str, Any] = Field(default=None)
 
+class ChargeFraudDetails(BaseModel):
+    """Information on fraud assessments for the charge"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    stripe_report: Union[str | None, Any] = Field(default=None, description="Assessments from Stripe. If set, the value is `fraudulent`.")
+    """Assessments from Stripe. If set, the value is `fraudulent`."""
+    user_report: Union[str | None, Any] = Field(default=None, description="Assessments from you or your users. Possible values are `fraudulent` and `safe`")
+    """Assessments from you or your users. Possible values are `fraudulent` and `safe`"""
+
+class ChargeOutcome(BaseModel):
+    """Details about whether the payment was accepted, and why"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    advice_code: Union[str | None, Any] = Field(default=None)
+    network_advice_code: Union[str | None, Any] = Field(default=None)
+    network_decline_code: Union[str | None, Any] = Field(default=None)
+    network_status: Union[str, Any] = Field(default=None)
+    reason: Union[str | None, Any] = Field(default=None)
+    risk_level: Union[str, Any] = Field(default=None)
+    risk_score: Union[int, Any] = Field(default=None)
+    seller_message: Union[str, Any] = Field(default=None)
+    type: Union[str, Any] = Field(default=None)
+
 class ChargePaymentMethodDetailsCardChecks(BaseModel):
     """Check results by Card networks on Card address and CVC"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
@@ -1190,6 +1213,19 @@ class ChargePaymentMethodDetailsCardChecks(BaseModel):
     address_line1_check: Union[str | None, Any] = Field(default=None)
     address_postal_code_check: Union[str | None, Any] = Field(default=None)
     cvc_check: Union[str | None, Any] = Field(default=None)
+
+class ChargePaymentMethodDetailsCardOvercapture(BaseModel):
+    """Overcapture details"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    maximum_amount_capturable: Union[int, Any] = Field(default=None)
+    status: Union[str, Any] = Field(default=None)
+
+class ChargePaymentMethodDetailsCardIncrementalAuthorization(BaseModel):
+    """Incremental authorization details"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    status: Union[str, Any] = Field(default=None)
 
 class ChargePaymentMethodDetailsCardExtendedAuthorization(BaseModel):
     """Extended authorization details"""
@@ -1203,21 +1239,8 @@ class ChargePaymentMethodDetailsCardNetworkToken(BaseModel):
 
     used: Union[bool, Any] = Field(default=None)
 
-class ChargePaymentMethodDetailsCardOvercapture(BaseModel):
-    """Overcapture details"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    maximum_amount_capturable: Union[int, Any] = Field(default=None)
-    status: Union[str, Any] = Field(default=None)
-
 class ChargePaymentMethodDetailsCardMulticapture(BaseModel):
     """Multicapture details"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    status: Union[str, Any] = Field(default=None)
-
-class ChargePaymentMethodDetailsCardIncrementalAuthorization(BaseModel):
-    """Incremental authorization details"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
     status: Union[str, Any] = Field(default=None)
@@ -1278,6 +1301,17 @@ class ChargePaymentMethodDetails(BaseModel):
     type: Union[str, Any] = Field(default=None)
     card: Union[ChargePaymentMethodDetailsCard | None, Any] = Field(default=None)
 
+class ChargePresentmentDetails(BaseModel):
+    """Currency presentation information for multi-currency charges"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    amount_authorized: Union[int | None, Any] = Field(default=None, description="Amount authorized in the presentment currency")
+    """Amount authorized in the presentment currency"""
+    amount_charged: Union[int | None, Any] = Field(default=None, description="Amount charged in the presentment currency")
+    """Amount charged in the presentment currency"""
+    currency: Union[str | None, Any] = Field(default=None, description="Three-letter ISO currency code for presentment")
+    """Three-letter ISO currency code for presentment"""
+
 class ChargeRefunds(BaseModel):
     """A list of refunds that have been applied to the charge"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
@@ -1310,40 +1344,6 @@ class ChargeBillingDetails(BaseModel):
     name: Union[str | None, Any] = Field(default=None)
     phone: Union[str | None, Any] = Field(default=None)
     tax_id: Union[str | None, Any] = Field(default=None)
-
-class ChargeFraudDetails(BaseModel):
-    """Information on fraud assessments for the charge"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    stripe_report: Union[str | None, Any] = Field(default=None, description="Assessments from Stripe. If set, the value is `fraudulent`.")
-    """Assessments from Stripe. If set, the value is `fraudulent`."""
-    user_report: Union[str | None, Any] = Field(default=None, description="Assessments from you or your users. Possible values are `fraudulent` and `safe`")
-    """Assessments from you or your users. Possible values are `fraudulent` and `safe`"""
-
-class ChargePresentmentDetails(BaseModel):
-    """Currency presentation information for multi-currency charges"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    amount_authorized: Union[int | None, Any] = Field(default=None, description="Amount authorized in the presentment currency")
-    """Amount authorized in the presentment currency"""
-    amount_charged: Union[int | None, Any] = Field(default=None, description="Amount charged in the presentment currency")
-    """Amount charged in the presentment currency"""
-    currency: Union[str | None, Any] = Field(default=None, description="Three-letter ISO currency code for presentment")
-    """Three-letter ISO currency code for presentment"""
-
-class ChargeOutcome(BaseModel):
-    """Details about whether the payment was accepted, and why"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    advice_code: Union[str | None, Any] = Field(default=None)
-    network_advice_code: Union[str | None, Any] = Field(default=None)
-    network_decline_code: Union[str | None, Any] = Field(default=None)
-    network_status: Union[str, Any] = Field(default=None)
-    reason: Union[str | None, Any] = Field(default=None)
-    risk_level: Union[str, Any] = Field(default=None)
-    risk_score: Union[int, Any] = Field(default=None)
-    seller_message: Union[str, Any] = Field(default=None)
-    type: Union[str, Any] = Field(default=None)
 
 class Charge(BaseModel):
     """Charge type definition"""
@@ -1445,14 +1445,12 @@ class RefundNextAction(BaseModel):
     type: Union[str, Any] = Field(default=None, description="Type of the next action to perform")
     """Type of the next action to perform"""
 
-class RefundDestinationDetailsBrBankTransfer(BaseModel):
-    """If this is a br_bank_transfer refund, this hash contains the transaction specific details"""
+class RefundDestinationDetailsCrypto(BaseModel):
+    """If this is a crypto refund, this hash contains the transaction specific details"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    reference: Union[str | None, Any] = Field(default=None, description="The reference assigned to the refund")
-    """The reference assigned to the refund"""
-    reference_status: Union[str | None, Any] = Field(default=None, description="Status of the reference on the refund")
-    """Status of the reference on the refund"""
+    reference: Union[str | None, Any] = Field(default=None, description="The transaction hash of the refund")
+    """The transaction hash of the refund"""
 
 class RefundDestinationDetailsUsBankTransfer(BaseModel):
     """If this is a us_bank_transfer refund, this hash contains the transaction specific details"""
@@ -1463,42 +1461,8 @@ class RefundDestinationDetailsUsBankTransfer(BaseModel):
     reference_status: Union[str | None, Any] = Field(default=None, description="Status of the reference on the refund")
     """Status of the reference on the refund"""
 
-class RefundDestinationDetailsMxBankTransfer(BaseModel):
-    """If this is a mx_bank_transfer refund, this hash contains the transaction specific details"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    reference: Union[str | None, Any] = Field(default=None, description="The reference assigned to the refund")
-    """The reference assigned to the refund"""
-    reference_status: Union[str | None, Any] = Field(default=None, description="Status of the reference on the refund")
-    """Status of the reference on the refund"""
-
-class RefundDestinationDetailsPaypal(BaseModel):
-    """If this is a paypal refund, this hash contains the transaction specific details"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    network_decline_code: Union[str | None, Any] = Field(default=None, description="For refunds declined by the network, a decline code provided by the network")
-    """For refunds declined by the network, a decline code provided by the network"""
-
-class RefundDestinationDetailsCrypto(BaseModel):
-    """If this is a crypto refund, this hash contains the transaction specific details"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    reference: Union[str | None, Any] = Field(default=None, description="The transaction hash of the refund")
-    """The transaction hash of the refund"""
-
-class RefundDestinationDetailsSwish(BaseModel):
-    """If this is a swish refund, this hash contains the transaction specific details"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    network_decline_code: Union[str | None, Any] = Field(default=None, description="For refunds declined by the network, a decline code provided by the network")
-    """For refunds declined by the network, a decline code provided by the network"""
-    reference: Union[str | None, Any] = Field(default=None, description="The reference assigned to the refund")
-    """The reference assigned to the refund"""
-    reference_status: Union[str | None, Any] = Field(default=None, description="Status of the reference on the refund")
-    """Status of the reference on the refund"""
-
-class RefundDestinationDetailsThBankTransfer(BaseModel):
-    """If this is a th_bank_transfer refund, this hash contains the transaction specific details"""
+class RefundDestinationDetailsEuBankTransfer(BaseModel):
+    """If this is a eu_bank_transfer refund, this hash contains the transaction specific details"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
     reference: Union[str | None, Any] = Field(default=None, description="The reference assigned to the refund")
@@ -1515,8 +1479,28 @@ class RefundDestinationDetailsMbWay(BaseModel):
     reference_status: Union[str | None, Any] = Field(default=None, description="Status of the reference on the refund")
     """Status of the reference on the refund"""
 
-class RefundDestinationDetailsGbBankTransfer(BaseModel):
-    """If this is a gb_bank_transfer refund, this hash contains the transaction specific details"""
+class RefundDestinationDetailsThBankTransfer(BaseModel):
+    """If this is a th_bank_transfer refund, this hash contains the transaction specific details"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    reference: Union[str | None, Any] = Field(default=None, description="The reference assigned to the refund")
+    """The reference assigned to the refund"""
+    reference_status: Union[str | None, Any] = Field(default=None, description="Status of the reference on the refund")
+    """Status of the reference on the refund"""
+
+class RefundDestinationDetailsSwish(BaseModel):
+    """If this is a swish refund, this hash contains the transaction specific details"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    network_decline_code: Union[str | None, Any] = Field(default=None, description="For refunds declined by the network, a decline code provided by the network")
+    """For refunds declined by the network, a decline code provided by the network"""
+    reference: Union[str | None, Any] = Field(default=None, description="The reference assigned to the refund")
+    """The reference assigned to the refund"""
+    reference_status: Union[str | None, Any] = Field(default=None, description="Status of the reference on the refund")
+    """Status of the reference on the refund"""
+
+class RefundDestinationDetailsBrBankTransfer(BaseModel):
+    """If this is a br_bank_transfer refund, this hash contains the transaction specific details"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
     reference: Union[str | None, Any] = Field(default=None, description="The reference assigned to the refund")
@@ -1546,6 +1530,13 @@ class RefundDestinationDetailsP24(BaseModel):
     reference_status: Union[str | None, Any] = Field(default=None, description="Status of the reference on the refund")
     """Status of the reference on the refund"""
 
+class RefundDestinationDetailsPaypal(BaseModel):
+    """If this is a paypal refund, this hash contains the transaction specific details"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    network_decline_code: Union[str | None, Any] = Field(default=None, description="For refunds declined by the network, a decline code provided by the network")
+    """For refunds declined by the network, a decline code provided by the network"""
+
 class RefundDestinationDetailsBlik(BaseModel):
     """If this is a blik refund, this hash contains the transaction specific details"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
@@ -1557,8 +1548,8 @@ class RefundDestinationDetailsBlik(BaseModel):
     reference_status: Union[str | None, Any] = Field(default=None, description="Status of the reference on the refund")
     """Status of the reference on the refund"""
 
-class RefundDestinationDetailsMultibanco(BaseModel):
-    """If this is a multibanco refund, this hash contains the transaction specific details"""
+class RefundDestinationDetailsGbBankTransfer(BaseModel):
+    """If this is a gb_bank_transfer refund, this hash contains the transaction specific details"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
     reference: Union[str | None, Any] = Field(default=None, description="The reference assigned to the refund")
@@ -1575,8 +1566,17 @@ class RefundDestinationDetailsJpBankTransfer(BaseModel):
     reference_status: Union[str | None, Any] = Field(default=None, description="Status of the reference on the refund")
     """Status of the reference on the refund"""
 
-class RefundDestinationDetailsEuBankTransfer(BaseModel):
-    """If this is a eu_bank_transfer refund, this hash contains the transaction specific details"""
+class RefundDestinationDetailsMultibanco(BaseModel):
+    """If this is a multibanco refund, this hash contains the transaction specific details"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    reference: Union[str | None, Any] = Field(default=None, description="The reference assigned to the refund")
+    """The reference assigned to the refund"""
+    reference_status: Union[str | None, Any] = Field(default=None, description="Status of the reference on the refund")
+    """Status of the reference on the refund"""
+
+class RefundDestinationDetailsMxBankTransfer(BaseModel):
+    """If this is a mx_bank_transfer refund, this hash contains the transaction specific details"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
     reference: Union[str | None, Any] = Field(default=None, description="The reference assigned to the refund")
@@ -1710,19 +1710,19 @@ class ProductPackageDimensions(BaseModel):
     width: Union[float, Any] = Field(default=None, description="Width, in inches")
     """Width, in inches"""
 
-class ProductMarketingFeaturesItem(BaseModel):
-    """Nested schema for Product.marketing_features_item"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    name: Union[str | None, Any] = Field(default=None, description="The marketing feature name. Up to 80 characters long")
-    """The marketing feature name. Up to 80 characters long"""
-
 class ProductFeaturesItem(BaseModel):
     """Nested schema for Product.features_item"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
     name: Union[str, Any] = Field(default=None, description="The feature name")
     """The feature name"""
+
+class ProductMarketingFeaturesItem(BaseModel):
+    """Nested schema for Product.marketing_features_item"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    name: Union[str | None, Any] = Field(default=None, description="The marketing feature name. Up to 80 characters long")
+    """The marketing feature name. Up to 80 characters long"""
 
 class Product(BaseModel):
     """Product type definition"""
@@ -1769,7 +1769,7 @@ class ProductSearchResult(BaseModel):
     next_page: Union[str | None, Any] = Field(default=None)
     url: Union[str, Any] = Field(default=None)
 
-class BalanceConnectReservedItemSourceTypes(BaseModel):
+class BalanceInstantAvailableItemSourceTypes(BaseModel):
     """Breakdown of balance by source types"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
@@ -1780,67 +1780,40 @@ class BalanceConnectReservedItemSourceTypes(BaseModel):
     fpx: Union[int | None, Any] = Field(default=None, description="Amount for fpx")
     """Amount for fpx"""
 
-class BalanceConnectReservedItem(BaseModel):
-    """Nested schema for Balance.connect_reserved_item"""
+class BalanceInstantAvailableItemNetAvailableItemSourceTypes(BaseModel):
+    """Breakdown of balance by source types"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    bank_account: Union[int | None, Any] = Field(default=None, description="Amount for bank_account")
+    """Amount for bank_account"""
+    card: Union[int | None, Any] = Field(default=None, description="Amount for card")
+    """Amount for card"""
+    fpx: Union[int | None, Any] = Field(default=None, description="Amount for fpx")
+    """Amount for fpx"""
+
+class BalanceInstantAvailableItemNetAvailableItem(BaseModel):
+    """Nested schema for BalanceInstantAvailableItem.net_available_item"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    amount: Union[int, Any] = Field(default=None, description="Net balance amount")
+    """Net balance amount"""
+    destination: Union[str, Any] = Field(default=None, description="ID of the external account")
+    """ID of the external account"""
+    source_types: Union[BalanceInstantAvailableItemNetAvailableItemSourceTypes | None, Any] = Field(default=None, description="Breakdown of balance by source types")
+    """Breakdown of balance by source types"""
+
+class BalanceInstantAvailableItem(BaseModel):
+    """Nested schema for Balance.instant_available_item"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
     amount: Union[int, Any] = Field(default=None, description="Balance amount in the smallest currency unit")
     """Balance amount in the smallest currency unit"""
     currency: Union[str, Any] = Field(default=None, description="Three-letter ISO currency code, in lowercase")
     """Three-letter ISO currency code, in lowercase"""
-    source_types: Union[BalanceConnectReservedItemSourceTypes | None, Any] = Field(default=None, description="Breakdown of balance by source types")
+    source_types: Union[BalanceInstantAvailableItemSourceTypes | None, Any] = Field(default=None, description="Breakdown of balance by source types")
     """Breakdown of balance by source types"""
-
-class BalanceAvailableItemSourceTypes(BaseModel):
-    """Breakdown of balance by source types"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    bank_account: Union[int | None, Any] = Field(default=None, description="Amount for bank_account")
-    """Amount for bank_account"""
-    card: Union[int | None, Any] = Field(default=None, description="Amount for card")
-    """Amount for card"""
-    fpx: Union[int | None, Any] = Field(default=None, description="Amount for fpx")
-    """Amount for fpx"""
-
-class BalanceAvailableItem(BaseModel):
-    """Nested schema for Balance.available_item"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    amount: Union[int, Any] = Field(default=None, description="Balance amount in the smallest currency unit (e.g., cents)")
-    """Balance amount in the smallest currency unit (e.g., cents)"""
-    currency: Union[str, Any] = Field(default=None, description="Three-letter ISO currency code, in lowercase")
-    """Three-letter ISO currency code, in lowercase"""
-    source_types: Union[BalanceAvailableItemSourceTypes | None, Any] = Field(default=None, description="Breakdown of balance by source types")
-    """Breakdown of balance by source types"""
-
-class BalanceIssuingAvailableItemSourceTypes(BaseModel):
-    """Breakdown of balance by source types"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    bank_account: Union[int | None, Any] = Field(default=None, description="Amount for bank_account")
-    """Amount for bank_account"""
-    card: Union[int | None, Any] = Field(default=None, description="Amount for card")
-    """Amount for card"""
-    fpx: Union[int | None, Any] = Field(default=None, description="Amount for fpx")
-    """Amount for fpx"""
-
-class BalanceIssuingAvailableItem(BaseModel):
-    """Nested schema for BalanceIssuing.available_item"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    amount: Union[int, Any] = Field(default=None, description="Balance amount")
-    """Balance amount"""
-    currency: Union[str, Any] = Field(default=None, description="Three-letter ISO currency code")
-    """Three-letter ISO currency code"""
-    source_types: Union[BalanceIssuingAvailableItemSourceTypes | None, Any] = Field(default=None, description="Breakdown of balance by source types")
-    """Breakdown of balance by source types"""
-
-class BalanceIssuing(BaseModel):
-    """Funds that are available for use with Issuing cards"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    available: Union[list[BalanceIssuingAvailableItem], Any] = Field(default=None, description="Funds available for issuing")
-    """Funds available for issuing"""
+    net_available: Union[list[BalanceInstantAvailableItemNetAvailableItem] | None, Any] = Field(default=None, description="Net balance amount available after deducting fees")
+    """Net balance amount available after deducting fees"""
 
 class BalanceRefundAndDisputePrefundingPendingItemSourceTypes(BaseModel):
     """Breakdown of balance by source types"""
@@ -1895,7 +1868,7 @@ class BalanceRefundAndDisputePrefunding(BaseModel):
     pending: Union[list[BalanceRefundAndDisputePrefundingPendingItem], Any] = Field(default=None, description="Pending funds for refunds and disputes")
     """Pending funds for refunds and disputes"""
 
-class BalanceInstantAvailableItemNetAvailableItemSourceTypes(BaseModel):
+class BalanceAvailableItemSourceTypes(BaseModel):
     """Breakdown of balance by source types"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
@@ -1906,40 +1879,45 @@ class BalanceInstantAvailableItemNetAvailableItemSourceTypes(BaseModel):
     fpx: Union[int | None, Any] = Field(default=None, description="Amount for fpx")
     """Amount for fpx"""
 
-class BalanceInstantAvailableItemNetAvailableItem(BaseModel):
-    """Nested schema for BalanceInstantAvailableItem.net_available_item"""
+class BalanceAvailableItem(BaseModel):
+    """Nested schema for Balance.available_item"""
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    amount: Union[int, Any] = Field(default=None, description="Net balance amount")
-    """Net balance amount"""
-    destination: Union[str, Any] = Field(default=None, description="ID of the external account")
-    """ID of the external account"""
-    source_types: Union[BalanceInstantAvailableItemNetAvailableItemSourceTypes | None, Any] = Field(default=None, description="Breakdown of balance by source types")
-    """Breakdown of balance by source types"""
-
-class BalanceInstantAvailableItemSourceTypes(BaseModel):
-    """Breakdown of balance by source types"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    bank_account: Union[int | None, Any] = Field(default=None, description="Amount for bank_account")
-    """Amount for bank_account"""
-    card: Union[int | None, Any] = Field(default=None, description="Amount for card")
-    """Amount for card"""
-    fpx: Union[int | None, Any] = Field(default=None, description="Amount for fpx")
-    """Amount for fpx"""
-
-class BalanceInstantAvailableItem(BaseModel):
-    """Nested schema for Balance.instant_available_item"""
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
-
-    amount: Union[int, Any] = Field(default=None, description="Balance amount in the smallest currency unit")
-    """Balance amount in the smallest currency unit"""
+    amount: Union[int, Any] = Field(default=None, description="Balance amount in the smallest currency unit (e.g., cents)")
+    """Balance amount in the smallest currency unit (e.g., cents)"""
     currency: Union[str, Any] = Field(default=None, description="Three-letter ISO currency code, in lowercase")
     """Three-letter ISO currency code, in lowercase"""
-    source_types: Union[BalanceInstantAvailableItemSourceTypes | None, Any] = Field(default=None, description="Breakdown of balance by source types")
+    source_types: Union[BalanceAvailableItemSourceTypes | None, Any] = Field(default=None, description="Breakdown of balance by source types")
     """Breakdown of balance by source types"""
-    net_available: Union[list[BalanceInstantAvailableItemNetAvailableItem] | None, Any] = Field(default=None, description="Net balance amount available after deducting fees")
-    """Net balance amount available after deducting fees"""
+
+class BalanceIssuingAvailableItemSourceTypes(BaseModel):
+    """Breakdown of balance by source types"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    bank_account: Union[int | None, Any] = Field(default=None, description="Amount for bank_account")
+    """Amount for bank_account"""
+    card: Union[int | None, Any] = Field(default=None, description="Amount for card")
+    """Amount for card"""
+    fpx: Union[int | None, Any] = Field(default=None, description="Amount for fpx")
+    """Amount for fpx"""
+
+class BalanceIssuingAvailableItem(BaseModel):
+    """Nested schema for BalanceIssuing.available_item"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    amount: Union[int, Any] = Field(default=None, description="Balance amount")
+    """Balance amount"""
+    currency: Union[str, Any] = Field(default=None, description="Three-letter ISO currency code")
+    """Three-letter ISO currency code"""
+    source_types: Union[BalanceIssuingAvailableItemSourceTypes | None, Any] = Field(default=None, description="Breakdown of balance by source types")
+    """Breakdown of balance by source types"""
+
+class BalanceIssuing(BaseModel):
+    """Funds that are available for use with Issuing cards"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    available: Union[list[BalanceIssuingAvailableItem], Any] = Field(default=None, description="Funds available for issuing")
+    """Funds available for issuing"""
 
 class BalancePendingItemSourceTypes(BaseModel):
     """Breakdown of balance by source types"""
@@ -1961,6 +1939,28 @@ class BalancePendingItem(BaseModel):
     currency: Union[str, Any] = Field(default=None, description="Three-letter ISO currency code, in lowercase")
     """Three-letter ISO currency code, in lowercase"""
     source_types: Union[BalancePendingItemSourceTypes | None, Any] = Field(default=None, description="Breakdown of balance by source types")
+    """Breakdown of balance by source types"""
+
+class BalanceConnectReservedItemSourceTypes(BaseModel):
+    """Breakdown of balance by source types"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    bank_account: Union[int | None, Any] = Field(default=None, description="Amount for bank_account")
+    """Amount for bank_account"""
+    card: Union[int | None, Any] = Field(default=None, description="Amount for card")
+    """Amount for card"""
+    fpx: Union[int | None, Any] = Field(default=None, description="Amount for fpx")
+    """Amount for fpx"""
+
+class BalanceConnectReservedItem(BaseModel):
+    """Nested schema for Balance.connect_reserved_item"""
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    amount: Union[int, Any] = Field(default=None, description="Balance amount in the smallest currency unit")
+    """Balance amount in the smallest currency unit"""
+    currency: Union[str, Any] = Field(default=None, description="Three-letter ISO currency code, in lowercase")
+    """Three-letter ISO currency code, in lowercase"""
+    source_types: Union[BalanceConnectReservedItemSourceTypes | None, Any] = Field(default=None, description="Breakdown of balance by source types")
     """Breakdown of balance by source types"""
 
 class Balance(BaseModel):
