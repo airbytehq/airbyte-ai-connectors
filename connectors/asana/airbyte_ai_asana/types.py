@@ -155,3 +155,41 @@ class AttachmentsDownloadParams(TypedDict):
     """Parameters for attachments.download operation"""
     attachment_gid: str
     range_header: NotRequired[str]
+
+class WorkspaceTagsListParams(TypedDict):
+    """Parameters for workspace_tags.list operation"""
+    workspace_gid: str
+    limit: NotRequired[int]
+    offset: NotRequired[str]
+
+class TagsGetParams(TypedDict):
+    """Parameters for tags.get operation"""
+    tag_gid: str
+
+class ProjectSectionsListParams(TypedDict):
+    """Parameters for project_sections.list operation"""
+    project_gid: str
+    limit: NotRequired[int]
+    offset: NotRequired[str]
+
+class SectionsGetParams(TypedDict):
+    """Parameters for sections.get operation"""
+    section_gid: str
+
+class TaskSubtasksListParams(TypedDict):
+    """Parameters for task_subtasks.list operation"""
+    task_gid: str
+    limit: NotRequired[int]
+    offset: NotRequired[str]
+
+class TaskDependenciesListParams(TypedDict):
+    """Parameters for task_dependencies.list operation"""
+    task_gid: str
+    limit: NotRequired[int]
+    offset: NotRequired[str]
+
+class TaskDependentsListParams(TypedDict):
+    """Parameters for task_dependents.list operation"""
+    task_gid: str
+    limit: NotRequired[int]
+    offset: NotRequired[str]

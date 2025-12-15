@@ -16,10 +16,16 @@ from .types import (
     AttachmentsDownloadParams,
     AttachmentsGetParams,
     AttachmentsListParams,
+    ProjectSectionsListParams,
     ProjectTasksListParams,
     ProjectsGetParams,
     ProjectsListParams,
+    SectionsGetParams,
+    TagsGetParams,
+    TaskDependenciesListParams,
+    TaskDependentsListParams,
     TaskProjectsListParams,
+    TaskSubtasksListParams,
     TasksGetParams,
     TasksListParams,
     TeamProjectsListParams,
@@ -29,6 +35,7 @@ from .types import (
     UsersGetParams,
     UsersListParams,
     WorkspaceProjectsListParams,
+    WorkspaceTagsListParams,
     WorkspaceTaskSearchListParams,
     WorkspaceTeamsListParams,
     WorkspaceUsersListParams,
@@ -38,6 +45,8 @@ from .types import (
 
 if TYPE_CHECKING:
     from .models import AsanaAuthConfig
+# Import specific auth config classes for multi-auth isinstance checks
+from .models import AsanaAsanaOauth20AuthConfig, AsanaPersonalAccessTokenAuthConfig
 # Import response models and envelope models at runtime
 from .models import (
     AsanaExecuteResult,
@@ -62,6 +71,13 @@ from .models import (
     UserTeamsListResult,
     AttachmentsListResult,
     AttachmentsGetResult,
+    WorkspaceTagsListResult,
+    TagsGetResult,
+    ProjectSectionsListResult,
+    SectionsGetResult,
+    TaskSubtasksListResult,
+    TaskDependenciesListResult,
+    TaskDependentsListResult,
 )
 
 
@@ -73,7 +89,7 @@ class AsanaConnector:
     """
 
     connector_name = "asana"
-    connector_version = "0.1.3"
+    connector_version = "0.1.4"
     vendored_sdk_version = "0.1.0"  # Version of vendored connector-sdk
 
     # Map of (entity, action) -> has_extractors for envelope wrapping decision
@@ -99,6 +115,13 @@ class AsanaConnector:
         ("attachments", "list"): True,
         ("attachments", "get"): True,
         ("attachments", "download"): False,
+        ("workspace_tags", "list"): True,
+        ("tags", "get"): True,
+        ("project_sections", "list"): True,
+        ("sections", "get"): True,
+        ("task_subtasks", "list"): True,
+        ("task_dependencies", "list"): True,
+        ("task_dependents", "list"): True,
     }
 
     # Map of (entity, action) -> {python_param_name: api_param_name}
@@ -125,6 +148,13 @@ class AsanaConnector:
         ('attachments', 'list'): {'parent': 'parent', 'limit': 'limit', 'offset': 'offset'},
         ('attachments', 'get'): {'attachment_gid': 'attachment_gid'},
         ('attachments', 'download'): {'attachment_gid': 'attachment_gid', 'range_header': 'range_header'},
+        ('workspace_tags', 'list'): {'workspace_gid': 'workspace_gid', 'limit': 'limit', 'offset': 'offset'},
+        ('tags', 'get'): {'tag_gid': 'tag_gid'},
+        ('project_sections', 'list'): {'project_gid': 'project_gid', 'limit': 'limit', 'offset': 'offset'},
+        ('sections', 'get'): {'section_gid': 'section_gid'},
+        ('task_subtasks', 'list'): {'task_gid': 'task_gid', 'limit': 'limit', 'offset': 'offset'},
+        ('task_dependencies', 'list'): {'task_gid': 'task_gid', 'limit': 'limit', 'offset': 'offset'},
+        ('task_dependents', 'list'): {'task_gid': 'task_gid', 'limit': 'limit', 'offset': 'offset'},
     }
 
     def __init__(
@@ -199,9 +229,18 @@ class AsanaConnector:
             # Build config_values dict from server variables
             config_values = None
 
+            # Multi-auth connector: detect auth scheme from auth_config type
+            auth_scheme: str | None = None
+            if auth_config:
+                if isinstance(auth_config, AsanaAsanaOauth20AuthConfig):
+                    auth_scheme = "oauth2"
+                if isinstance(auth_config, AsanaPersonalAccessTokenAuthConfig):
+                    auth_scheme = "personalAccessToken"
+
             self._executor = LocalExecutor(
                 config_path=config_path,
                 auth_config=auth_config.model_dump() if auth_config else None,
+                auth_scheme=auth_scheme,
                 config_values=config_values,
                 on_token_refresh=on_token_refresh
             )
@@ -224,6 +263,13 @@ class AsanaConnector:
         self.workspace_teams = WorkspaceTeamsQuery(self)
         self.user_teams = UserTeamsQuery(self)
         self.attachments = AttachmentsQuery(self)
+        self.workspace_tags = WorkspaceTagsQuery(self)
+        self.tags = TagsQuery(self)
+        self.project_sections = ProjectSectionsQuery(self)
+        self.sections = SectionsQuery(self)
+        self.task_subtasks = TaskSubtasksQuery(self)
+        self.task_dependencies = TaskDependenciesQuery(self)
+        self.task_dependents = TaskDependentsQuery(self)
 
     @classmethod
     def get_default_config_path(cls) -> Path:
@@ -399,6 +445,62 @@ class AsanaConnector:
         action: Literal["download"],
         params: "AttachmentsDownloadParams"
     ) -> "AsyncIterator[bytes]": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["workspace_tags"],
+        action: Literal["list"],
+        params: "WorkspaceTagsListParams"
+    ) -> "WorkspaceTagsListResult": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["tags"],
+        action: Literal["get"],
+        params: "TagsGetParams"
+    ) -> "TagsGetResult": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["project_sections"],
+        action: Literal["list"],
+        params: "ProjectSectionsListParams"
+    ) -> "ProjectSectionsListResult": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["sections"],
+        action: Literal["get"],
+        params: "SectionsGetParams"
+    ) -> "SectionsGetResult": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["task_subtasks"],
+        action: Literal["list"],
+        params: "TaskSubtasksListParams"
+    ) -> "TaskSubtasksListResult": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["task_dependencies"],
+        action: Literal["list"],
+        params: "TaskDependenciesListParams"
+    ) -> "TaskDependenciesListResult": ...
+
+    @overload
+    async def execute(
+        self,
+        entity: Literal["task_dependents"],
+        action: Literal["list"],
+        params: "TaskDependentsListParams"
+    ) -> "TaskDependentsListResult": ...
 
 
     @overload
@@ -1390,4 +1492,291 @@ metadata to get the download_url, then downloads the file from that URL.
         )
 
         return await save_download(content_iterator, path)
+
+
+class WorkspaceTagsQuery:
+    """
+    Query class for WorkspaceTags entity operations.
+    """
+
+    def __init__(self, connector: AsanaConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        workspace_gid: str,
+        limit: int | None = None,
+        offset: str | None = None,
+        **kwargs
+    ) -> WorkspaceTagsListResult:
+        """
+        Returns all tags in a workspace
+
+        Args:
+            workspace_gid: Workspace GID to list tags from
+            limit: Number of items to return per page
+            offset: Pagination offset token
+            **kwargs: Additional parameters
+
+        Returns:
+            WorkspaceTagsListResult
+        """
+        params = {k: v for k, v in {
+            "workspace_gid": workspace_gid,
+            "limit": limit,
+            "offset": offset,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("workspace_tags", "list", params)
+        # Cast generic envelope to concrete typed result
+        return WorkspaceTagsListResult(
+            data=result.data,
+            meta=result.meta        )
+
+
+
+class TagsQuery:
+    """
+    Query class for Tags entity operations.
+    """
+
+    def __init__(self, connector: AsanaConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def get(
+        self,
+        tag_gid: str,
+        **kwargs
+    ) -> TagsGetResult:
+        """
+        Get a single tag by its ID
+
+        Args:
+            tag_gid: Tag GID
+            **kwargs: Additional parameters
+
+        Returns:
+            TagsGetResult
+        """
+        params = {k: v for k, v in {
+            "tag_gid": tag_gid,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("tags", "get", params)
+        # Cast generic envelope to concrete typed result
+        return TagsGetResult(
+            data=result.data        )
+
+
+
+class ProjectSectionsQuery:
+    """
+    Query class for ProjectSections entity operations.
+    """
+
+    def __init__(self, connector: AsanaConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        project_gid: str,
+        limit: int | None = None,
+        offset: str | None = None,
+        **kwargs
+    ) -> ProjectSectionsListResult:
+        """
+        Returns all sections in a project
+
+        Args:
+            project_gid: Project GID to list sections from
+            limit: Number of items to return per page
+            offset: Pagination offset token
+            **kwargs: Additional parameters
+
+        Returns:
+            ProjectSectionsListResult
+        """
+        params = {k: v for k, v in {
+            "project_gid": project_gid,
+            "limit": limit,
+            "offset": offset,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("project_sections", "list", params)
+        # Cast generic envelope to concrete typed result
+        return ProjectSectionsListResult(
+            data=result.data,
+            meta=result.meta        )
+
+
+
+class SectionsQuery:
+    """
+    Query class for Sections entity operations.
+    """
+
+    def __init__(self, connector: AsanaConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def get(
+        self,
+        section_gid: str,
+        **kwargs
+    ) -> SectionsGetResult:
+        """
+        Get a single section by its ID
+
+        Args:
+            section_gid: Section GID
+            **kwargs: Additional parameters
+
+        Returns:
+            SectionsGetResult
+        """
+        params = {k: v for k, v in {
+            "section_gid": section_gid,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("sections", "get", params)
+        # Cast generic envelope to concrete typed result
+        return SectionsGetResult(
+            data=result.data        )
+
+
+
+class TaskSubtasksQuery:
+    """
+    Query class for TaskSubtasks entity operations.
+    """
+
+    def __init__(self, connector: AsanaConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        task_gid: str,
+        limit: int | None = None,
+        offset: str | None = None,
+        **kwargs
+    ) -> TaskSubtasksListResult:
+        """
+        Returns all subtasks of a task
+
+        Args:
+            task_gid: Task GID to list subtasks from
+            limit: Number of items to return per page
+            offset: Pagination offset token
+            **kwargs: Additional parameters
+
+        Returns:
+            TaskSubtasksListResult
+        """
+        params = {k: v for k, v in {
+            "task_gid": task_gid,
+            "limit": limit,
+            "offset": offset,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("task_subtasks", "list", params)
+        # Cast generic envelope to concrete typed result
+        return TaskSubtasksListResult(
+            data=result.data,
+            meta=result.meta        )
+
+
+
+class TaskDependenciesQuery:
+    """
+    Query class for TaskDependencies entity operations.
+    """
+
+    def __init__(self, connector: AsanaConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        task_gid: str,
+        limit: int | None = None,
+        offset: str | None = None,
+        **kwargs
+    ) -> TaskDependenciesListResult:
+        """
+        Returns all tasks that this task depends on
+
+        Args:
+            task_gid: Task GID to list dependencies from
+            limit: Number of items to return per page
+            offset: Pagination offset token
+            **kwargs: Additional parameters
+
+        Returns:
+            TaskDependenciesListResult
+        """
+        params = {k: v for k, v in {
+            "task_gid": task_gid,
+            "limit": limit,
+            "offset": offset,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("task_dependencies", "list", params)
+        # Cast generic envelope to concrete typed result
+        return TaskDependenciesListResult(
+            data=result.data,
+            meta=result.meta        )
+
+
+
+class TaskDependentsQuery:
+    """
+    Query class for TaskDependents entity operations.
+    """
+
+    def __init__(self, connector: AsanaConnector):
+        """Initialize query with connector reference."""
+        self._connector = connector
+
+    async def list(
+        self,
+        task_gid: str,
+        limit: int | None = None,
+        offset: str | None = None,
+        **kwargs
+    ) -> TaskDependentsListResult:
+        """
+        Returns all tasks that depend on this task
+
+        Args:
+            task_gid: Task GID to list dependents from
+            limit: Number of items to return per page
+            offset: Pagination offset token
+            **kwargs: Additional parameters
+
+        Returns:
+            TaskDependentsListResult
+        """
+        params = {k: v for k, v in {
+            "task_gid": task_gid,
+            "limit": limit,
+            "offset": offset,
+            **kwargs
+        }.items() if v is not None}
+
+        result = await self._connector.execute("task_dependents", "list", params)
+        # Cast generic envelope to concrete typed result
+        return TaskDependentsListResult(
+            data=result.data,
+            meta=result.meta        )
+
 
