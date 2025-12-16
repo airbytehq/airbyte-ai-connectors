@@ -13,7 +13,7 @@
 [![Python](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
 [![Publish Connectors](https://github.com/airbytehq/airbyte-agent-connectors/actions/workflows/publish.yml/badge.svg)](https://github.com/airbytehq/airbyte-agent-connectors/actions/workflows/publish.yml)
 [![License](https://img.shields.io/badge/License-Elastic_2.0-blue.svg)](LICENSE)
-[![Airbyte Stars](https://img.shields.io/github/stars/airbytehq/airbyte-agent-connectors?style=social)](https://github.com/airbytehq/airbyte-agent-connectors)
+[![Airbyte Stars](https://img.shields.io/github/stars/airbytehq/airbyte?style=social)](https://github.com/airbytehq/airbyte-agent-connectors)
 [![Slack](https://img.shields.io/badge/Slack-Join_Community-4A154B?logo=slack&logoColor=white)](https://slack.airbyte.com/)
 [![Twitter Follow](https://img.shields.io/twitter/follow/airbytehq?style=social)](https://twitter.com/airbytehq)
 
@@ -134,10 +134,6 @@ This command installs:
 
 The GitHub connector also includes `python-dotenv`, which you can use to load environment variables from a `.env` file.
 
-:::note
-If you want a smaller installation with only OpenAI support, you can use `pydantic-ai-slim[openai]` instead of `pydantic-ai`. See the [Pydantic AI installation docs](https://ai.pydantic.dev/install/) for more options.
-:::
-
 ### Part 3: Import Pydantic AI and the GitHub agent connector
 
 Add the following imports to `agent.py`:
@@ -167,10 +163,6 @@ These imports provide:
     GITHUB_ACCESS_TOKEN=your-github-personal-access-token
     OPENAI_API_KEY=your-openai-api-key
     ```
-
-    :::warning
-    Never commit your `.env` file to version control. If you do this by mistake, rotate your secrets immediately.
-    :::
 
 2. Add the following line to `agent.py` after your imports to load the environment variables:
 
