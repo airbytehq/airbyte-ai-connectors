@@ -11,7 +11,7 @@
 <p/>
 
 [![Python](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
-[![Publish Connectors](https://github.com/airbytehq/airbyte-ai-connectors/actions/workflows/publish.yml/badge.svg)](https://github.com/airbytehq/airbyte-ai-connectors/actions/workflows/publish.yml)
+[![Publish Connectors](https://github.com/airbytehq/airbyte-agent-connectors/actions/workflows/publish.yml/badge.svg)](https://github.com/airbytehq/airbyte-agent-connectors/actions/workflows/publish.yml)
 [![License](https://img.shields.io/badge/License-Elastic_2.0-blue.svg)](LICENSE)
 [![Airbyte Stars](https://img.shields.io/github/stars/airbytehq/airbyte-agent-connectors?style=social)](https://github.com/airbytehq/airbyte-agent-connectors)
 [![Slack](https://img.shields.io/badge/Slack-Join_Community-4A154B?logo=slack&logoColor=white)](https://slack.airbyte.com/)
@@ -32,7 +32,7 @@ Each connector is a standalone Python package:
 ```
 connectors/
 ├── gong/
-│   ├── airbyte_ai_gong/
+│   ├── airbyte_agent_gong/
 │   ├── pyproject.toml
 │   ├── CHANGELOG.md
 │   └── README.md
@@ -126,12 +126,12 @@ You create `.env` and `uv.lock` files in later steps, so don't worry about them 
 Install the GitHub connector and Pydantic AI. This tutorial uses OpenAI as the LLM provider, but Pydantic AI supports many other providers.
 
 ```bash
-uv add airbyte-ai-github pydantic-ai
+uv add airbyte-agent-github pydantic-ai
 ```
 
 This command installs:
 
-- `airbyte-ai-github`: The Airbyte agent connector for GitHub, which provides type-safe access to GitHub's API.
+- `airbyte-agent-github`: The Airbyte agent connector for GitHub, which provides type-safe access to GitHub's API.
 - `pydantic-ai`: The AI agent framework, which includes support for multiple LLM providers including OpenAI, Anthropic, and Google.
 
 The GitHub connector also includes `python-dotenv`, which you can use to load environment variables from a `.env` file.
@@ -149,8 +149,8 @@ import os
 
 from dotenv import load_dotenv
 from pydantic_ai import Agent
-from airbyte_ai_github import GithubConnector
-from airbyte_ai_github.models import GithubAuthConfig
+from airbyte_agent_github import GithubConnector
+from airbyte_agent_github.models import GithubAuthConfig
 ```
 
 These imports provide:

@@ -48,7 +48,7 @@ jobs:
           python scripts/release_info.py \
             --pyproject connectors/${{ matrix.connector }}/pyproject.toml \
             --changelog connectors/${{ matrix.connector }}/CHANGELOG.md \
-            --package-name airbyte-ai-${{ matrix.connector }} \
+            --package-name airbyte-agent-${{ matrix.connector }} \
             --github-output >> $GITHUB_OUTPUT
       - name: Build package
         if: steps.release_info.outputs.should_publish == 'true'
@@ -85,8 +85,8 @@ jobs:
         if: steps.release_info.outputs.should_publish == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: airbyte-ai-${{ matrix.connector }}-v${{ steps.release_info.outputs.version }}
-          name: airbyte-ai-${{ matrix.connector }} ${{ steps.release_info.outputs.version }}
+          tag_name: airbyte-agent-${{ matrix.connector }}-v${{ steps.release_info.outputs.version }}
+          name: airbyte-agent-${{ matrix.connector }} ${{ steps.release_info.outputs.version }}
           body: ${{ steps.release_info.outputs.notes }}
           generate_release_notes: false
 
