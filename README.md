@@ -35,7 +35,8 @@ connectors/
 │   ├── airbyte_agent_gong/
 │   ├── pyproject.toml
 │   ├── CHANGELOG.md
-│   └── README.md
+│   ├── README.md
+│   └── REFERENCE.md
 ├── github/
 │   └── ...
 └── ...
