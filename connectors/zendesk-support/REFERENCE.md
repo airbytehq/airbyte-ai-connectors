@@ -40,7 +40,7 @@ Returns a list of all tickets in your account
 **Python SDK**
 
 ```python
-zendesk_support.tickets.list()
+await zendesk_support.tickets.list()
 ```
 
 **API**
@@ -130,7 +130,7 @@ Returns a ticket by its ID
 **Python SDK**
 
 ```python
-zendesk_support.tickets.get(
+await zendesk_support.tickets.get(
     ticket_id=0
 )
 ```
@@ -217,7 +217,7 @@ Returns a list of all users in your account
 **Python SDK**
 
 ```python
-zendesk_support.users.list()
+await zendesk_support.users.list()
 ```
 
 **API**
@@ -306,7 +306,7 @@ Returns a user by their ID
 **Python SDK**
 
 ```python
-zendesk_support.users.get(
+await zendesk_support.users.get(
     user_id=0
 )
 ```
@@ -392,7 +392,7 @@ Returns a list of all organizations in your account
 **Python SDK**
 
 ```python
-zendesk_support.organizations.list()
+await zendesk_support.organizations.list()
 ```
 
 **API**
@@ -455,7 +455,7 @@ Returns an organization by its ID
 **Python SDK**
 
 ```python
-zendesk_support.organizations.get(
+await zendesk_support.organizations.get(
     organization_id=0
 )
 ```
@@ -517,7 +517,7 @@ Returns a list of all groups in your account
 **Python SDK**
 
 ```python
-zendesk_support.groups.list()
+await zendesk_support.groups.list()
 ```
 
 **API**
@@ -576,7 +576,7 @@ Returns a group by its ID
 **Python SDK**
 
 ```python
-zendesk_support.groups.get(
+await zendesk_support.groups.get(
     group_id=0
 )
 ```
@@ -633,7 +633,7 @@ Returns a list of comments for a specific ticket
 **Python SDK**
 
 ```python
-zendesk_support.ticket_comments.list(
+await zendesk_support.ticket_comments.list(
     ticket_id=0
 )
 ```
@@ -704,7 +704,7 @@ Returns an attachment by its ID
 **Python SDK**
 
 ```python
-zendesk_support.attachments.get(
+await zendesk_support.attachments.get(
     attachment_id=0
 )
 ```
@@ -803,7 +803,7 @@ Returns a list of all ticket audits
 **Python SDK**
 
 ```python
-zendesk_support.ticket_audits.list()
+await zendesk_support.ticket_audits.list()
 ```
 
 **API**
@@ -859,7 +859,7 @@ Returns a list of audits for a specific ticket
 **Python SDK**
 
 ```python
-zendesk_support.ticket_audits.list(
+await zendesk_support.ticket_audits.list(
     ticket_id=0
 )
 ```
@@ -923,7 +923,7 @@ Returns a list of all ticket metrics
 **Python SDK**
 
 ```python
-zendesk_support.ticket_metrics.list()
+await zendesk_support.ticket_metrics.list()
 ```
 
 **API**
@@ -996,7 +996,7 @@ Returns a list of all ticket fields
 **Python SDK**
 
 ```python
-zendesk_support.ticket_fields.list()
+await zendesk_support.ticket_fields.list()
 ```
 
 **API**
@@ -1071,7 +1071,7 @@ Returns a ticket field by its ID
 **Python SDK**
 
 ```python
-zendesk_support.ticket_fields.get(
+await zendesk_support.ticket_fields.get(
     ticket_field_id=0
 )
 ```
@@ -1144,7 +1144,7 @@ Returns a list of all brands for the account
 **Python SDK**
 
 ```python
-zendesk_support.brands.list()
+await zendesk_support.brands.list()
 ```
 
 **API**
@@ -1209,7 +1209,7 @@ Returns a brand by its ID
 **Python SDK**
 
 ```python
-zendesk_support.brands.get(
+await zendesk_support.brands.get(
     brand_id=0
 )
 ```
@@ -1273,7 +1273,7 @@ Returns a list of all views for the account
 **Python SDK**
 
 ```python
-zendesk_support.views.list()
+await zendesk_support.views.list()
 ```
 
 **API**
@@ -1339,7 +1339,7 @@ Returns a view by its ID
 **Python SDK**
 
 ```python
-zendesk_support.views.get(
+await zendesk_support.views.get(
     view_id=0
 )
 ```
@@ -1399,7 +1399,7 @@ Returns a list of all macros for the account
 **Python SDK**
 
 ```python
-zendesk_support.macros.list()
+await zendesk_support.macros.list()
 ```
 
 **API**
@@ -1466,7 +1466,7 @@ Returns a macro by its ID
 **Python SDK**
 
 ```python
-zendesk_support.macros.get(
+await zendesk_support.macros.get(
     macro_id=0
 )
 ```
@@ -1525,7 +1525,7 @@ Returns a list of all triggers for the account
 **Python SDK**
 
 ```python
-zendesk_support.triggers.list()
+await zendesk_support.triggers.list()
 ```
 
 **API**
@@ -1589,7 +1589,7 @@ Returns a trigger by its ID
 **Python SDK**
 
 ```python
-zendesk_support.triggers.get(
+await zendesk_support.triggers.get(
     trigger_id=0
 )
 ```
@@ -1649,7 +1649,7 @@ Returns a list of all automations for the account
 **Python SDK**
 
 ```python
-zendesk_support.automations.list()
+await zendesk_support.automations.list()
 ```
 
 **API**
@@ -1710,7 +1710,7 @@ Returns an automation by its ID
 **Python SDK**
 
 ```python
-zendesk_support.automations.get(
+await zendesk_support.automations.get(
     automation_id=0
 )
 ```
@@ -1768,7 +1768,7 @@ Returns a list of all tags used in the account
 **Python SDK**
 
 ```python
-zendesk_support.tags.list()
+await zendesk_support.tags.list()
 ```
 
 **API**
@@ -1821,7 +1821,7 @@ Returns a list of all satisfaction ratings
 **Python SDK**
 
 ```python
-zendesk_support.satisfaction_ratings.list()
+await zendesk_support.satisfaction_ratings.list()
 ```
 
 **API**
@@ -1886,7 +1886,7 @@ Returns a satisfaction rating by its ID
 **Python SDK**
 
 ```python
-zendesk_support.satisfaction_ratings.get(
+await zendesk_support.satisfaction_ratings.get(
     satisfaction_rating_id=0
 )
 ```
@@ -1947,7 +1947,7 @@ Returns a list of all group memberships
 **Python SDK**
 
 ```python
-zendesk_support.group_memberships.list()
+await zendesk_support.group_memberships.list()
 ```
 
 **API**
@@ -2005,7 +2005,7 @@ Returns a list of all organization memberships
 **Python SDK**
 
 ```python
-zendesk_support.organization_memberships.list()
+await zendesk_support.organization_memberships.list()
 ```
 
 **API**
@@ -2065,7 +2065,7 @@ Returns a list of all SLA policies
 **Python SDK**
 
 ```python
-zendesk_support.sla_policies.list()
+await zendesk_support.sla_policies.list()
 ```
 
 **API**
@@ -2123,7 +2123,7 @@ Returns an SLA policy by its ID
 **Python SDK**
 
 ```python
-zendesk_support.sla_policies.get(
+await zendesk_support.sla_policies.get(
     sla_policy_id=0
 )
 ```
@@ -2180,7 +2180,7 @@ Returns a list of all ticket forms for the account
 **Python SDK**
 
 ```python
-zendesk_support.ticket_forms.list()
+await zendesk_support.ticket_forms.list()
 ```
 
 **API**
@@ -2248,7 +2248,7 @@ Returns a ticket form by its ID
 **Python SDK**
 
 ```python
-zendesk_support.ticket_forms.get(
+await zendesk_support.ticket_forms.get(
     ticket_form_id=0
 )
 ```
@@ -2313,7 +2313,7 @@ Returns a list of all articles in the Help Center
 **Python SDK**
 
 ```python
-zendesk_support.articles.list()
+await zendesk_support.articles.list()
 ```
 
 **API**
@@ -2380,7 +2380,7 @@ Retrieves the details of a specific article
 **Python SDK**
 
 ```python
-zendesk_support.articles.get(
+await zendesk_support.articles.get(
     id=0
 )
 ```
@@ -2444,7 +2444,7 @@ Returns a list of all attachments for a specific article
 **Python SDK**
 
 ```python
-zendesk_support.article_attachments.list(
+await zendesk_support.article_attachments.list(
     article_id=0
 )
 ```
@@ -2509,7 +2509,7 @@ Retrieves the metadata of a specific attachment for a specific article
 **Python SDK**
 
 ```python
-zendesk_support.article_attachments.get(
+await zendesk_support.article_attachments.get(
     article_id=0,
     attachment_id=0
 )
