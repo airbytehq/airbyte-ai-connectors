@@ -19,8 +19,12 @@ from ._vendored.connector_sdk.schema.security import (
     AirbyteAuthConfig,
     AuthConfigFieldSpec,
 )
+from uuid import (
+    UUID,
+)
 
 JiraConnectorModel: ConnectorModel = ConnectorModel(
+    id=UUID('68e63de2-bb83-4c7e-93fa-a8a9051e3993'),
     name='jira',
     version='1.0.2',
     base_url='https://{subdomain}.atlassian.net',
