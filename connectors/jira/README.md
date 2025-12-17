@@ -19,7 +19,7 @@ connector = JiraConnector(
     password="..."
   )
 )
-result = connector.issues.search()
+result = await connector.issues.search()
 ```
 
 ## Full documentation
@@ -42,6 +42,6 @@ For the service's official API docs, see the [Jira API reference](https://develo
 
 ## Version information
 
-- **Package version:** 0.1.9
+- **Package version:** 0.1.10
 - **Connector version:** 1.0.2
-- **Generated with Connector SDK commit SHA:** 6a6c981ea241fe65b8f71e85c9c284c151b35b69
+- **Generated with Connector SDK commit SHA:** af45652142962c8574c427e5e2e6eb2db22445eb

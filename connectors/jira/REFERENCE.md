@@ -24,7 +24,7 @@ Retrieve issues based on JQL query with pagination support
 **Python SDK**
 
 ```python
-jira.issues.search()
+await jira.issues.search()
 ```
 
 **API**
@@ -85,7 +85,7 @@ Retrieve a single issue by its ID or key
 **Python SDK**
 
 ```python
-jira.issues.get(
+await jira.issues.get(
     issue_id_or_key="<str>"
 )
 ```
@@ -144,7 +144,7 @@ Search and filter projects with advanced query parameters
 **Python SDK**
 
 ```python
-jira.projects.search()
+await jira.projects.search()
 ```
 
 **API**
@@ -224,7 +224,7 @@ Retrieve a single project by its ID or key
 **Python SDK**
 
 ```python
-jira.projects.get(
+await jira.projects.get(
     project_id_or_key="<str>"
 )
 ```
@@ -296,7 +296,7 @@ Retrieve a single user by their account ID
 **Python SDK**
 
 ```python
-jira.users.get(
+await jira.users.get(
     account_id="<str>"
 )
 ```
@@ -355,7 +355,7 @@ Returns a paginated list of users
 **Python SDK**
 
 ```python
-jira.users.list()
+await jira.users.list()
 ```
 
 **API**
@@ -386,7 +386,7 @@ Search for users using a query string
 **Python SDK**
 
 ```python
-jira.users.search()
+await jira.users.search()
 ```
 
 **API**
@@ -422,7 +422,7 @@ Returns a list of all custom and system fields
 **Python SDK**
 
 ```python
-jira.issue_fields.list()
+await jira.issue_fields.list()
 ```
 
 **API**
@@ -446,7 +446,7 @@ Search and filter issue fields with query parameters
 **Python SDK**
 
 ```python
-jira.issue_fields.search()
+await jira.issue_fields.search()
 ```
 
 **API**
@@ -517,7 +517,7 @@ Retrieve all comments for a specific issue
 **Python SDK**
 
 ```python
-jira.issue_comments.list(
+await jira.issue_comments.list(
     issue_id_or_key="<str>"
 )
 ```
@@ -586,7 +586,7 @@ Retrieve a single comment by its ID
 **Python SDK**
 
 ```python
-jira.issue_comments.get(
+await jira.issue_comments.get(
     issue_id_or_key="<str>",
     comment_id="<str>"
 )
@@ -649,7 +649,7 @@ Retrieve all worklogs for a specific issue
 **Python SDK**
 
 ```python
-jira.issue_worklogs.list(
+await jira.issue_worklogs.list(
     issue_id_or_key="<str>"
 )
 ```
@@ -719,7 +719,7 @@ Retrieve a single worklog by its ID
 **Python SDK**
 
 ```python
-jira.issue_worklogs.get(
+await jira.issue_worklogs.get(
     issue_id_or_key="<str>",
     worklog_id="<str>"
 )
