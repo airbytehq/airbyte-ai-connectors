@@ -22,8 +22,12 @@ from ._vendored.connector_sdk.schema.security import (
 from ._vendored.connector_sdk.schema.components import (
     PathOverrideConfig,
 )
+from uuid import (
+    UUID,
+)
 
 GreenhouseConnectorModel: ConnectorModel = ConnectorModel(
+    id=UUID('59f1e50a-331f-4f09-b3e8-2e8d4d355f44'),
     name='greenhouse',
     version='0.1.1',
     base_url='https://harvest.greenhouse.io/v1',
