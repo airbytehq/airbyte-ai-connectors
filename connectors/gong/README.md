@@ -75,6 +75,6 @@ For the service's official API docs, see the [Gong API reference](https://gong.a
 
 ## Version information
 
-- **Package version:** 0.19.20
+- **Package version:** 0.19.21
 - **Connector version:** 0.1.5
-- **Generated with Connector SDK commit SHA:** 4fe5029b71369ddb9ad9b5912e7f957fb4f81747
+- **Generated with Connector SDK commit SHA:** 6a6c981ea241fe65b8f71e85c9c284c151b35b69
