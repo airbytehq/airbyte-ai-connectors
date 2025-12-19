@@ -1691,7 +1691,7 @@ curl --location 'https://api.airbyte.ai/api/v1/connectors/instances/{your_connec
 The Github connector supports the following authentication methods.
 
 
-### GitHub OAuth 2.0
+### OAuth 2
 
 | Field Name | Type | Required | Description |
 |------------|------|----------|-------------|
@@ -1725,7 +1725,7 @@ curl --location 'https://api.airbyte.ai/api/v1/connectors/instances' \
 ```
 
 
-### GitHub Personal Access Token
+### Personal Access Token
 
 | Field Name | Type | Required | Description |
 |------------|------|----------|-------------|

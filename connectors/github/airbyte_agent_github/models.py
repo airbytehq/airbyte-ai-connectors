@@ -12,23 +12,23 @@ from typing import TypeVar, Generic, Union, Any
 
 # Authentication configuration - multiple options available
 
-class GithubGithubOauth20AuthConfig(BaseModel):
-    """GitHub OAuth 2.0"""
+class GithubOauth2AuthConfig(BaseModel):
+    """OAuth 2"""
 
     model_config = ConfigDict(extra="forbid")
 
     access_token: str
     """OAuth 2.0 access token"""
 
-class GithubGithubPersonalAccessTokenAuthConfig(BaseModel):
-    """GitHub Personal Access Token"""
+class GithubPersonalAccessTokenAuthConfig(BaseModel):
+    """Personal Access Token"""
 
     model_config = ConfigDict(extra="forbid")
 
     token: str
     """GitHub personal access token (fine-grained or classic)"""
 
-GithubAuthConfig = GithubGithubOauth20AuthConfig | GithubGithubPersonalAccessTokenAuthConfig
+GithubAuthConfig = GithubOauth2AuthConfig | GithubPersonalAccessTokenAuthConfig
 
 # ===== RESPONSE TYPE DEFINITIONS (PYDANTIC) =====
 
