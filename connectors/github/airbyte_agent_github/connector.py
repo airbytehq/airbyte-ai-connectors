@@ -58,7 +58,7 @@ from .types import (
 if TYPE_CHECKING:
     from .models import GithubAuthConfig
 # Import specific auth config classes for multi-auth isinstance checks
-from .models import GithubGithubOauth20AuthConfig, GithubGithubPersonalAccessTokenAuthConfig
+from .models import GithubOauth2AuthConfig, GithubPersonalAccessTokenAuthConfig
 # Import response models and envelope models at runtime
 from .models import (
     GithubExecuteResult,
@@ -114,7 +114,7 @@ class GithubConnector:
     """
 
     connector_name = "github"
-    connector_version = "0.1.5"
+    connector_version = "0.1.6"
     vendored_sdk_version = "0.1.0"  # Version of vendored connector-sdk
 
     # Map of (entity, action) -> has_extractors for envelope wrapping decision
@@ -274,9 +274,9 @@ class GithubConnector:
             # Multi-auth connector: detect auth scheme from auth_config type
             auth_scheme: str | None = None
             if auth_config:
-                if isinstance(auth_config, GithubGithubOauth20AuthConfig):
+                if isinstance(auth_config, GithubOauth2AuthConfig):
                     auth_scheme = "githubOAuth"
-                if isinstance(auth_config, GithubGithubPersonalAccessTokenAuthConfig):
+                if isinstance(auth_config, GithubPersonalAccessTokenAuthConfig):
                     auth_scheme = "githubPAT"
 
             self._executor = LocalExecutor(
