@@ -45,6 +45,7 @@ connector = LinearConnector(
 result = await connector.issues.list()
 ```
 
+
 ## Full documentation
 
 This connector supports the following entities and actions.
@@ -62,6 +63,6 @@ For the service's official API docs, see the [Linear API reference](https://line
 
 ## Version information
 
-- **Package version:** 0.19.20
+- **Package version:** 0.19.21
 - **Connector version:** 0.1.1
-- **Generated with Connector SDK commit SHA:** f7c55d3e3cdc7568cab2da9d736285eec58f044b
+- **Generated with Connector SDK commit SHA:** e996e848c6d55a9640a0cfa24ab5b34a275f9ceb
