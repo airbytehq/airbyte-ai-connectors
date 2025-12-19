@@ -22,6 +22,7 @@ connector = JiraConnector(
 result = await connector.issues.search()
 ```
 
+
 ## Full documentation
 
 This connector supports the following entities and actions.
@@ -42,6 +43,6 @@ For the service's official API docs, see the [Jira API reference](https://develo
 
 ## Version information
 
-- **Package version:** 0.1.11
+- **Package version:** 0.1.12
 - **Connector version:** 1.0.2
-- **Generated with Connector SDK commit SHA:** f7c55d3e3cdc7568cab2da9d736285eec58f044b
+- **Generated with Connector SDK commit SHA:** e996e848c6d55a9640a0cfa24ab5b34a275f9ceb
